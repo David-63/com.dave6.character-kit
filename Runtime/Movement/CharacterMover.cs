@@ -10,6 +10,18 @@ using Dave6.CharacterKit.Look;
 namespace Dave6.CharacterKit.Movement
 {
     /// <summary>
+    /// 
+    /// Mover가 작동 안하는 경우
+    /// 
+    /// 1. 카메라가 없어
+    /// MainCamera 오브젝트가 없음
+    /// MainCamera 오브젝트가 Main Camera 태그를 안달고있음
+    /// 
+    /// 2. 플레이어 오브젝트(부모)의 레이어가 default임
+    /// 
+    /// 
+    /// 
+    /// 
     /// Mover가 할 일
     /// 
     /// 1. 바닥 체크  done
@@ -199,6 +211,12 @@ namespace Dave6.CharacterKit.Movement
             playerController = GetComponent<PlayerController>();
 
             MainCamera = Camera.main.transform;
+
+            var brain = Camera.main.GetComponent<CinemachineBrain>();
+            if (brain == null)
+            {
+                Camera.main.gameObject.AddComponent<CinemachineBrain>();
+            }
         }
         void OnceSetting()
         {
@@ -209,6 +227,7 @@ namespace Dave6.CharacterKit.Movement
             if (cameraTarget == null)
             {
                 cameraTarget = transform.Find("CameraTarget");
+                cameraTarget.position = new Vector3(0, 1.4f, 0);
             }
             if (cameraLookProfile == null)
             {
