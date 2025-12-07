@@ -1373,7 +1373,7 @@ GameObject:
   - component: {fileID: 1523569695206668514}
   - component: {fileID: 6334786993863572514}
   - component: {fileID: 172162477524901018}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: PlayerCharacterPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1435,6 +1435,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9929bacbe0a65442987dae9d6383a92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Movement.CharacterMover
+  showInitialDebug: 0
   stepHeightRatio: 0.14
   colliderHeight: 1.8
   colliderRadius: 0.28
@@ -1481,6 +1482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6f21c34ad63fb4448f4ebd983c670f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.PlayerController
+  showInitialDebug: 0
   input: {fileID: 11400000, guid: 2f261d4683d151f42904e9e057487137, type: 2}
   JumpInput: 0
   AimInput: 0

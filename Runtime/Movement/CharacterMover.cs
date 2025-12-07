@@ -227,7 +227,7 @@ namespace Dave6.CharacterKit.Movement
             if (cameraTarget == null)
             {
                 cameraTarget = transform.Find("CameraTarget");
-                cameraTarget.position = new Vector3(0, 1.4f, 0);
+                cameraTarget.localPosition = new Vector3(0, 1.4f, 0);
             }
             if (cameraLookProfile == null)
             {
