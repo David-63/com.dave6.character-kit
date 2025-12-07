@@ -1,0 +1,25 @@
+{
+  "name": "com.dave6.character-kit",
+  "version": "0.0.1",
+  "displayName": "Dave Character Kit",
+  "description": ".",
+  "unity": "6000.0",
+  "unityRelease": "0",
+  "documentationUrl": "https://github.com/David-63/com.dave6.character-kit#readme",
+  "changelogUrl": "https://github.com/David-63/com.dave6.character-kit/releases",
+  "licensesUrl": "https://github.com/David-63/com.dave6.character-kit/blob/main/LICENSE",
+  "keywords": [
+    "character-controller",
+    "moduler"
+  ],
+  "author": {
+    "name": "David-63",
+    "email": "jiseop.63@gmail.com",
+    "url": "https://github.com/David-63"
+  },
+  "dependencies": {
+    "com.unity.inputsystem": "1.14.2",
+    "com.unity.cinemachine": "3.1.5",
+    "com.dave6.state-machine": "0.0.1"
+  }
+}

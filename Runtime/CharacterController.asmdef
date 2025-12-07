@@ -1,0 +1,19 @@
+{
+    "name": "CharacterKit",
+    "rootNamespace": "Dave6.CharacterKit",
+    "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:417688e2874e8804cbef51c87617e9fa",
+        "GUID:acb680708cfad1644a5c42ac93cd3b14"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
