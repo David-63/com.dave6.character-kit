@@ -10,7 +10,7 @@ namespace Dave6.CharacterKit
 {
     public class PlayerController : MonoBehaviour
     {
-        
+        public bool showInitialDebug = false;
         [SerializeField] InputReader input;
         public InputReader GetInputReader() => input;
         CharacterMover mover;
@@ -56,10 +56,10 @@ namespace Dave6.CharacterKit
             EventBind();
         }
 
-        
         void Start()
         {
             input.EnablePlayerAction();
+            stateMachine.SetState(stateMachine.GetStateByType(typeof(FreeLookState)));
         }
 
         void Update()
@@ -77,6 +77,10 @@ namespace Dave6.CharacterKit
 
         void EventBind()
         {
+            if (showInitialDebug)
+            {
+                Debug.Log("인풋 초기화");
+            }
             input.Jump += (value) => JumpInput = value;
             input.Aim += (value) => AimInput = value;
             input.Shift += (value) => ShiftInput = value;
@@ -84,14 +88,16 @@ namespace Dave6.CharacterKit
 
         void SetupStateMachine()
         {
+            if (showInitialDebug)
+            {
+                Debug.Log("상태 초기화");
+            }
             // FSM 생성 및 상태 정의
             stateMachine = new GameStateMachine();
             var freeLook = new FreeLookState(this);
             var strafeMove = new StrafeMoveState(this);
             At(freeLook, strafeMove, new FuncPredicate(() => AimInput));
             At(strafeMove, freeLook, new FuncPredicate(() => !AimInput));
-
-            stateMachine.SetState(freeLook);
         }
         void At(IState from, IState to, IPredicate condition) => stateMachine.AddTransition(from, to, condition);
         void Any(IState to, IPredicate condition) => stateMachine.AddAnyTransition(to, condition);

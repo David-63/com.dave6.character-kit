@@ -23,6 +23,7 @@ namespace Dave6.CharacterKit.Movement
     [RequireComponent(typeof(CharacterController))]
     public class CharacterMover : MonoBehaviour
     {
+        public bool showInitialDebug = false;
         CharacterController controller;
         PlayerController playerController; // 이건 레지스터 방식으로 해도 되고
 
@@ -190,6 +191,10 @@ namespace Dave6.CharacterKit.Movement
 
         void Setup()
         {
+            if (showInitialDebug)
+            {
+                Debug.Log("내장된 컴포넌트 초기화");
+            }
             controller = GetComponent<CharacterController>();
             playerController = GetComponent<PlayerController>();
 
@@ -197,6 +202,10 @@ namespace Dave6.CharacterKit.Movement
         }
         void OnceSetting()
         {
+            if (showInitialDebug)
+            {
+                Debug.Log("카메라 객체 초기화");
+            }
             if (cameraTarget == null)
             {
                 cameraTarget = transform.Find("CameraTarget");
@@ -217,6 +226,7 @@ namespace Dave6.CharacterKit.Movement
             {
                 Debug.Log("카메라 타겟을 못찾음 (이름 불일치?)");
             }
+
             cinemachineCamera.Follow = cameraTarget;
 
             thirdPersonFollow.Damping = Vector3.zero;
@@ -314,6 +324,8 @@ namespace Dave6.CharacterKit.Movement
         {
             float elapsed = 0f;
             float invDuration = 1f / duration;
+
+            Debug.Log($"{cinemachineCamera} 에 트렌지션 적용중");
 
             // 시작값 저장
             float startFOV = cinemachineCamera.Lens.FieldOfView;
