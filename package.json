@@ -20,7 +20,7 @@
   "dependencies": {
     "com.unity.inputsystem": "1.14.2",
     "com.unity.cinemachine": "3.1.5",
-    "com.dave6.unity-utils": "0.0.1",
+    "com.dave6.unity-utils": "0.0.2",
     "com.dave6.timer": "0.0.1",
     "com.dave6.state-machine": "0.0.1",
     "com.dave6.stat-system": "0.0.7"
