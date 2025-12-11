@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d237e49079b1256469dd55068017614b, type: 3}
+  m_Name: PlayerStats
+  m_EditorClassIdentifier: StatSystem::Dave6.StatSystem.StatDatabase
+  m_Attributes:
+  - {fileID: 11400000, guid: f47c87f0ef8bc2446bebae38477f6da1, type: 2}
+  m_SecondaryStat:
+  - {fileID: 11400000, guid: fb3b5223ef8ecd84598b24d592a48f4a, type: 2}
+  - {fileID: 11400000, guid: 2c92d13abd887ca4c97e1f07b015b657, type: 2}
+  m_ResourceStat:
+  - {fileID: 11400000, guid: 2e6bfe1998127cf40be8c07cc9b4781b, type: 2}

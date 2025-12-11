@@ -1,12 +1,23 @@
 using UnityEngine;
 using Dave6.StateMachine;
+using Dave6.StatSystem;
+using Dave6.StatSystem.Stat;
 
 namespace Dave6.CharacterKit.States
 {
-    public class FreeLookState : BaseState<PlayerController>
+    public class FreeLookState : BaseState<BasicPlayerController>
     {
-        public FreeLookState(PlayerController controller) : base(controller) { }
+        StatHandler m_StatHandler;
 
+        public FreeLookState(BasicPlayerController controller) : base(controller)
+        {
+            PlayerController playerController = controller as PlayerController;
+            m_StatHandler = playerController.statHandler;
+            if (m_StatHandler == null)
+            {
+                Debug.Log("잘못연결된것같아요");
+            }
+        }
         public override void OnEnter()
         {
             controller.GetMover().SetFreeLookMode();
@@ -18,28 +29,31 @@ namespace Dave6.CharacterKit.States
 
         public override  void Update()
         {
+            float deltaTime = Time.deltaTime;
             UpdateTargetSpeed();
-            controller.GetMover().CalculateSpeed(Time.deltaTime);
-            controller.GetMover().FreeLookDirection();
+            controller.GetMover().CalculateSpeed(deltaTime);
+            controller.GetMover().FreeLookRotate(deltaTime);
         }
 
         void UpdateTargetSpeed()
         {
             float targetSpeed = 0;
 
+            SecondaryStat moveStat = m_StatHandler.GetStat("S_MoveSpeed") as SecondaryStat;
+
             if (controller.HasMovementInput())
             {
-                if (controller.ShiftInput)
+                if (controller.shiftInput)
                 {
-                    targetSpeed = controller.GetMover().GetMovementProfile().SprintSpeed;
+                    targetSpeed = moveStat.finalValue * 1.8f;
                 }
                 else
                 {
-                    targetSpeed = controller.GetMover().GetMovementProfile().JogSpeed;
+                    targetSpeed = moveStat.finalValue;
                 }
             }
 
-            controller.TargetSpeed = targetSpeed;
+            controller.targetSpeed = targetSpeed;
         }
     }
 }

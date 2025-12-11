@@ -1,6 +1,6 @@
 {
   "name": "com.dave6.character-kit",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "displayName": "Dave Character Kit",
   "description": "A lightweight starter kit for building character controllers in Unity.",
   "unity": "6000.0",
@@ -20,7 +20,9 @@
   "dependencies": {
     "com.unity.inputsystem": "1.14.2",
     "com.unity.cinemachine": "3.1.5",
+    "com.dave6.unity-utils": "0.0.1",
+    "com.dave6.timer": "0.0.1",
     "com.dave6.state-machine": "0.0.1",
-    "com.dave6.timer": "0.0.1"
+    "com.dave6.stat-system": "0.0.7"
   }
 }
