@@ -47,7 +47,7 @@ namespace Dave6.CharacterKit
 
         void AirborneSpeed(float deltaTime)
         {
-            controller.horizontalSpeed = Mathf.Lerp(controller.horizontalSpeed, 1, deltaTime * 0.5f);
+            controller.horizontalSpeed = Mathf.Lerp(controller.horizontalSpeed, 0, deltaTime * 0.5f);
             controller.horizontalSpeed = Mathf.Round(controller.horizontalSpeed * 1000f) / 1000f;
         }
 

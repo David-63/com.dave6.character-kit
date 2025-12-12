@@ -18,6 +18,8 @@ namespace Dave6.CharacterKit.Input
         public event UnityAction<bool> Aim = delegate {};
         public event UnityAction<bool> Shift = delegate {};
         public event UnityAction ShiftToggleChanged = delegate {};
+        public event UnityAction<bool> Attack = delegate {};
+        public event UnityAction AttackTap = delegate {};
 
         bool _shiftToggle;
 
@@ -111,6 +113,20 @@ namespace Dave6.CharacterKit.Input
                 break;
                 case InputActionPhase.Canceled:
                 Shift?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnAttack(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Attack?.Invoke(true);
+                AttackTap?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Attack?.Invoke(false);
                 break;
             }
         }

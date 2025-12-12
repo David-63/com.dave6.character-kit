@@ -138,6 +138,15 @@ namespace Dave6.CharacterKit.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""3c5eb958-9d0e-4706-8d03-dc5669ffed2c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -338,6 +347,28 @@ namespace Dave6.CharacterKit.Input
                     ""action"": ""Shift"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""29a894a9-8d3f-4e1a-9409-994faddd706a"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PC"",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4bb26820-4f98-4190-aad5-3dbba6a28912"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Controller"",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -379,6 +410,7 @@ namespace Dave6.CharacterKit.Input
             m_Character_Look = m_Character.FindAction("Look", throwIfNotFound: true);
             m_Character_Aim = m_Character.FindAction("Aim", throwIfNotFound: true);
             m_Character_Shift = m_Character.FindAction("Shift", throwIfNotFound: true);
+            m_Character_Attack = m_Character.FindAction("Attack", throwIfNotFound: true);
         }
 
         ~@DaveInput()
@@ -464,6 +496,7 @@ namespace Dave6.CharacterKit.Input
         private readonly InputAction m_Character_Look;
         private readonly InputAction m_Character_Aim;
         private readonly InputAction m_Character_Shift;
+        private readonly InputAction m_Character_Attack;
         /// <summary>
         /// Provides access to input actions defined in input action map "Character".
         /// </summary>
@@ -495,6 +528,10 @@ namespace Dave6.CharacterKit.Input
             /// Provides access to the underlying input action "Character/Shift".
             /// </summary>
             public InputAction @Shift => m_Wrapper.m_Character_Shift;
+            /// <summary>
+            /// Provides access to the underlying input action "Character/Attack".
+            /// </summary>
+            public InputAction @Attack => m_Wrapper.m_Character_Attack;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -536,6 +573,9 @@ namespace Dave6.CharacterKit.Input
                 @Shift.started += instance.OnShift;
                 @Shift.performed += instance.OnShift;
                 @Shift.canceled += instance.OnShift;
+                @Attack.started += instance.OnAttack;
+                @Attack.performed += instance.OnAttack;
+                @Attack.canceled += instance.OnAttack;
             }
 
             /// <summary>
@@ -562,6 +602,9 @@ namespace Dave6.CharacterKit.Input
                 @Shift.started -= instance.OnShift;
                 @Shift.performed -= instance.OnShift;
                 @Shift.canceled -= instance.OnShift;
+                @Attack.started -= instance.OnAttack;
+                @Attack.performed -= instance.OnAttack;
+                @Attack.canceled -= instance.OnAttack;
             }
 
             /// <summary>
@@ -663,6 +706,13 @@ namespace Dave6.CharacterKit.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnShift(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Attack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnAttack(InputAction.CallbackContext context);
         }
     }
 }

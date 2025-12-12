@@ -5,34 +5,38 @@ using Dave6.StatSystem.Stat;
 
 namespace Dave6.CharacterKit.States
 {
-    public class FreeLookState : BaseState<BasicPlayerController>
+    public class StrafeMoveState : BaseState<PlayerController>
     {
         StatHandler m_StatHandler;
+        bool ShiftToggle = false;
 
-        public FreeLookState(BasicPlayerController controller) : base(controller)
+        public StrafeMoveState(PlayerController controller) : base(controller)
         {
-            PlayerController playerController = controller as PlayerController;
-            m_StatHandler = playerController.statHandler;
+            m_StatHandler = controller.statHandler;
             if (m_StatHandler == null)
             {
                 Debug.Log("잘못연결된것같아요");
             }
         }
+
         public override void OnEnter()
         {
-            controller.GetMover().SetFreeLookMode();
+            ShiftToggle = true;
+            controller.GetMover().SetStrafeMode(ShiftToggle);
+            controller.GetInputReader().ShiftToggleChanged += OnShiftToggled;
         }
 
         public override void OnExit()
         {
+            controller.GetInputReader().ShiftToggleChanged -= OnShiftToggled;
         }
 
-        public override  void Update()
+        public override void Update()
         {
             float deltaTime = Time.deltaTime;
             UpdateTargetSpeed();
             controller.GetMover().CalculateSpeed(deltaTime);
-            controller.GetMover().FreeLookRotate(deltaTime);
+            controller.GetMover().StrafeMoveRotate(deltaTime);
         }
 
         void UpdateTargetSpeed()
@@ -40,20 +44,20 @@ namespace Dave6.CharacterKit.States
             float targetSpeed = 0;
 
             SecondaryStat moveStat = m_StatHandler.GetStat("S_MoveSpeed") as SecondaryStat;
+            float moveSpeed = moveStat.finalValue;
 
             if (controller.HasMovementInput())
             {
-                if (controller.shiftInput)
-                {
-                    targetSpeed = moveStat.finalValue * 1.8f;
-                }
-                else
-                {
-                    targetSpeed = moveStat.finalValue;
-                }
+                targetSpeed = moveSpeed - moveSpeed * 0.4f;
             }
 
             controller.targetSpeed = targetSpeed;
+        }
+
+        void OnShiftToggled()
+        {
+            ShiftToggle = !ShiftToggle;
+            controller.GetMover().SetStrafeMode(ShiftToggle);
         }
     }
 }

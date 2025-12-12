@@ -23,8 +23,8 @@ namespace Dave6.CharacterKit
             m_StateMachine = new GameStateMachine();
             var freeLook = new MinimalFreeLookState(this);
             var strafeMove = new MinimalStrafeMoveState(this);
-            At(freeLook, strafeMove, new FuncPredicate(() => aimInput));
-            At(strafeMove, freeLook, new FuncPredicate(() => !aimInput));
+            At(m_StateMachine, freeLook, strafeMove, new FuncPredicate(() => aimInput));
+            At(m_StateMachine, strafeMove, freeLook, new FuncPredicate(() => !aimInput));
         }
     }
 }

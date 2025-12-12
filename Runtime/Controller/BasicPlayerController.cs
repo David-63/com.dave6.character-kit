@@ -1,3 +1,4 @@
+using System;
 using Dave6.CharacterKit.Input;
 using Dave6.StateMachine;
 using UnityEngine;
@@ -25,6 +26,10 @@ namespace Dave6.CharacterKit
         public bool aimInput => m_AimInput;
         bool m_ShiftInput = false;
         public bool shiftInput => m_ShiftInput;
+        bool m_AttackInput = false;
+        public bool attackInput => m_AttackInput;
+        bool m_AttackInputTap = false;
+        public bool attackInputTap => m_AttackInputTap;
         #endregion
 
         #region movement value field
@@ -69,6 +74,12 @@ namespace Dave6.CharacterKit
         public virtual void LateUpdate()
         {
             m_StateMachine.LateUpdate();
+            ClearTapInput();
+        }
+
+        void ClearTapInput()
+        {
+            m_AttackInputTap = false;
         }
 
         protected virtual void EventBind()
@@ -80,11 +91,14 @@ namespace Dave6.CharacterKit
             m_Input.Jump += (value) => m_JumpInput = value;
             m_Input.Aim += (value) => m_AimInput = value;
             m_Input.Shift += (value) => m_ShiftInput = value;
+            m_Input.Attack += (value) => m_AttackInput = value;
+            m_Input.AttackTap += () => m_AttackInputTap = true;
+            
         }
         protected abstract void SetupStateMachine();
 
-        protected void At(IState from, IState to, IPredicate condition) => m_StateMachine.AddTransition(from, to, condition);
-        protected void Any(IState to, IPredicate condition) => m_StateMachine.AddAnyTransition(to, condition);
+        protected void At(GameStateMachine stateMachine, IState from, IState to, IPredicate condition) => stateMachine.AddTransition(from, to, condition);
+        protected void Any(GameStateMachine stateMachine, IState to, IPredicate condition) => stateMachine.AddAnyTransition(to, condition);
 
     }
 }
