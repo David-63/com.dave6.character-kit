@@ -1,4 +1,3 @@
-using System;
 using Dave6.StateMachine;
 using UnityEngine;
 using UnityUtils.Timer;
@@ -9,11 +8,15 @@ namespace Dave6.CharacterKit.States
     public class ActionRangeState : BaseState<PlayerController>
     {
         float m_AttackDuration = 2f;
-        public Timer endTimer;
+        public Timer m_EndTimer;
+        GameObject cacheProjectilePrefab;
         public ActionRangeState(PlayerController controller) : base(controller)
         {
-            endTimer = new Countdown(m_AttackDuration);
-            endTimer.OnTimerStop += AttackFinish;
+            m_EndTimer = new Countdown(m_AttackDuration);
+            m_EndTimer.OnTimerStop += AttackFinish;
+
+            // 투사체 캐싱은 전용 함수를 두고 런타임중에 변경하도록 구조를 바꿔야함
+            cacheProjectilePrefab = controller.combatHandler.projectilePrefab;
         }
         public override void OnEnter()
         {
@@ -21,7 +24,6 @@ namespace Dave6.CharacterKit.States
 
         public override void OnExit()
         {
-            endTimer.Pause();
         }
 
         public override  void Update()
@@ -39,10 +41,25 @@ namespace Dave6.CharacterKit.States
         void DoFire()
         {
             Debug.Log("사격!");
-            endTimer.Reset();
-            endTimer.Resume();
+            GameObject projectileOjb = controller.InstantiatePrefab(cacheProjectilePrefab, controller.combatHandler.muzzle.position, controller.transform.rotation);
+            projectileOjb.GetComponent<ProjectileMover>().Initialize(controller);
+
+            CooldownTimer(m_EndTimer);
         }
 
         void AttackFinish() => controller.exitRangeFlag = true;
+
+        void CooldownTimer(Timer target)
+        {
+            if (target.IsRunning)
+            {
+                target.Reset();
+                target.Resume();
+            }
+            else
+            {
+                target.Start();
+            }
+        }
     }
 }

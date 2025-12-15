@@ -11,7 +11,7 @@ namespace Dave6.CharacterKit
             SetupStateMachine();
             m_Input.EnablePlayerAction();
 
-            m_StateMachine.SetState(m_StateMachine.GetStateByType(typeof(MinimalFreeLookState)));
+            m_LocomotionStateMachine.SetState(m_LocomotionStateMachine.GetStateByType(typeof(MinimalFreeLookState)));
         }
         protected override void SetupStateMachine()
         {
@@ -20,11 +20,11 @@ namespace Dave6.CharacterKit
                 Debug.Log("상태 초기화");
             }
             // FSM 생성 및 상태 정의
-            m_StateMachine = new GameStateMachine();
+            m_LocomotionStateMachine = new MinimumStateMachine();
             var freeLook = new MinimalFreeLookState(this);
             var strafeMove = new MinimalStrafeMoveState(this);
-            At(m_StateMachine, freeLook, strafeMove, new FuncPredicate(() => aimInput));
-            At(m_StateMachine, strafeMove, freeLook, new FuncPredicate(() => !aimInput));
+            m_LocomotionStateMachine.At(freeLook, strafeMove, new FuncPredicate(() => aimInput));
+            m_LocomotionStateMachine.At(strafeMove, freeLook, new FuncPredicate(() => !aimInput));
         }
     }
 }

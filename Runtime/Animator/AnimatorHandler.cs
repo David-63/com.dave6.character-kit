@@ -1,0 +1,66 @@
+using UnityEngine;
+
+namespace Dave6.CharacterKit.AnimHandler
+{
+    /// <summary>
+    /// 애니메이터에 값을 넣어주고
+    /// controller를 통해 애니메이션 관련 기능을 제공
+    /// </summary>
+    public class AnimatorHandler
+    {
+        Animator m_Animator;
+        BasicPlayerController m_Controller;
+        string m_CurrentAnimation = "";
+        public bool attackReady = true;
+
+
+        public AnimatorHandler(BasicPlayerController controller, Animator animator)
+        {
+            m_Animator = animator;
+            m_Controller = controller;
+        }
+
+        public void UpdateMoveSpeed()
+        {
+            m_Animator.SetFloat("moveSpeed", m_Controller.horizontalSpeed);
+        }
+        public void UpdateVerticalSpeed()
+        {
+            m_Animator.SetFloat("verticalSpeed", m_Controller.verticalSpeed);
+        }
+        public void UpdateGrounded()
+        {
+            m_Animator.SetBool("isGrounded", m_Controller.GetMover().isGrounded);
+        }
+        public void UpdateHasMovementInput()
+        {
+            m_Animator.SetBool("hasMoveInput", m_Controller.HasMovementInput());
+        }
+
+        /// <summary>
+        /// 1. 액션 토큰 필요함
+        /// 고유 ID를 발급하고 wait이 끝났을때 id가 유효한지 체크
+        /// 
+        /// </summary>
+        /// <param name="animation"></param>
+        /// <param name="corssfade"></param>
+        /// <param name="duration"></param>
+
+        public void ChangeAnimation(string animation, float corssfade = 0.2f)
+        {
+            if (m_CurrentAnimation == animation) return;
+            m_CurrentAnimation = animation;
+            m_Animator.CrossFade(animation, corssfade);
+        }
+        public void ClearCurrentAnimation()
+        {
+            m_CurrentAnimation = "";
+        }
+        public void OnAttackAnimationEnd(AnimationEvent animationEvent)
+        {
+            attackReady = true;
+            m_Controller.movementLocked = false;
+            ClearCurrentAnimation();
+        }
+    }
+}

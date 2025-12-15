@@ -7,162 +7,82 @@ using UnityUtils.Timer;
 namespace Dave6.CharacterKit.States
 {
     /// <summary>
-    /// 진입 조건
-    /// AimInput이 없고, Idle상태일 때.
     /// 
-    /// 전반적으로 구조를 싹 갈아엎어야함
-    /// 당장은 프로토타이핑으로 기능만 구현
+    /// 언제 공격을 시도하는가              | 공격 유효 타이머¿
+    /// 상태 진입 / 종료                   | 
+    /// FSM 전환 조건                       |
+    /// 입력 버퍼 여부                      | 버퍼 입력받는 기간을 정해주면 될듯?
     /// </summary>
     public class ActionMeleeState : BaseState<PlayerController>
     {
-        
-        float m_AttackDuration = 2f;
+        float m_AttackDuration = 4f;
         Timer m_EndTimer;
 
-        #region combo field
-        int m_ComboStep = 0;
-        const int comboEnd = 3;
-        bool entered = false;
-        Timer m_StepTimer;
-        float stepDuration = 0.6f;
-        #endregion
+        bool bufferInput = false;
 
-        #region collition field
-        bool canAttack = true;
-        GameObject m_HitObject;
-        Timer existTimer;
-        float colliderDuration = 0.2f;
-        #endregion
 
         public ActionMeleeState(PlayerController controller) : base(controller)
         {
             // 공격 유효시간
             m_EndTimer = new Countdown(m_AttackDuration);
             m_EndTimer.OnTimerStop += AttackFinish;
-            // 콤보 제한시간
-            m_StepTimer = new Countdown(stepDuration);
-            m_StepTimer.OnTimerStop += ComboReset;
-
-
-            m_HitObject = controller.CreateGameObject(controller.hitColliderPrefab);
-            m_HitObject.GetComponent<HitCollider>().Initialize(controller);
-            m_HitObject.transform.localPosition = new Vector3(0, 1, 1);
-            m_HitObject.SetActive(false);
-            existTimer = new Countdown(colliderDuration);
-            existTimer.OnTimerStop += CollitionEnd;       
         }
-
-
 
         public override void OnEnter()
         {
-            entered = false;
-            m_ComboStep = 0;
+            bufferInput = false;
         }
 
         public override void OnExit()
         {
-            m_StepTimer.Pause();
+            bufferInput = false;
         }
 
         public override  void Update()
         {
-            if (!entered)
+            // 진입 조건
+
+            // 공격 입력을 받거나, 버퍼가 등록되어 있으면
+            if (controller.attackInputTap || bufferInput)
             {
-                entered = true;
-                DoAttack(m_ComboStep);
-                if (m_StepTimer.IsRunning)
+                if (controller.combatHandler.TryMeleeAttack())
                 {
-                    m_StepTimer.Reset();
-                    m_StepTimer.Resume();
+                    bufferInput = false;
                 }
                 else
                 {
-                    m_StepTimer.Start();
+                    bufferInput = true;
                 }
-                
-                return;
-            }
-            // 입력 감지
-            // 타이머 연장 및 콤보 연계
-            if (controller.attackInputTap)
-            {
-                DoAttack(m_ComboStep);
-                if (m_StepTimer.IsRunning)
-                {
-                    m_StepTimer.Reset();
-                    m_StepTimer.Resume();
-                }
-                else
-                {
-                    m_StepTimer.Start();
-                }
-                return;
             }
         }
 
-        void DoAttack(int comboIndex)
-        {
-            // 당장은 타이밍 맞게 공격해야 콤보가 이어지지만,
-            // 입력을 버퍼로 받아서 선입력 되도록 할 예정
-            if (!canAttack) return;
-            canAttack = false;
-
-            if (comboIndex == 0)
-            {
-                Debug.Log($"{m_ComboStep}: 진입 타격!");
-                m_ComboStep++;
-            }
-            else if (comboIndex == comboEnd -1)
-            {
-                Debug.Log($"{m_ComboStep}: 마무리 타격!");
-                ComboReset();
-            }
-            else
-            {
-                Debug.Log($"{m_ComboStep}: 타격!");
-                m_ComboStep++;
-            }
-
-            m_HitObject.SetActive(true);
-
-            // 공격 할때마다 타이머 초기화
-            if (existTimer.IsRunning)
-            {
-                existTimer.Reset();
-                existTimer.Resume();
-            }
-            else
-            {
-                existTimer.Start();
-            }
-
-            if (m_EndTimer.IsRunning)
-            {
-                m_EndTimer.Reset();
-                m_EndTimer.Resume();
-            }
-            else
-            {
-                m_EndTimer.Start();
-            }
-
-        }
-
-        // 콜백 이벤트
+        /// <summary>
+        /// 상태 종료 조건
+        /// </summary>
         void AttackFinish()
         {
             controller.exitMeleeFlag = true;
         }
-        void ComboReset()
-        {
-            m_ComboStep = 0;
-        }
-        void CollitionEnd()
-        {
-            canAttack = true;
-            m_HitObject.SetActive(false);
-        }
     }
-
 }
+
+// 카메라를 돌리는 로직은 필요 없는듯함
+// // 공격이 나가는동안 유효함
+// if (existTimer.IsRunning)
+// {
+//     // 캐릭터가 카메라 방향으로 회전
+//     float targetDir = controller.GetMover().CalcTargetRotationByCamera();
+//     float currentDir = controller.GetMover().transform.eulerAngles.y;
+
+//     // 캐릭터가 카메라 방향으로 회전하는 로직
+//     //float lerpRotation = controller.GetMover().SmoothRotateUpdate(currentDir, targetDir, 0.3f);                
+//     //controller.GetMover().ApplyCharacterRotation(lerpRotation);
+
+//     // 카메라가 캐릭터 방향으로 회전하는 로직
+//     float angleDiff = Mathf.DeltaAngle(currentDir, targetDir);
+//     if (Mathf.Abs(angleDiff) < 120f)
+//     {
+//         float amount = 4f;
+//         controller.GetMover().NudgeCameraToCharacter(amount);    
+//     }
+// }

@@ -11,6 +11,7 @@ namespace Dave6.CharacterKit.Sensor
         Transform characterTransform;
         public enum CastDirection { Forward, Right, Up, Backward, Left, Down }
         CastDirection castDirection;
+        float radius;
 
         RaycastHit hitInfo;
         public RaycastSensor(Transform transform) => characterTransform = transform;
@@ -22,6 +23,12 @@ namespace Dave6.CharacterKit.Sensor
 
             Physics.Raycast(worldOrigin, worldDirection, out hitInfo, castLength, layermask, QueryTriggerInteraction.Ignore);
         }
+        public void SphereCast()
+        {
+            Vector3 worldOrigin = characterTransform.TransformPoint(origin);
+            Vector3 worldDirection = GetCastDirection();
+            Physics.SphereCast(worldOrigin, radius, worldDirection, out hitInfo, castLength, layermask);
+        }
 
         public bool HasDetecteHit() => hitInfo.collider != null;
         public float GetDistance() => hitInfo.distance;
@@ -32,6 +39,7 @@ namespace Dave6.CharacterKit.Sensor
 
         public void SetCastDirection(CastDirection direction) => castDirection = direction;
         public void SetCastOrigin(Vector3 pos) => origin = characterTransform.InverseTransformPoint(pos);
+        public void SetRadius(float value) => radius = value;
 
         Vector3 GetCastDirection()
         {

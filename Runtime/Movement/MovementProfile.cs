@@ -17,7 +17,7 @@ namespace Dave6.CharacterKit.Movement
         [Tooltip("Strafe speed of the character in m/s")]
         public float StrafeSpeed = 2.0f;
         [Tooltip("Acceleration and deceleration")]
-        public float SpeedChangeRate = 5.0f;
+        public float SpeedChangeRate = 8.0f;
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.1f, 1.5f)]
         public float RotationSmoothTime = 0.12f;

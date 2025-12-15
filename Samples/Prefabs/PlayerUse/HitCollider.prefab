@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8170811619783021628}
   - component: {fileID: 6972547476427053929}
   - component: {fileID: 154679278376198007}
-  - component: {fileID: 771772682933535046}
+  - component: {fileID: 5429165266484523815}
   m_Layer: 0
   m_Name: HitCollider
   m_TagString: Untagged
@@ -112,7 +112,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &771772682933535046
+--- !u!114 &5429165266484523815
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7978663354676208820}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ddf6c35593d9a7488567beebab637fd, type: 3}
+  m_Script: {fileID: 11500000, guid: 9435a2183d295e7448fc7238fbbb1173, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: StatSystem::ProtoCode.HitCollider
+  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.MeleeHitbox
   m_EffectDefinition: {fileID: 11400000, guid: f435745761ba6484caf6048d7b6306d7, type: 2}

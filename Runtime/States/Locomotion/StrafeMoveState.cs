@@ -35,8 +35,20 @@ namespace Dave6.CharacterKit.States
         {
             float deltaTime = Time.deltaTime;
             UpdateTargetSpeed();
-            controller.GetMover().CalculateSpeed(deltaTime);
-            controller.GetMover().StrafeMoveRotate(deltaTime);
+
+            if (controller.GetMover().isGrounded)
+            {
+                controller.GetMover().CalcGroundSpeed(deltaTime);
+            }
+            else
+            {
+                controller.GetMover().CalcAirborneSpeed(deltaTime);
+            }
+
+            float targetRotation = controller.GetMover().CalcTargetRotationByCamera();
+            float rotation = controller.GetMover().SmoothRotateUpdate(controller.GetMover().transform.eulerAngles.y, targetRotation, 0.06f);
+            controller.GetMover().ApplyCharacterRotation(rotation);
+            controller.moveDirection = controller.GetMover().CalcMoveDirByCamera(deltaTime);
         }
 
         void UpdateTargetSpeed()

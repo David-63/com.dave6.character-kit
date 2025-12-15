@@ -9,7 +9,6 @@ namespace Dave6.CharacterKit.States
 
         public override void OnEnter()
         {
-            Debug.Log("대기상태 진입");
         }
 
         public override void OnExit() { }

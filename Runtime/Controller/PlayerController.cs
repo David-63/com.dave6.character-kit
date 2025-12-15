@@ -1,10 +1,12 @@
 using Dave6.CharacterKit.Combat;
 using Dave6.CharacterKit.States;
+using Dave6.CharacterKit.AnimHandler;
 using Dave6.StateMachine;
 using Dave6.StatSystem;
 using Dave6.StatSystem.Interaction;
 using Dave6.StatSystem.Stat;
 using UnityEngine;
+using UnityUtils;
 
 namespace Dave6.CharacterKit
 {
@@ -20,27 +22,28 @@ namespace Dave6.CharacterKit
         public ResourceStat health { get; set; }
         #endregion
 
-        GameStateMachine m_ActionStateMachine;
+        MinimumStateMachine m_ActionStateMachine;
 
         CombatHandler m_CombatHandler;
         public CombatHandler combatHandler => m_CombatHandler;
-
-        [SerializeField] GameObject m_HitColliderPrefab;
-        public GameObject hitColliderPrefab => m_HitColliderPrefab;
 
         public override void Awake()
         {
             base.Awake();
             InitializeStat();
-            m_CombatHandler = new();
+            m_CombatHandler = gameObject.GetOrAddComponent<CombatHandler>();
         }
 
         public override void Start()
         {
-            SetupStateMachine();
             m_Input.EnablePlayerAction();
+            // 애니메이션 이벤트 바인딩
+            m_AnimEventProxy.onAttackFinishEvent += animatorHandler.OnAttackAnimationEnd;
 
-            m_StateMachine.SetState(m_StateMachine.GetStateByType(typeof(FreeLookState)));
+            // 상태 처리
+            SetupStateMachine();
+
+            m_LocomotionStateMachine.SetState(m_LocomotionStateMachine.GetStateByType(typeof(FreeLookState)));
             m_ActionStateMachine.SetState(m_ActionStateMachine.GetStateByType(typeof(ActionIdleState)));
         }
 
@@ -69,11 +72,11 @@ namespace Dave6.CharacterKit
             }
 
             // Locomotion
-            m_StateMachine = new();
+            m_LocomotionStateMachine = new();
             var freeLook = new FreeLookState(this);
             var strafeMove = new StrafeMoveState(this);
-            At(m_StateMachine, freeLook, strafeMove, new FuncPredicate(() => aimInput));
-            At(m_StateMachine, strafeMove, freeLook, new FuncPredicate(() => !aimInput));
+            m_LocomotionStateMachine.At(freeLook, strafeMove, new FuncPredicate(() => aimInput));
+            m_LocomotionStateMachine.At(strafeMove, freeLook, new FuncPredicate(() => !aimInput));
 
             // Action
             m_ActionStateMachine = new();
@@ -82,25 +85,20 @@ namespace Dave6.CharacterKit
             var actionRange = new ActionRangeState(this);
 
             // 공격 진입
-            
-            At(m_ActionStateMachine, actionIdle, actionMelee, new FuncPredicate(() => attackInputTap && !aimInput));
-            At(m_ActionStateMachine, actionIdle, actionRange, new FuncPredicate(() => aimInput));
+            m_ActionStateMachine.At(actionIdle, actionMelee, new FuncPredicate(() => attackInputTap && !aimInput));
+            m_ActionStateMachine.At(actionIdle, actionRange, new FuncPredicate(() => aimInput));
 
             
-            
-            
             // 공격 전환
-            
-            At(m_ActionStateMachine, actionMelee, actionRange, new FuncPredicate(() => aimInput));
-            At(m_ActionStateMachine, actionRange, actionMelee, new FuncPredicate(() => !aimInput && attackInputTap));
+            m_ActionStateMachine.At(actionMelee, actionRange, new FuncPredicate(() => aimInput));
+            m_ActionStateMachine.At(actionRange, actionMelee, new FuncPredicate(() => !aimInput && attackInputTap));
 
             
             // 공격 해제
-
-            At(m_ActionStateMachine, actionMelee, actionIdle, new FuncPredicate(() => ConsumeExitMelee()));
+            m_ActionStateMachine.At(actionMelee, actionIdle, new FuncPredicate(() => ConsumeExitMelee()));
 
             ///%%%
-            At(m_ActionStateMachine, actionRange, actionIdle, new FuncPredicate(() => !aimInput && ConsumeExitRange())); // 이거 문제있음
+            m_ActionStateMachine.At(actionRange, actionIdle, new FuncPredicate(() => !aimInput && ConsumeExitRange()));
 
         }
 
@@ -148,9 +146,13 @@ namespace Dave6.CharacterKit
         }
         #endregion
 
-        public GameObject CreateGameObject(GameObject obj)
+        public GameObject InstantiatePrefab(GameObject obj)
         {
             return Instantiate(obj, transform);
+        }
+        public GameObject InstantiatePrefab(GameObject obj, Vector3 position, Quaternion rotation)
+        {
+            return Instantiate(obj, position, rotation);
         }
     }
 }

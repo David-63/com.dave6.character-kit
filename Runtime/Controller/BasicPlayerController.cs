@@ -1,7 +1,9 @@
 using System;
+using Dave6.CharacterKit.AnimHandler;
 using Dave6.CharacterKit.Input;
 using Dave6.StateMachine;
 using UnityEngine;
+using UnityUtils;
 
 namespace Dave6.CharacterKit
 {
@@ -13,6 +15,7 @@ namespace Dave6.CharacterKit
         public InputReader GetInputReader() => m_Input;
         protected BasicMover m_Mover;
         public BasicMover GetMover() => m_Mover;
+        public bool movementLocked; // 이건 숨길거임
         #endregion
 
 
@@ -43,11 +46,27 @@ namespace Dave6.CharacterKit
         public Vector3 moveDirection { get => m_MoveDirection; set => m_MoveDirection = value; }
         public bool HasMovementInput() => inputMove.x != 0 || inputMove.z != 0;
         #endregion
-        protected GameStateMachine m_StateMachine;
+        protected MinimumStateMachine m_LocomotionStateMachine;
+
+        #region animator handle field
+        protected AnimatorHandler m_AnimatorHandler;
+        public AnimatorHandler animatorHandler => m_AnimatorHandler;
+
+        protected AnimatorEventProxy m_AnimEventProxy;
+        #endregion
 
 
         public virtual void Awake()
         {
+            if (this.TryGetComponentInChildren<Animator>(out var animator))
+            {
+                m_AnimatorHandler = new AnimatorHandler(this, animator);
+            }
+            if (this.TryGetComponentInChildren<AnimatorEventProxy>(out var proxy))
+            {
+                m_AnimEventProxy = proxy;
+            }
+
             m_Mover = GetComponent<BasicMover>();
             gameObject.layer = 3;
             
@@ -65,15 +84,15 @@ namespace Dave6.CharacterKit
         // Update is called once per frame
         public virtual void Update()
         {
-            m_StateMachine.Update();
+            m_LocomotionStateMachine.Update();
         }
         public virtual void FixedUpdate()
         {
-            m_StateMachine.FixedUpdate();
+            m_LocomotionStateMachine.FixedUpdate();
         }
         public virtual void LateUpdate()
         {
-            m_StateMachine.LateUpdate();
+            m_LocomotionStateMachine.LateUpdate();
             ClearTapInput();
         }
 
@@ -96,9 +115,5 @@ namespace Dave6.CharacterKit
             
         }
         protected abstract void SetupStateMachine();
-
-        protected void At(GameStateMachine stateMachine, IState from, IState to, IPredicate condition) => stateMachine.AddTransition(from, to, condition);
-        protected void Any(GameStateMachine stateMachine, IState to, IPredicate condition) => stateMachine.AddAnyTransition(to, condition);
-
     }
 }
