@@ -23,7 +23,6 @@ namespace Dave6.CharacterKit.Combat
     public class CombatHandler : MonoBehaviour
     {
         PlayerController m_Controller;
-        public PlayerController controller => m_Controller;
         #region 외부 프리팹 필드
         [SerializeField] GameObject m_MeleeHitPrefab;
         public GameObject meleeHitPrefab => m_MeleeHitPrefab;
@@ -47,10 +46,8 @@ namespace Dave6.CharacterKit.Combat
         
         #endregion
 
-        void Awake()
+        void Start()
         {
-            m_Controller = GetComponent<PlayerController>();
-
             // 타이머 세팅
             m_StepTimer = new Countdown(m_StepDuration);
             m_StepTimer.OnTimerStop += ComboReset;
@@ -89,20 +86,20 @@ namespace Dave6.CharacterKit.Combat
             // 콤보에 따른 애니메이션 호출
             if (m_ComboStep == 0)
             {
-                controller.animatorHandler.ChangeAnimation("LeftPunch", 0.1f);
+                m_Controller.animatorHandler.ChangeAnimation("LeftPunch", 0.1f);
             }
             else if (m_ComboStep == m_ComboEnd -1)
             {
-                controller.animatorHandler.ChangeAnimation("CrossPunch");
+                m_Controller.animatorHandler.ChangeAnimation("CrossPunch");
                 isComboEnd = true;
             }
             else
             {
-                controller.animatorHandler.ChangeAnimation("RightHook");
+                m_Controller.animatorHandler.ChangeAnimation("RightHook");
             }
 
             // 움직임 제어
-            controller.movementLocked = true;
+            m_Controller.movementLocked = true;
 
             // 타이머 제어
             m_HitboxExistTimer.RestartTimer();
@@ -120,5 +117,9 @@ namespace Dave6.CharacterKit.Combat
             return true;
         }
 
+        internal void RegisterCombat(PlayerController controller)
+        {
+            m_Controller = controller;
+        }
     }
 }

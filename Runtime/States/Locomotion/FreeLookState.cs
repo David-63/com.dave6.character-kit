@@ -8,6 +8,7 @@ namespace Dave6.CharacterKit.States
     public class FreeLookState : BaseState<PlayerController>
     {
         StatHandler m_StatHandler;
+        bool m_PrevHasInput;
 
         public FreeLookState(PlayerController controller) : base(controller)
         {
@@ -19,7 +20,7 @@ namespace Dave6.CharacterKit.States
         }
         public override void OnEnter()
         {
-            controller.GetMover().SetFreeLookMode();
+            controller.cameraHandler.SetFreeLookMode();
         }
 
         public override void OnExit()
@@ -32,27 +33,35 @@ namespace Dave6.CharacterKit.States
 
             // 속도 계산
             UpdateTargetSpeed();
-            if (controller.GetMover().isGrounded)
+            if (controller.mover.isGrounded)
             {
-                controller.GetMover().CalcGroundSpeed(deltaTime);
+                controller.mover.CalcGroundSpeed(deltaTime);
             }
             else
             {
-                controller.GetMover().CalcAirborneSpeed(deltaTime);
+                controller.mover.CalcAirborneSpeed(deltaTime);
             }
 
             // 당장은 수평속도를 사용했는데, 키입력 여부에 따라 애니메이션이 설정되도록 해야함(여기서 말고 Editor에 조건 추가)
             controller.animatorHandler.UpdateMoveSpeed();
             controller.animatorHandler.UpdateHasMovementInput();
 
-            if (!controller.HasMovementInput()) return;
+            bool hasInput = controller.HasMovementInput();
+            if (m_PrevHasInput && !hasInput)
+            {
+                controller.animatorHandler.UpdateLastMoveSpeed();
+            }
+
+            m_PrevHasInput = hasInput;
+
+            if (!hasInput) return;
 
             // 회전 계산
-            float targetRotation = controller.GetMover().CalcTargetRotationByInput();
-            float rotation = controller.GetMover().SmoothRotateUpdate(controller.GetMover().transform.eulerAngles.y, targetRotation, 0.12f);
+            float targetRotation = controller.mover.CalcTargetRotationByInput();
+            float rotation = controller.mover.SmoothRotateUpdate(controller.mover.transform.eulerAngles.y, targetRotation, 0.12f);
 
-            controller.GetMover().ApplyCharacterRotation(rotation);
-            controller.moveDirection = controller.GetMover().CalcMoveDirByInput(rotation, deltaTime);
+            controller.mover.ApplyCharacterRotation(rotation);
+            controller.moveDirection = controller.mover.CalcMoveDirByInput(rotation, deltaTime);
         }
 
         //public virtual void FixedUpdate();

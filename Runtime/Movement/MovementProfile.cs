@@ -20,11 +20,14 @@ namespace Dave6.CharacterKit.Movement
         public float SpeedChangeRate = 8.0f;
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.1f, 1.5f)]
-        public float RotationSmoothTime = 0.12f;
+        public float CharacterRotationSmoothTime = 0.12f;
+        [Tooltip("How fast the character turns to face movement direction")]
+        [Range(0.1f, 1.5f)]
+        public float DirRotationSpeed = 12.0f;
 
         [Space(10)]
         [Tooltip("The height the player can jump")]
-        public float JumpHeight = 1.2f;
+        public float JumpHeight = 2.0f;
         [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
         public float AirborneGravity = -15.0f;
         public float GroundGravity = -4.0f;

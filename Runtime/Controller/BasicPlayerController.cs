@@ -14,7 +14,13 @@ namespace Dave6.CharacterKit
         [SerializeField] protected InputReader m_Input;
         public InputReader GetInputReader() => m_Input;
         protected BasicMover m_Mover;
-        public BasicMover GetMover() => m_Mover;
+        public BasicMover mover => m_Mover;
+        protected CameraHandler m_CameraHandler;
+        public CameraHandler cameraHandler => m_CameraHandler;
+        protected AnimatorHandler m_AnimatorHandler;
+        public AnimatorHandler animatorHandler => m_AnimatorHandler;
+
+        protected AnimatorEventProxy m_AnimEventProxy;
         public bool movementLocked; // 이건 숨길거임
         #endregion
 
@@ -49,15 +55,18 @@ namespace Dave6.CharacterKit
         protected MinimumStateMachine m_LocomotionStateMachine;
 
         #region animator handle field
-        protected AnimatorHandler m_AnimatorHandler;
-        public AnimatorHandler animatorHandler => m_AnimatorHandler;
-
-        protected AnimatorEventProxy m_AnimEventProxy;
+        Vector3 m_CachedInputDir;
+        public Vector3 cachedInputDir
+        {
+            get => m_CachedInputDir;
+            set => m_CachedInputDir = value;
+        }
         #endregion
 
 
         public virtual void Awake()
         {
+            // 애니메이션 세팅
             if (this.TryGetComponentInChildren<Animator>(out var animator))
             {
                 m_AnimatorHandler = new AnimatorHandler(this, animator);
@@ -66,15 +75,24 @@ namespace Dave6.CharacterKit
             {
                 m_AnimEventProxy = proxy;
             }
+            // 카메라 세팅
+            m_CameraHandler = GetComponent<CameraHandler>();
+            m_CameraHandler.RegisterCamera(this);
 
+            // 무버 세팅
             m_Mover = GetComponent<BasicMover>();
+            m_Mover.RegisterMover(this, m_CameraHandler);
+
+
+
+            // 레이어 세팅
             gameObject.layer = 3;
             
             if (m_Input == null)
             {
                 Debug.Log("인풋 추가 안했음");
             }
-            EventBind();
+            InputEventBind();
         }
 
         
@@ -101,7 +119,7 @@ namespace Dave6.CharacterKit
             m_AttackInputTap = false;
         }
 
-        protected virtual void EventBind()
+        protected virtual void InputEventBind()
         {
             if (showInitialDebug)
             {

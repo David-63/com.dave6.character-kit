@@ -6,13 +6,14 @@ namespace Dave6.CharacterKit.States
     public class MinimalStrafeMoveState : BaseState<BasicPlayerController>
     {
         bool ShiftToggle = false;
+        const float m_RotateDuration = 2.0f;
 
         public MinimalStrafeMoveState(BasicPlayerController controller) : base(controller) { }
 
         public override void OnEnter()
         {
             ShiftToggle = true;
-            controller.GetMover().SetStrafeMode(ShiftToggle);
+            controller.cameraHandler.SetStrafeMode(ShiftToggle);
             controller.GetInputReader().ShiftToggleChanged += OnShiftToggled;
         }
 
@@ -25,8 +26,27 @@ namespace Dave6.CharacterKit.States
         {
             float deltaTime = Time.deltaTime;
             UpdateTargetSpeed();
-            controller.GetMover().CalculateSpeed(deltaTime);
-            controller.GetMover().StrafeMoveRotate(deltaTime);
+            
+            if (controller.mover.isGrounded)
+            {
+                controller.mover.CalcGroundSpeed(deltaTime);
+            }
+            else
+            {
+                controller.mover.CalcAirborneSpeed(deltaTime);
+            }
+
+            controller.animatorHandler.UpdateMoveSpeed();
+            controller.animatorHandler.UpdateHasMovementInput();
+
+            float targetRotation = controller.mover.CalcTargetRotationByCamera();
+            float rotation = controller.mover.SmoothRotateUpdate(controller.mover.transform.eulerAngles.y, targetRotation, deltaTime * m_RotateDuration);
+            controller.mover.ApplyCharacterRotation(rotation);
+            controller.moveDirection = controller.mover.CalcMoveDirByCamera(deltaTime);
+
+            controller.mover.SmoothInputDirection(deltaTime);
+            controller.animatorHandler.UpdateDirectionX(controller.cachedInputDir.x);
+            controller.animatorHandler.UpdateDirectionY(controller.cachedInputDir.z);
         }
 
         void UpdateTargetSpeed()
@@ -35,7 +55,7 @@ namespace Dave6.CharacterKit.States
 
             if (controller.HasMovementInput())
             {
-                targetSpeed = controller.GetMover().GetMovementProfile().StrafeSpeed;
+                targetSpeed = controller.mover.GetMovementProfile().StrafeSpeed;
             }
 
             controller.targetSpeed = targetSpeed;
@@ -44,7 +64,7 @@ namespace Dave6.CharacterKit.States
         void OnShiftToggled()
         {
             ShiftToggle = !ShiftToggle;
-            controller.GetMover().SetStrafeMode(ShiftToggle);
+            controller.cameraHandler.SetStrafeMode(ShiftToggle);
         }
     }
 }

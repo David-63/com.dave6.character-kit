@@ -44,7 +44,7 @@ Animator:
   m_GameObject: {fileID: 18088165329228736}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 36078ab0369161e49a29d349ae3e0739, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9c97e9ef3d1c9b149bdc5c038302b62c, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -1373,6 +1373,7 @@ GameObject:
   - component: {fileID: 1523569695206668514}
   - component: {fileID: 6334786993863572514}
   - component: {fileID: 172162477524901018}
+  - component: {fileID: 8986219821873860264}
   m_Layer: 3
   m_Name: MinimalPlayer
   m_TagString: Untagged
@@ -1440,8 +1441,36 @@ MonoBehaviour:
   m_ColliderHeight: 1.8
   m_ColliderRadius: 0.28
   m_ColliderOffset: {x: 0, y: 0.5, z: 0}
-  isGrounded: 0
   m_MovementProfile: {fileID: 11400000, guid: 825738b170be1d44ba8f33e930ad5820, type: 2}
+  m_JumpDuration: 0.2
+--- !u!114 &172162477524901018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4822889400758563661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6f21c34ad63fb4448f4ebd983c670f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.PlayerController
+  showInitialDebug: 0
+  m_Input: {fileID: 11400000, guid: 2f261d4683d151f42904e9e057487137, type: 2}
+  movementLocked: 0
+--- !u!114 &8986219821873860264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4822889400758563661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5958b98046bfda0488db5fee66b48b5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.CameraHandler
+  showInitialDebug: 0
   m_PlayerCameraPrefab: {fileID: 4468746250186752257, guid: c3c4177e55a0aa6479823eee0451df4a, type: 3}
   m_CameraLookProfile: {fileID: 11400000, guid: 267fd599309cc984bbd74f956c7a10c9, type: 2}
   m_TransitionDuration: 0.35
@@ -1469,24 +1498,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_JumpDuration: 0.2
---- !u!114 &172162477524901018
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4822889400758563661}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6f21c34ad63fb4448f4ebd983c670f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.PlayerController
-  showInitialDebug: 0
-  m_Input: {fileID: 11400000, guid: 2f261d4683d151f42904e9e057487137, type: 2}
-  jumpInput: 0
-  aimInput: 0
-  shiftInput: 0
 --- !u!1 &4944088590278392599
 GameObject:
   m_ObjectHideFlags: 0

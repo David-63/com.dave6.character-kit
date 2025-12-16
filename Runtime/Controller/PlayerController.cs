@@ -1,12 +1,10 @@
 using Dave6.CharacterKit.Combat;
 using Dave6.CharacterKit.States;
-using Dave6.CharacterKit.AnimHandler;
 using Dave6.StateMachine;
 using Dave6.StatSystem;
 using Dave6.StatSystem.Interaction;
 using Dave6.StatSystem.Stat;
 using UnityEngine;
-using UnityUtils;
 
 namespace Dave6.CharacterKit
 {
@@ -31,7 +29,8 @@ namespace Dave6.CharacterKit
         {
             base.Awake();
             InitializeStat();
-            m_CombatHandler = gameObject.GetOrAddComponent<CombatHandler>();
+            m_CombatHandler = GetComponent<CombatHandler>();
+            m_CombatHandler.RegisterCombat(this);
         }
 
         public override void Start()

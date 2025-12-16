@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Dave6.CharacterKit.AnimHandler
@@ -24,18 +25,27 @@ namespace Dave6.CharacterKit.AnimHandler
         {
             m_Animator.SetFloat("moveSpeed", m_Controller.horizontalSpeed);
         }
+        public void UpdateLastMoveSpeed()
+        {
+            m_Animator.SetFloat("lastMoveSpeed", m_Controller.horizontalSpeed);
+        }
         public void UpdateVerticalSpeed()
         {
             m_Animator.SetFloat("verticalSpeed", m_Controller.verticalSpeed);
         }
+        public void UpdateLastVerticalSpeed()
+        {
+            m_Animator.SetFloat("lastVerticalSpeed", m_Controller.verticalSpeed);
+        }
         public void UpdateGrounded()
         {
-            m_Animator.SetBool("isGrounded", m_Controller.GetMover().isGrounded);
+            m_Animator.SetBool("isGrounded", m_Controller.mover.isGrounded);
         }
         public void UpdateHasMovementInput()
         {
             m_Animator.SetBool("hasMoveInput", m_Controller.HasMovementInput());
         }
+
 
         /// <summary>
         /// 1. 액션 토큰 필요함
@@ -62,5 +72,24 @@ namespace Dave6.CharacterKit.AnimHandler
             m_Controller.movementLocked = false;
             ClearCurrentAnimation();
         }
+        public void UpdateUseStrafe(bool useStrafe)
+        {
+            Debug.Log($"useStrafe: {useStrafe}");
+            m_Animator.SetBool("useStrafe", useStrafe);
+        }
+        public void UpdateUseShift(bool useShift)
+        {
+            m_Animator.SetBool("useShift", useShift);
+        }
+        public void UpdateDirectionX(float x)
+        {
+            m_Animator.SetFloat("directionX", x);
+        }
+
+        public void UpdateDirectionY(float z)
+        {
+            m_Animator.SetFloat("directionY", z);
+        }
+
     }
 }

@@ -12,31 +12,19 @@ namespace Dave6.CharacterKit
 {
     /// <summary>
     /// 
-    /// Mover가 작동 안하는 경우
-    /// 
-    /// 1. 카메라가 없어
-    /// MainCamera 오브젝트가 없음
-    /// MainCamera 오브젝트가 Main Camera 태그를 안달고있음
-    /// 
-    /// 2. 플레이어 오브젝트(부모)의 레이어가 default임
-    /// 
-
-    /// Mover가 할 일
-    /// 
-    /// 1. 바닥 체크  done
-    /// 2. 이동 로직
-    /// 3. 점프 로직
-    /// 
-    /// 여기서 구현해야할건 Controller 로 부터 데이터를 받아서 반환만 하는것임!!!
-    /// 그니까 계산만 하고 값은 외부로 반환한다는것
-    /// 
+    /// 카메라 필요함.
+    /// PlayerController에서 세팅해주기
     /// </summary>
-    public abstract class BasicMover : MonoBehaviour, IMover
+    public abstract class BasicMover : MonoBehaviour
     {
         public bool showInitialDebug = false;
         CharacterController m_Controller;
         BasicPlayerController m_BasicController; // 이건 레지스터 방식으로 해도 되고
-        public BasicPlayerController controller => m_BasicController;
+        public BasicPlayerController controller
+        {
+            get => m_BasicController;
+            set => m_BasicController = value;
+        }
 
         #region collider & sensor field
         [Header("Collider Settings")]
@@ -75,25 +63,8 @@ namespace Dave6.CharacterKit
         protected const float m_TerminalVelocity = 53.0f;               // 가속 제한인듯
         protected const float m_Gravity = -15f;
 
-        [Header("Camera Setting")]
-        [SerializeField] GameObject m_PlayerCameraPrefab;
-        GameObject m_CinemachineObj;
-        CinemachineCamera m_CinemachineCamera;
-        CinemachineThirdPersonFollow m_ThirdPersonFollow;     // 아직 쓸댄 없지만 세부 세팅에 필요해보여서 추가함
-        [SerializeField] CameraLookProfile m_CameraLookProfile;
-
-        [SerializeField] float m_TransitionDuration = 0.35f;
-        [SerializeField] AnimationCurve m_TransitionCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-        float m_CurrentFOV;
-        float m_CurrentSide;
-        float m_CurrentDistance;
-        Coroutine m_TransitionCoroutine;
-
-
-        Transform m_CameraTarget;                             // 이걸 mover 전담할지, 아니면 다른데서 쓸지에 따라 해당 변수의 위치가 바뀔 수 있음
-        Transform m_MainCamera;                               // 원래 외부에 데이터 전달하려고 만든 기능인데 아직 쓸대가 없으니 그냥 private으로 설정
-        public Transform mainCamera => m_MainCamera;
-        public float yawAngle => m_MainCamera.eulerAngles.y;  // 위와 같음
+        CameraHandler m_CameraHandler;
+        public CameraHandler cameraHandler => m_CameraHandler;
 
         float m_CameraYaw = 0f;
         public float cameraYaw => m_CameraYaw;
@@ -113,11 +84,13 @@ namespace Dave6.CharacterKit
         #endregion
 
         #region Initialize & Sensor setting
+        /// <summary>
+        /// 센서와 콜라이더 세팅
+        /// </summary>
         protected virtual void Awake()
         {
             Setup();
             RecalculateColliderDimensions();
-            OnceSetting();
         }
 
         
@@ -188,9 +161,14 @@ namespace Dave6.CharacterKit
 
             m_GroundChecker.castLength = m_BaseSensorRange;
             m_GroundChecker.SphereCast();
-            
+
+            bool prevGroudned = m_IsGrounded;
 
             m_IsGrounded = m_GroundChecker.HasDetecteHit();
+            if (!prevGroudned && m_IsGrounded)
+            {
+                controller.animatorHandler.UpdateLastVerticalSpeed();
+            }
 
             controller.animatorHandler.UpdateGrounded();
         }
@@ -208,57 +186,16 @@ namespace Dave6.CharacterKit
                 Debug.Log("내장된 컴포넌트 초기화");
             }
             m_Controller = gameObject.GetOrAddComponent<CharacterController>();
-            m_BasicController = GetComponent<BasicPlayerController>();
-
-
-            if (!Camera.main)
+            if (m_JumpTimer == null)
             {
-                Debug.Log("Main Camera 태그 달아야함");
+                m_JumpTimer = new Countdown(m_JumpDuration);
             }
-
-            m_MainCamera = Camera.main.transform;
-
-            // 없으면 추가해줌
-            Camera.main.gameObject.GetOrAddComponent<CinemachineBrain>();
         }
-        protected virtual void OnceSetting()
+
+        public virtual void RegisterMover(BasicPlayerController playerController, CameraHandler camera)
         {
-            if (showInitialDebug)
-            {
-                Debug.Log("카메라 객체 초기화");
-            }
-            if (m_CameraTarget == null)
-            {
-                m_CameraTarget = transform.Find("CameraTarget");
-                m_CameraTarget.localPosition = new Vector3(0, 1.4f, 0);
-            }
-            if (m_CameraLookProfile == null)
-            {
-                Debug.Log("카메라 프로파일 세팅 안돼있음");
-            }
-
-            if (m_PlayerCameraPrefab == null)
-            {
-                Debug.Log("카메라 프리팹 세팅 안돼있음");
-            }
-            m_CinemachineObj = Instantiate(m_PlayerCameraPrefab, transform);
-            m_CinemachineCamera = m_CinemachineObj.GetComponent<CinemachineCamera>();
-            m_ThirdPersonFollow = m_CinemachineObj.GetComponent<CinemachineThirdPersonFollow>();
-            if (m_CameraTarget == null)
-            {
-                Debug.Log("카메라 타겟을 못찾음 (이름 불일치?)");
-            }
-
-            m_CinemachineCamera.Follow = m_CameraTarget;
-
-            m_ThirdPersonFollow.Damping = Vector3.zero;
-            m_ThirdPersonFollow.ShoulderOffset = new Vector3(1,0,0);
-            m_ThirdPersonFollow.VerticalArmLength = 0;
-            m_ThirdPersonFollow.AvoidObstacles.Enabled = true;
-            m_ThirdPersonFollow.AvoidObstacles.DampingFromCollision = 0.2f;
-            m_ThirdPersonFollow.AvoidObstacles.DampingIntoCollision = 0.2f;
-
-            m_JumpTimer = new Countdown(m_JumpDuration);
+            controller = playerController;
+            m_CameraHandler = camera;
         }
         #endregion
 
@@ -270,41 +207,7 @@ namespace Dave6.CharacterKit
             ApplyMovement();
         }
 
-        protected virtual void LateUpdate()
-        {
-            LookRotation();
-        }
-
-        #region 외부 호출 함수들
-        public void SetFreeLookMode() => StartTransition(55f, 0.75f, 3f);
-        public void SetStrafeMode(bool shift)
-        {
-            if (shift)
-            {
-                StartTransition(65f, 0.85f, 1.2f);
-            }
-            else
-            {
-                StartTransition(65f, 1 - 0.85f, 1.2f);
-            }
-        }
-
-        public virtual void CalculateSpeed(float deltaTime)
-        {
-            if (Mathf.Abs(controller.horizontalSpeed - controller.targetSpeed) > m_SpeedOffset)
-            {
-                controller.horizontalSpeed = Mathf.Lerp
-                (
-                    controller.horizontalSpeed, controller.targetSpeed, deltaTime * m_MovementProfile.SpeedChangeRate
-                );
-                controller.horizontalSpeed = Mathf.Round(controller.horizontalSpeed * 1000f) / 1000f;
-            }
-            else
-            {
-                controller.horizontalSpeed = controller.targetSpeed;
-            }
-        }
-
+        #region 속도 계산
         public virtual void CalcGroundSpeed(float deltaTime)
         {
             if (Mathf.Abs(controller.horizontalSpeed - controller.targetSpeed) > m_SpeedOffset)
@@ -325,60 +228,17 @@ namespace Dave6.CharacterKit
             controller.horizontalSpeed = Mathf.Lerp(controller.horizontalSpeed, 0, deltaTime * 0.5f);
             controller.horizontalSpeed = Mathf.Round(controller.horizontalSpeed * 1000f) / 1000f;
         }
+        #endregion
 
-        /// <summary>
-        /// 하는일
-        /// 1. 목표 회전값 (입력 방향 기준)
-        /// 2. 회전량 보간
-        /// 3. 캐릭터 회전 적용
-        /// 4. 이동방향 계산 (이동 방향 기준)
-        /// </summary>
-        public virtual void FreeLookRotate(float deltaTime)
-        {
-            if (!controller.HasMovementInput()) return;
 
-            // 입력의 수평 수직 값을 기반으로 각을 구한 뒤, 카메라 회전(yaw)값 누적
-            m_TargetRotation = Mathf.Atan2(controller.inputMove.x, controller.inputMove.z) * Mathf.Rad2Deg + yawAngle;
-            // 현재 transform의 yaw 값을 목표 값으로 보간
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, m_TargetRotation, ref m_InterpCache, m_MovementProfile.RotationSmoothTime);
-            // 캐릭터 회전시키기
-            transform.rotation = Quaternion.Euler(0, rotation, 0);
-            // 이동방향 전달
-            controller.moveDirection = (Quaternion.Euler(0.0f, m_TargetRotation, 0.0f) * Vector3.forward).normalized;
-        }
-        /// <summary>
-        /// 하는일
-        /// 1. 목표 회전값 (카메라 기준)
-        /// 2. 회전량 보간 `중복 코드`
-        /// 3. 캐릭터 회전 적용 `중복 코드`
-        /// 4. 이동방향 계산 (카메라 기준)
-        /// </summary>
-        /// <param name="deltaTime"></param>
-        public virtual void StrafeMoveRotate(float deltaTime)
-        {
-            // 카메라 회전값으로 고정!!
-            m_TargetRotation = yawAngle;
-            // 현재 transform의 yaw 값을 목표 값으로 보간
-            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, m_TargetRotation, ref m_InterpCache, m_MovementProfile.RotationSmoothTime);
-            // 회전값 적용
-            transform.rotation = Quaternion.Euler(0, rotation, 0);
-
-            // 인풋 벡터를 카메라 yaw 기준으로 변환
-            Vector3 cameraDirection = Quaternion.Euler(0f, yawAngle, 0f) * controller.inputMove;
-            cameraDirection.Normalize();
-            if (controller.HasMovementInput())
-            {
-                controller.moveDirection = cameraDirection;
-            }
-        }
-
+        #region 캐릭터 회전 계산
         /// <summary>
         /// 입력기준 캐릭터 회전 방향 계산
         /// </summary>
         /// <returns> 계산된 목표 yaw 회전값 </returns>
         public virtual float CalcTargetRotationByInput()
         {
-            m_TargetRotation = Mathf.Atan2(controller.inputMove.x, controller.inputMove.z) * Mathf.Rad2Deg + yawAngle;
+            m_TargetRotation = Mathf.Atan2(controller.inputMove.x, controller.inputMove.z) * Mathf.Rad2Deg + m_CameraHandler.yawAngle;
             return m_TargetRotation;
         }
         /// <summary>
@@ -387,7 +247,8 @@ namespace Dave6.CharacterKit
         /// <returns> 카메라 기준 yaw </returns>
         public virtual float CalcTargetRotationByCamera()
         {
-            return yawAngle;
+            float targetYaw = cameraHandler.aimAnchor.eulerAngles.y;
+            return targetYaw;
         }
         /// <summary>
         /// 현재 각도에서 목표 각도로 보간
@@ -408,6 +269,10 @@ namespace Dave6.CharacterKit
         {
             transform.rotation = Quaternion.Euler(0, rotation, 0);
         }
+        #endregion
+
+
+        #region 이동 방향 계산
         /// <summary>
         /// 입력에 따라 캐릭터가 이동해야 할 방향 벡터를 계산.
         /// 공중에서는 회전을 완화함.
@@ -419,10 +284,10 @@ namespace Dave6.CharacterKit
             float changeSpeed = 1f;
             float baseRotation = m_IsGrounded ? rotation : m_TargetRotation;
             float lerpRotation = baseRotation;
+            float currentYaw = GetCurrentYaw();
 
             if (!m_IsGrounded && controller.moveDirection.sqrMagnitude > 0.001f)
             {
-                float currentYaw = Mathf.Atan2(controller.moveDirection.x, controller.moveDirection.z) * Mathf.Rad2Deg;
                 lerpRotation = Mathf.LerpAngle(currentYaw, baseRotation, deltaTime * changeSpeed);
             }
 
@@ -434,118 +299,42 @@ namespace Dave6.CharacterKit
         /// <returns>transform에 적용할 이동 방향</returns>
         public virtual Vector3 CalcMoveDirByCamera(float deltaTime)
         {
-            Vector3 cameraDirection = Quaternion.Euler(0f, yawAngle, 0f) * controller.inputMove;
+            // 입력 없으면 방향은 0,0,0
+            if (!controller.HasMovementInput()) return Vector3.zero;
+
+            // 입력 기반 카메라 방향
+            Vector3 cameraDirection = Quaternion.Euler(0f, m_CameraHandler.yawAngle, 0f) * controller.inputMove;
             cameraDirection.Normalize();
 
+            // 목표 Yaw
             float targetYaw = Mathf.Atan2(cameraDirection.x, cameraDirection.z) * Mathf.Rad2Deg;
-            float lerpRotation = targetYaw;
+            // 현재 Yaw
+            float currentYaw = GetCurrentYaw();
 
-            if (!m_IsGrounded)
-            {
-                float currentYaw = Mathf.Atan2(controller.moveDirection.x, controller.moveDirection.z) * Mathf.Rad2Deg;
-                lerpRotation = Mathf.LerpAngle(currentYaw, targetYaw, deltaTime * 0.5f);
-            }
+            // lerp 속도 조절
+            float lerpSpeed = m_IsGrounded ? m_MovementProfile.DirRotationSpeed : m_MovementProfile.DirRotationSpeed / 3f;
+            float lerpRotation = Mathf.LerpAngle(currentYaw, targetYaw, deltaTime * lerpSpeed);
 
             return Quaternion.Euler(0f, lerpRotation, 0f) * Vector3.forward;
         }
 
-        public void FreeLookCameraSetting()
+        float GetCurrentYaw()
         {
-            m_CinemachineCamera.Lens.FieldOfView = 50;
-            m_ThirdPersonFollow.CameraSide = 0.8f;
-            m_ThirdPersonFollow.CameraDistance = 3;
-        }
-        public void StrafeMoveCameraSetting()
-        {
-            m_CinemachineCamera.Lens.FieldOfView = 60;
-            m_ThirdPersonFollow.CameraSide = 1f;
-            m_ThirdPersonFollow.CameraDistance = 2f;
+            return Mathf.Atan2(controller.moveDirection.x, controller.moveDirection.z) * Mathf.Rad2Deg;
         }
 
-
-        public void StartTransition(float fov, float side, float distance, float? duration = null)
+        public void SmoothInputDirection(float deltaTime)
         {
-            m_CurrentFOV = fov;
-            m_CurrentSide = side;
-            m_CurrentDistance = distance;
-
-            if (m_TransitionCoroutine != null)
-                StopCoroutine(m_TransitionCoroutine);
-
-            m_TransitionCoroutine = StartCoroutine(TransitionRoutine(duration ?? m_TransitionDuration));
-        }
-
-
-        IEnumerator TransitionRoutine(float duration)
-        {
-            float elapsed = 0f;
-            float invDuration = 1f / duration;
-
-            // 시작값 저장
-            float startFOV = m_CinemachineCamera.Lens.FieldOfView;
-            float startSide = m_ThirdPersonFollow.CameraSide;
-            float startDistance = m_ThirdPersonFollow.CameraDistance;
-
-            while (elapsed < duration)
-            {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed * invDuration);
-                float curveT = m_TransitionCurve.Evaluate(t);
-
-                m_CinemachineCamera.Lens.FieldOfView = Mathf.LerpUnclamped(startFOV, m_CurrentFOV, curveT);
-                m_ThirdPersonFollow.CameraSide = Mathf.LerpUnclamped(startSide, m_CurrentSide, curveT);
-                m_ThirdPersonFollow.CameraDistance = Mathf.LerpUnclamped(startDistance, m_CurrentDistance, curveT);
-
-                yield return null;
-            }
-
-            // 정확히 목표값으로 마무리 (부동소수점 오차 방지)
-            m_CinemachineCamera.Lens.FieldOfView = m_CurrentFOV;
-            m_ThirdPersonFollow.CameraSide = m_CurrentSide;
-            m_ThirdPersonFollow.CameraDistance = m_CurrentDistance;
-
-            m_TransitionCoroutine = null;
-        }
-
-        // 이상태로는 외부 호츨이 딱히 필요없이 알아서 작동하긴할듯
-        public void Jump()
-        {
-            if (!m_IsGrounded) return;
-
-            if (controller.jumpInput && CanJump())
-            {
-                m_JumpTimer.Start();
-                controller.verticalSpeed = Mathf.Sqrt(m_MovementProfile.JumpHeight * -2f * m_MovementProfile.AirborneGravity);
-            }
-        }
-
-        bool CanJump()
-        {
-            return m_JumpTimer.IsFinished;
-        }
-
-        public void NudgeCameraToCharacter(float amount)
-        {
-            float target = controller.transform.eulerAngles.y;  // 캐릭터가 현재 보고 있는 방향
-            m_CameraYaw = Mathf.LerpAngle(m_CameraYaw, target, amount * Time.deltaTime);
-        }
-
-        void ProcessInputLook()
-        {
-            Vector2 look = controller.inputLook;
-
-            // 마우스 감도값
-            float sensitive = 1 + m_CameraLookProfile.LookSensitive;
-
-            if (look.sqrMagnitude >= m_Threshold)
-            {
-                m_CameraYaw += look.x * sensitive;
-                m_CameraPitch += look.y * sensitive;
-            }
+            Vector3 targetInputDir = controller.inputMove;
+            Vector3 currentAnimDir = controller.cachedInputDir;
+            
+            // 보간
+            Vector3 lerpInputDir = Vector3.Lerp(currentAnimDir, targetInputDir, deltaTime * m_MovementProfile.DirRotationSpeed);
+            controller.cachedInputDir = lerpInputDir;
         }
         #endregion
 
-        #region 내부에서 진행되는 로직
+        #region 내부 물리 로직
         protected void ApplyGravity()
         {
             if (m_IsGrounded)
@@ -556,7 +345,7 @@ namespace Dave6.CharacterKit
                     controller.verticalSpeed = m_MovementProfile.GroundGravity;
                 }
             }
-
+            controller.animatorHandler.UpdateVerticalSpeed();
             // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
             if (controller.verticalSpeed < m_MovementProfile.TerminalVelocity)
             {
@@ -570,26 +359,22 @@ namespace Dave6.CharacterKit
             m_Controller.Move(velocity * Time.deltaTime);
         }
 
-        // 이건 FSM에서 호출할 가능성이 있다
-        public void LookRotation()
+        // 이상태로는 외부 호츨이 딱히 필요없이 알아서 작동하긴할듯
+        void Jump()
         {
-            ProcessInputLook();
+            if (!m_IsGrounded) return;
 
-            // 회전이 적용되기 전에 클램프
-            m_CameraYaw = ClampAngle(m_CameraYaw, float.MinValue, float.MaxValue);
-            m_CameraPitch = ClampAngle(m_CameraPitch, m_CameraLookProfile.BottomClamp, m_CameraLookProfile.TopClamp);
-
-            // 최종적으로 회전
-            m_CameraTarget.rotation = Quaternion.Euler(m_CameraPitch + m_CameraLookProfile.CameraAngleOverride, m_CameraYaw, 0.0f);
+            if (controller.jumpInput && CanJump())
+            {
+                m_JumpTimer.RestartTimer();
+                controller.verticalSpeed = Mathf.Sqrt(m_MovementProfile.JumpHeight * -2f * m_MovementProfile.AirborneGravity);
+            }
         }
 
+        bool CanJump()
+        {
+            return m_JumpTimer.IsFinished;
+        }
         #endregion
-
-        static float ClampAngle(float lfAngle, float lfMin, float lfMax)
-        {
-            if (lfAngle < -360f) lfAngle += 360f;
-            if (lfAngle > 360f) lfAngle -= 360f;
-            return Mathf.Clamp(lfAngle, lfMin, lfMax);
-        }
     }
 }

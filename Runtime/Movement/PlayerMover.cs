@@ -17,38 +17,5 @@ namespace Dave6.CharacterKit
             m_PlayerController = controller as PlayerController;
         }
 
-        public override void CalculateSpeed(float deltaTime)
-        {
-            if (isGrounded)
-            {
-                GroundSpeed(deltaTime);
-            }
-            else
-            {
-                AirborneSpeed(deltaTime);
-            }
-        }
-
-        void GroundSpeed(float deltaTime)
-        {
-            if (Mathf.Abs(controller.horizontalSpeed - controller.targetSpeed) > m_SpeedOffset)
-            {
-                controller.horizontalSpeed = Mathf.Lerp
-                (
-                    controller.horizontalSpeed, controller.targetSpeed, deltaTime * m_MovementProfile.SpeedChangeRate
-                );
-                controller.horizontalSpeed = Mathf.Round(controller.horizontalSpeed * 1000f) / 1000f;
-            }
-            else
-            {
-                controller.horizontalSpeed = controller.targetSpeed;
-            }
-        }
-
-        void AirborneSpeed(float deltaTime)
-        {
-            controller.horizontalSpeed = Mathf.Lerp(controller.horizontalSpeed, 0, deltaTime * 0.5f);
-            controller.horizontalSpeed = Mathf.Round(controller.horizontalSpeed * 1000f) / 1000f;
-        }
     }
 }
