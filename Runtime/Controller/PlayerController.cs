@@ -48,19 +48,28 @@ namespace Dave6.CharacterKit
 
         public override void Update()
         {
-            base.Update();
+            m_LocomotionStateMachine.Update();
+
+            m_Mover.OnUpdate();
+
             m_ActionStateMachine.Update();
         }
 
         public override void FixedUpdate()
         {
-            base.FixedUpdate();
+            m_LocomotionStateMachine.FixedUpdate();
             m_ActionStateMachine.FixedUpdate();
         }
         public override void LateUpdate()
         {
-            base.LateUpdate();
+            m_LocomotionStateMachine.LateUpdate();
+
+            m_CameraHandler.OnLateUpdate();
+            m_CombatHandler.OnLateUpdate();
+
             m_ActionStateMachine.LateUpdate();
+
+            ClearTapInput();
         }
 
         protected override void SetupStateMachine()
@@ -146,6 +155,10 @@ namespace Dave6.CharacterKit
         #endregion
 
         public GameObject InstantiatePrefab(GameObject obj)
+        {
+            return Instantiate(obj);
+        }
+        public GameObject InstantiatePrefabSetParent(GameObject obj)
         {
             return Instantiate(obj, transform);
         }

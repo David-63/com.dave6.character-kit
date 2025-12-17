@@ -21,9 +21,8 @@ namespace Dave6.CharacterKit.Movement
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.1f, 1.5f)]
         public float CharacterRotationSmoothTime = 0.12f;
-        [Tooltip("How fast the character turns to face movement direction")]
-        [Range(0.1f, 1.5f)]
-        public float DirRotationSpeed = 12.0f;
+        [Tooltip("방향 회전에 걸리는 속도")]
+        public float DirRotationSpeed = 20.0f;
 
         [Space(10)]
         [Tooltip("The height the player can jump")]

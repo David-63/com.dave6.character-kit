@@ -103,4 +103,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.ProjectileMover
   m_EffectDefinition: {fileID: 11400000, guid: 0f84484ef8272d842a0ad80b4e388125, type: 2}
-  m_MoveSpeed: 30
+  m_MoveSpeed: 120

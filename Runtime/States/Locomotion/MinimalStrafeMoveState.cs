@@ -39,8 +39,8 @@ namespace Dave6.CharacterKit.States
             controller.animatorHandler.UpdateMoveSpeed();
             controller.animatorHandler.UpdateHasMovementInput();
 
-            float targetRotation = controller.mover.CalcTargetRotationByCamera();
-            float rotation = controller.mover.SmoothRotateUpdate(controller.mover.transform.eulerAngles.y, targetRotation, deltaTime * m_RotateDuration);
+            float targetRotation = controller.mover.CalcTargetYawByCamera();
+            float rotation = controller.mover.SmoothYawUpdate(targetRotation, deltaTime);
             controller.mover.ApplyCharacterRotation(rotation);
             controller.moveDirection = controller.mover.CalcMoveDirByCamera(deltaTime);
 

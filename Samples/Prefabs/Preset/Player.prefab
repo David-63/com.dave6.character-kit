@@ -20,7 +20,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4256420622964289850
 Transform:
   m_ObjectHideFlags: 0
@@ -118,6 +118,7 @@ MonoBehaviour:
   m_MeleeHitPrefab: {fileID: 7978663354676208820, guid: d633525c9b91b984c933efd2f8176b26, type: 3}
   m_ProjectilePrefab: {fileID: 2011244684452411310, guid: ab326d3a10b04cc4f871404758a0d103, type: 3}
   muzzle: {fileID: 8616700304769399512}
+  crosshairUI: {fileID: 0}
 --- !u!114 &1854906704890434098
 MonoBehaviour:
   m_ObjectHideFlags: 0

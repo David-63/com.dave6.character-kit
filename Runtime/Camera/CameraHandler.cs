@@ -21,6 +21,7 @@ namespace Dave6.CharacterKit
         CinemachineCamera m_CinemachineCamera;
         CinemachineThirdPersonFollow m_ThirdPersonFollow;     // 아직 쓸댄 없지만 세부 세팅에 필요해보여서 추가함
         [SerializeField] CameraLookProfile m_CameraLookProfile;
+        public CameraLookProfile cameraLookProfile => m_CameraLookProfile;
 
         [SerializeField] float m_TransitionDuration = 0.35f;
         [SerializeField] AnimationCurve m_TransitionCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
@@ -47,22 +48,25 @@ namespace Dave6.CharacterKit
         #region 에임 제어 필드
         Quaternion m_AimAnchor;
         public Quaternion aimAnchor => m_AimAnchor;
+        Quaternion m_BaseAim;
+        public Quaternion baseAim => m_BaseAim;
 
-        float shakeTime;
-        float shakeDuration;        // 유지시간
-        float shakeAmplitude;       // 강도
-        float shakeFrequency;       // 속도
+        Vector3 m_BaseAimPoint;
+        public Vector3 baseAimPoint => m_BaseAimPoint;
+
         #endregion
 
-        protected virtual void Awake()
+        void Awake()
         {
             Setup();
         }
 
-        protected virtual void LateUpdate()
+        public void OnLateUpdate()
         {
             LookRotation();
+            m_BaseAimPoint = m_Controller.CalculateAimPoint(m_MainCamera.position, m_BaseAim * Vector3.forward);
         }
+        #region 초기화
         public void RegisterCamera(BasicPlayerController controller)
         {
             m_Controller = controller;
@@ -114,7 +118,9 @@ namespace Dave6.CharacterKit
             m_ThirdPersonFollow.AvoidObstacles.DampingFromCollision = 0.2f;
             m_ThirdPersonFollow.AvoidObstacles.DampingIntoCollision = 0.2f;
         }
+        #endregion
 
+        #region 카메라 업데이트
         public void LookRotation()
         {
             ProcessInputLook();
@@ -125,8 +131,12 @@ namespace Dave6.CharacterKit
 
             // 최종적으로 회전
             m_AimAnchor = Quaternion.Euler(m_CameraPitch + m_CameraLookProfile.CameraAngleOverride, m_CameraYaw, 0.0f);
-            Quaternion offset = GetCameraShakeOffset(); // 예: shake, recoil, hit reaction 등
-            m_CameraTarget.rotation = m_AimAnchor * offset;
+            Quaternion offset = GetRecoilOffset(); // 예: shake, recoil, hit reaction 등
+            m_BaseAim = m_AimAnchor * offset;
+            m_CameraTarget.rotation = m_BaseAim;
+
+
+            // =========================================================================================
         }
 
         void ProcessInputLook()
@@ -143,7 +153,7 @@ namespace Dave6.CharacterKit
             }
         }
 
-        //void CalcRay
+        #endregion
 
         #region 시네머신 트랜지션
         public void SetFreeLookMode()
@@ -214,30 +224,58 @@ namespace Dave6.CharacterKit
         #endregion
 
         #region 카메라 흔들림
-        public void PlayShake(float amplitude, float duration, float frequency)
+        public Quaternion GetRecoilOffset()
         {
-            shakeAmplitude = amplitude;
-            shakeDuration = duration;
-            shakeFrequency = frequency;
-            shakeTime = 0f;
+            float deltaTime = Time.deltaTime;
+
+            // === target 감쇄 속도 동적화 (빠른 복귀 강조) ===
+            float targetDecayPitchSpeed = minTargetDecaySpeed + Mathf.Abs(targetRecoilPitch) * targetDecayMultiplier;
+            targetRecoilPitch = Mathf.MoveTowards(targetRecoilPitch, 0f, targetDecayPitchSpeed * deltaTime);
+
+            float targetDecayYawSpeed = minTargetDecaySpeed + Mathf.Abs(targetRecoilYaw) * targetDecayMultiplier;
+            targetRecoilYaw = Mathf.MoveTowards(targetRecoilYaw, 0f, targetDecayYawSpeed * deltaTime);
+
+            // 동적 복귀 속도 계산
+            float applySpeedPitch = (targetRecoilPitch > currentRecoilPitch) ? recoilApplySpeed : recoveryApplySpeed;
+            currentRecoilPitch = Mathf.MoveTowards(currentRecoilPitch, targetRecoilPitch, applySpeedPitch * deltaTime);
+
+            float applySpeedYaw = (targetRecoilYaw > currentRecoilYaw) ? recoilApplySpeed : recoveryApplySpeed;
+            currentRecoilYaw = Mathf.MoveTowards(currentRecoilYaw, targetRecoilYaw, applySpeedYaw * deltaTime);
+
+            // 거의 완료 시 초기화 (선택적 최적화)
+            if (Mathf.Approximately(targetRecoilPitch, 0f) && Mathf.Approximately(targetRecoilYaw, 0f) &&
+                Mathf.Approximately(currentRecoilPitch, 0f) && Mathf.Approximately(currentRecoilYaw, 0f))
+            {
+                currentRecoilPitch = currentRecoilYaw = targetRecoilPitch = targetRecoilYaw = 0f;
+            }
+
+            return Quaternion.Euler(currentRecoilPitch, currentRecoilYaw, 0f);
         }
 
-        Quaternion GetCameraShakeOffset()
+
+        float currentRecoilPitch = 0f;   // 현재 적용 pitch offset
+        float targetRecoilPitch = 0f;    // 누적 목표 pitch (음수로 위로 올라감)
+        float currentRecoilYaw = 0f;     // 현재 yaw offset
+        float targetRecoilYaw = 0f;      // 누적 목표 yaw
+
+        float recoilRiseSpeed = 12f;     // target으로 향하는 상승 속도
+
+        // 반동 복귀 속도
+        [SerializeField] float minTargetDecaySpeed = 15f;    // 최소 감쇄 속도
+        [SerializeField] float targetDecayMultiplier = 20f;  // 크기 비례 증가 속도
+
+        // 반동 반영속도
+        [SerializeField] float recoilApplySpeed = 15f;
+        [SerializeField] float recoveryApplySpeed = 10;
+        float maxRecoilPitch = -15f;     // 최대 누적 한계 (음수)
+
+        public void PlayRecoil(float amplitude, float sideVariation = 0.6f)
         {
-            if (shakeTime >= shakeDuration) return Quaternion.identity;
+            // 각 발사마다 target 누적 (캡 적용)
+            targetRecoilPitch = Mathf.Max(targetRecoilPitch - amplitude, maxRecoilPitch);
 
-            shakeTime += Time.deltaTime;
-
-            float t = shakeTime / shakeDuration;      // 0 ~ 1
-            float damper = 1f - t;                     // 선형 감쇠 (필요하면 곡선)
-
-            float noiseX = Mathf.PerlinNoise(Time.time * shakeFrequency, 0f) - 0.5f;
-            float noiseY = Mathf.PerlinNoise(0f, Time.time * shakeFrequency) - 0.5f;
-
-            float pitch = noiseX * shakeAmplitude * damper;
-            float yaw   = noiseY * shakeAmplitude * damper;
-
-            return Quaternion.Euler(pitch, yaw, 0f);
+            // yaw도 약간 누적 + 랜덤
+            targetRecoilYaw += UnityEngine.Random.Range(-amplitude * sideVariation, amplitude * sideVariation);
         }
         #endregion
 

@@ -16,7 +16,8 @@ MonoBehaviour:
   SprintSpeed: 5.5
   StrafeSpeed: 2
   SpeedChangeRate: 8
-  RotationSmoothTime: 0.12
+  CharacterRotationSmoothTime: 0.12
+  DirRotationSpeed: 15
   JumpHeight: 1.2
   AirborneGravity: -15
   GroundGravity: -4

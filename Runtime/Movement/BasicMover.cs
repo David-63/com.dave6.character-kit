@@ -58,7 +58,7 @@ namespace Dave6.CharacterKit
             return m_MovementProfile;
         }
         protected float m_TargetRotation = 0f;                          // FreeMove 상태에서 회전값 기록하는 용도        
-        protected float m_InterpCache;
+        protected float m_InterpCache;                                  // 이제 안씀
         protected const float m_SpeedOffset = 0.1f;
         protected const float m_TerminalVelocity = 53.0f;               // 가속 제한인듯
         protected const float m_Gravity = -15f;
@@ -66,10 +66,14 @@ namespace Dave6.CharacterKit
         CameraHandler m_CameraHandler;
         public CameraHandler cameraHandler => m_CameraHandler;
 
-        float m_CameraYaw = 0f;
-        public float cameraYaw => m_CameraYaw;
-        float m_CameraPitch = 0f;
         const float m_Threshold = 0.01f;                      // 입력 최소치 제한
+
+        float m_CurrentYaw;
+        float m_CurrentPitch;
+
+        Quaternion m_CharacterAim;
+        public Quaternion characterAim => m_CharacterAim;
+
         
         #endregion
 
@@ -79,8 +83,6 @@ namespace Dave6.CharacterKit
         [SerializeField] float m_JumpDuration = 0.2f;
 
         Countdown m_JumpTimer;
-
-
         #endregion
 
         #region Initialize & Sensor setting
@@ -199,7 +201,7 @@ namespace Dave6.CharacterKit
         }
         #endregion
 
-        protected virtual void Update()
+        public virtual void OnUpdate()
         {
             Jump();
             ApplyGravity();
@@ -236,7 +238,7 @@ namespace Dave6.CharacterKit
         /// 입력기준 캐릭터 회전 방향 계산
         /// </summary>
         /// <returns> 계산된 목표 yaw 회전값 </returns>
-        public virtual float CalcTargetRotationByInput()
+        public virtual float CalcTargetYawByInput()
         {
             m_TargetRotation = Mathf.Atan2(controller.inputMove.x, controller.inputMove.z) * Mathf.Rad2Deg + m_CameraHandler.yawAngle;
             return m_TargetRotation;
@@ -245,21 +247,64 @@ namespace Dave6.CharacterKit
         /// 카메라기준 캐릭터 회전 방향 계산
         /// </summary>
         /// <returns> 카메라 기준 yaw </returns>
-        public virtual float CalcTargetRotationByCamera()
+        public virtual float CalcTargetYawByCamera()
         {
             float targetYaw = cameraHandler.aimAnchor.eulerAngles.y;
             return targetYaw;
         }
-        /// <summary>
-        /// 현재 각도에서 목표 각도로 보간
-        /// </summary>
-        /// <param name="currentYaw">현재 회전 값</param>
-        /// <param name="targetRotation">목표 Yaw</param>
-        /// <param name="rotateDelay">목표값 도달에 걸리는 시간</param>
-        /// <returns>보간된 Yaw 각도</returns>
-        public virtual float SmoothRotateUpdate(float currentYaw, float targetRotation, float rotateDelay)
+        public virtual float CalcTargetYawByAimPoint()
         {
-            return Mathf.SmoothDampAngle(currentYaw, targetRotation, ref m_InterpCache, rotateDelay);
+            // 1. 방향 벡터
+            Vector3 toAim = cameraHandler.baseAimPoint - controller.transform.position;
+            // 2. Y축 제거
+            toAim.y = 0f;
+
+            // 너무 가까운 경우 예외처리
+            if (toAim.sqrMagnitude < 0.001f)
+            {
+                return controller.transform.eulerAngles.y;
+            }
+            // 3. 정규화
+            Vector3 aimDirection = toAim.normalized;
+            float targetYaw = Mathf.Atan2(aimDirection.x, aimDirection.z) * Mathf.Rad2Deg;
+
+            return targetYaw;
+        }
+        public virtual float CalcTargetPitchByAimPoint(Vector3 beginPoint)
+        {
+            Vector3 toAim = cameraHandler.baseAimPoint - beginPoint;
+            if (toAim.sqrMagnitude < 0.001f)
+            {
+                return m_CurrentPitch;
+            }
+            Vector3 aimDirection = toAim.normalized;
+
+            //float targetPitch = Mathf.Asin(aimDirection.y) * Mathf.Rad2Deg;
+            float targetPitch = -Mathf.Atan2(aimDirection.y, new Vector2(aimDirection.x, aimDirection.z).magnitude) * Mathf.Rad2Deg;
+            //m_CharacterAim = Quaternion.Euler(targetPitch, )
+            return targetPitch;
+        }
+        /// <summary>
+        /// SmoothDamp를 사용하여 Yaw 보간 (정해진 시간에 수렴)
+        /// </summary>
+        /// <param name="targetYaw">목표 Yaw</param>
+        /// <param name="smoothTime">목표값 도달에 걸리는 시간</param>
+        /// <returns>보간된 Yaw 각도</returns>
+        public virtual float SmoothYawUpdate(float targetYaw, float deltaTime)
+        {
+            m_CurrentYaw = Mathf.LerpAngle(m_CurrentYaw, targetYaw, m_MovementProfile.DirRotationSpeed * deltaTime);
+            return m_CurrentYaw;
+        }
+        /// <summary>
+        /// LerpAngle을 사용하여 Pitch 보간 (비율 기반)
+        /// </summary>
+        /// <param name="targetPitch"></param>
+        /// <param name="deltaTime"></param>
+        /// <returns></returns>
+        public virtual float SmoothPitchUpdate(float targetPitch, float deltaTime)
+        {
+            m_CurrentPitch = Mathf.LerpAngle(m_CurrentPitch, targetPitch, m_MovementProfile.DirRotationSpeed * deltaTime);
+            return m_CurrentPitch;
         }
         /// <summary>
         /// 캐릭터에 회전값 적용
@@ -268,6 +313,11 @@ namespace Dave6.CharacterKit
         public virtual void ApplyCharacterRotation(float rotation)
         {
             transform.rotation = Quaternion.Euler(0, rotation, 0);
+        }
+
+        public Quaternion CharacterAimUpdate()
+        {
+            return m_CharacterAim = Quaternion.Euler(m_CurrentPitch, m_CurrentYaw, 0f);
         }
         #endregion
 

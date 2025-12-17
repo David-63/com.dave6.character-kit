@@ -44,9 +44,8 @@ namespace Dave6.CharacterKit.States
             if (!hasInput) return;
 
             // 회전 계산
-            float targetRotation = controller.mover.CalcTargetRotationByInput();
-            float rotation = controller.mover.SmoothRotateUpdate(controller.mover.transform.eulerAngles.y, targetRotation, 0.12f);
-
+            float targetRotation = controller.mover.CalcTargetYawByInput();
+            float rotation = controller.mover.SmoothYawUpdate(targetRotation, deltaTime);
             controller.mover.ApplyCharacterRotation(rotation);
             controller.moveDirection = controller.mover.CalcMoveDirByInput(rotation, deltaTime);
         }

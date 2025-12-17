@@ -10,7 +10,7 @@ namespace Dave6.CharacterKit.States
         StatHandler m_StatHandler;
         bool ShiftToggle = false;
 
-        const float m_RotateDuration = 2.0f;
+        const float m_RotateSmoothTime = 2.0f;
         //const float m_RotateDuration = 0.06f;
         const float m_SpeedLess = 0.4f;
 
@@ -74,13 +74,14 @@ namespace Dave6.CharacterKit.States
 
         /// <summary>
         /// 상체 하체 따로 회전량 넣어야함
+        /// Yaw 계산 진행, Pitch는 mover에서 상시 계산
         /// </summary>
         void UpdateTargetRotate(float deltaTime)
         {
             // 목표 회전값
-            float targetRotation = controller.mover.CalcTargetRotationByCamera();
+            float targetYaw = controller.mover.CalcTargetYawByAimPoint();
             // 회전값 보간
-            float rotation = controller.mover.SmoothRotateUpdate(controller.mover.transform.eulerAngles.y, targetRotation, deltaTime * m_RotateDuration);
+            float rotation = controller.mover.SmoothYawUpdate(targetYaw, deltaTime);
             // 캐릭터 회전 적용
             controller.mover.ApplyCharacterRotation(rotation);
             // 이동방향 적용

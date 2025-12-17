@@ -63,6 +63,8 @@ namespace Dave6.CharacterKit
         }
         #endregion
 
+        [SerializeField] LayerMask ignorePlayerLayerMask;
+
 
         public virtual void Awake()
         {
@@ -102,6 +104,7 @@ namespace Dave6.CharacterKit
         // Update is called once per frame
         public virtual void Update()
         {
+            m_Mover.OnUpdate();
             m_LocomotionStateMachine.Update();
         }
         public virtual void FixedUpdate()
@@ -111,10 +114,11 @@ namespace Dave6.CharacterKit
         public virtual void LateUpdate()
         {
             m_LocomotionStateMachine.LateUpdate();
+            m_CameraHandler.OnLateUpdate();
             ClearTapInput();
         }
 
-        void ClearTapInput()
+        protected virtual void ClearTapInput()
         {
             m_AttackInputTap = false;
         }
@@ -133,5 +137,15 @@ namespace Dave6.CharacterKit
             
         }
         protected abstract void SetupStateMachine();
+
+        public Vector3 CalculateAimPoint(Vector3 origin, Vector3 direction)
+        {
+            Ray ray = new Ray(origin, direction);
+            if (Physics.Raycast(ray, out RaycastHit hit, m_CameraHandler.cameraLookProfile.MaxLookRange, ignorePlayerLayerMask))
+            {
+                return hit.point;
+            }
+            return origin + direction * m_CameraHandler.cameraLookProfile.MaxLookRange;
+        }
     }
 }

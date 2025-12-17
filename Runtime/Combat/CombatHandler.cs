@@ -42,8 +42,14 @@ namespace Dave6.CharacterKit.Combat
         float m_StepDuration = 3f;
         Timer m_HitboxExistTimer;
         float m_HitboxDuration = 0.5f;
+        #endregion
 
-        
+        #region 에임 계산
+        [SerializeField] GameObject crosshairPrefab;
+        CrosshairController m_BodyCrosshairUI;
+        CrosshairController m_CameraCrosshairUI;
+        Vector3 m_CharacterAimPoint;
+        public Vector3 characterAimPoint => m_CharacterAimPoint;
         #endregion
 
         void Start()
@@ -54,7 +60,7 @@ namespace Dave6.CharacterKit.Combat
             m_HitboxExistTimer = new Countdown(m_HitboxDuration);
             m_HitboxExistTimer.OnTimerStop += HitboxReset;
 
-            m_Hitbox = m_Controller.InstantiatePrefab(m_MeleeHitPrefab).GetComponent<MeleeHitbox>();
+            m_Hitbox = m_Controller.InstantiatePrefabSetParent(m_MeleeHitPrefab).GetComponent<MeleeHitbox>();
             if (m_Hitbox == null)
             {
                 Debug.Log("m_Hitbox 초기화 안됨");
@@ -62,8 +68,34 @@ namespace Dave6.CharacterKit.Combat
             m_Hitbox.Initialize(m_Controller);
             m_Hitbox.transform.localPosition = new Vector3(0, 1, 1);
             m_Hitbox.gameObject.SetActive(false);
+
+            CrosshairCanvas crosshair = m_Controller.InstantiatePrefab(crosshairPrefab).GetComponent<CrosshairCanvas>();
+            m_BodyCrosshairUI = crosshair.bodyCrosshairUI;
+            m_CameraCrosshairUI = crosshair.cameraCrosshairUI;
         }
 
+        public void OnLateUpdate()
+        {
+            // Pitch 계산!!
+            float targetPitch = m_Controller.mover.CalcTargetPitchByAimPoint(m_Controller.combatHandler.muzzle.position);
+            m_Controller.mover.SmoothPitchUpdate(targetPitch, Time.deltaTime);
+            m_Controller.mover.CharacterAimUpdate();
+
+            Vector3 origin = m_Controller.combatHandler.muzzle.position;
+            Vector3 direction = m_Controller.mover.characterAim * Vector3.forward;
+            m_CharacterAimPoint = m_Controller.CalculateAimPoint(origin, direction);
+
+
+            m_BodyCrosshairUI?.LateUpdateCrosshair(m_CharacterAimPoint);
+            m_CameraCrosshairUI?.LateUpdateCrosshair(m_Controller.cameraHandler.baseAimPoint);
+        }
+
+        public void RegisterCombat(PlayerController controller)
+        {
+            m_Controller = controller;
+        }
+
+        #region 밀리 콤보
         void ComboReset()
         {
             m_ComboStep = 0;
@@ -116,10 +148,10 @@ namespace Dave6.CharacterKit.Combat
             }
             return true;
         }
+        #endregion
 
-        internal void RegisterCombat(PlayerController controller)
-        {
-            m_Controller = controller;
-        }
+        #region 반동
+        #endregion
+
     }
 }

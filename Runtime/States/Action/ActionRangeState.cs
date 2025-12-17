@@ -41,12 +41,12 @@ namespace Dave6.CharacterKit.States
         void DoFire()
         {
             Debug.Log("사격!");
-            GameObject projectileOjb = controller.InstantiatePrefab(cacheProjectilePrefab, controller.combatHandler.muzzle.position, controller.transform.rotation);
+            GameObject projectileOjb = controller.InstantiatePrefab(cacheProjectilePrefab, controller.combatHandler.muzzle.position, controller.mover.characterAim);
             projectileOjb.GetComponent<ProjectileMover>().Initialize(controller);
             float amplitude = 6f;
-            float duration = 0.25f;
-            float frequency = 6f;
-            controller.cameraHandler.PlayShake(amplitude,duration,frequency);
+            //float duration = 0.15f;
+            
+            controller.cameraHandler.PlayRecoil(amplitude);
 
             CooldownTimer(m_EndTimer);
         }
