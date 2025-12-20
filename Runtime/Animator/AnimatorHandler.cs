@@ -69,12 +69,16 @@ namespace Dave6.CharacterKit.AnimHandler
         public void OnAttackAnimationEnd(AnimationEvent animationEvent)
         {
             attackReady = true;
-            m_Controller.movementLocked = false;
+            m_Controller.attacking = false;
             ClearCurrentAnimation();
+        }
+        public void OnAttackImpulse(AnimationEvent animationEvent)
+        {
+            var playerController = m_Controller as PlayerController;
+            playerController.combatHandler.AddAttackImpulse();
         }
         public void UpdateUseStrafe(bool useStrafe)
         {
-            Debug.Log($"useStrafe: {useStrafe}");
             m_Animator.SetBool("useStrafe", useStrafe);
         }
         public void UpdateUseShift(bool useShift)

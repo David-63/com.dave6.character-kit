@@ -26,15 +26,6 @@ namespace Dave6.CharacterKit.States
         {
             float deltaTime = Time.deltaTime;
             UpdateTargetSpeed();
-            
-            if (controller.mover.isGrounded)
-            {
-                controller.mover.CalcGroundSpeed(deltaTime);
-            }
-            else
-            {
-                controller.mover.CalcAirborneSpeed(deltaTime);
-            }
 
             controller.animatorHandler.UpdateMoveSpeed();
             controller.animatorHandler.UpdateHasMovementInput();

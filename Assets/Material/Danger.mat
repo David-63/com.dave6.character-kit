@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Transparent
+  m_Name: Danger
   m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -135,9 +135,9 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 0.16509429, g: 1, b: 0.1813061, a: 0.56078434}
-    - _Color: {r: 0.16509426, g: 1, b: 0.18130606, a: 0.56078434}
-    - _EmissionColor: {r: 0.030704921, g: 0.007843141, b: 0.1882353, a: 1}
+    - _BaseColor: {r: 0.8301887, g: 0.121395506, b: 0.26656997, a: 0.9372549}
+    - _Color: {r: 0.8301887, g: 0.121395476, b: 0.26656994, a: 0.9372549}
+    - _EmissionColor: {r: 23.968632, g: 0.36819184, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

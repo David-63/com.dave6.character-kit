@@ -9,13 +9,8 @@ namespace Dave6.CharacterKit
     {
         [SerializeField] EffectDefinition m_EffectDefinition;
         public EffectDefinition effectDefinition => m_EffectDefinition;
-
-        // 원래는 플레이어가 생성하면서 초기화 함수로 본인을 넣어줘야함
-        [SerializeField] IEntity m_Actor;
+        IEntity m_Actor;
         public IEntity actor => m_Actor;
-
-        // 나중에 공격 배율 추가하기 (Effect에서 factor 요소 추가하면 될듯)
-        float m_Factor;
 
         /// <summary>
         /// 생성될 때, 스텟을 받도록 할수도 있음
@@ -29,22 +24,22 @@ namespace Dave6.CharacterKit
         {
             if (other.TryGetComponent<IStatReceiver>(out var entity))
             {
+                Debug.Log("Hit Someone");
                 entity.Accept(this);
             }
         }
 
         public void Invoke<T>(T target) where T : Component, IStatReceiver
         {
+            // 상대 스탯 가져오기
             IEntity entity = target as IEntity;
             var stat = entity.statHandler.GetHealthStat();
 
+            // 본인 스탯을 상대에게 때려박기
             m_Actor.statHandler.ApplyEffect(effectDefinition, stat);
             Debug.Log($"target Helth: {stat.currentValue}/{stat.finalValue}");
 
-            if (stat.currentValue <= 0)
-            {
-                Destroy(target.gameObject);
-            }
+            entity.CheckHealth();
         }
     }
 }

@@ -61,15 +61,6 @@ namespace Dave6.CharacterKit.States
             }
 
             controller.targetSpeed = targetSpeed;
-
-            if (controller.mover.isGrounded)
-            {
-                controller.mover.CalcGroundSpeed(deltaTime);
-            }
-            else
-            {
-                controller.mover.CalcAirborneSpeed(deltaTime);
-            }
         }
 
         /// <summary>

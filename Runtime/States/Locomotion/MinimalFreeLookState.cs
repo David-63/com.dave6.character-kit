@@ -20,14 +20,6 @@ namespace Dave6.CharacterKit.States
         {
             float deltaTime = Time.deltaTime;
             UpdateTargetSpeed();
-            if (controller.mover.isGrounded)
-            {
-                controller.mover.CalcGroundSpeed(deltaTime);
-            }
-            else
-            {
-                controller.mover.CalcAirborneSpeed(deltaTime);
-            }
 
             // 당장은 수평속도를 사용했는데, 키입력 여부에 따라 애니메이션이 설정되도록 해야함(여기서 말고 Editor에 조건 추가)
             controller.animatorHandler.UpdateMoveSpeed();

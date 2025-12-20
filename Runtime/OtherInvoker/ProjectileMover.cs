@@ -2,6 +2,7 @@ using Dave6.StatSystem;
 using Dave6.StatSystem.Effect;
 using Dave6.StatSystem.Interaction;
 using UnityEngine;
+using UnityUtils.Timer;
 
 namespace Dave6.CharacterKit
 {
@@ -10,15 +11,37 @@ namespace Dave6.CharacterKit
         [SerializeField] EffectDefinition m_EffectDefinition;
         public EffectDefinition effectDefinition => m_EffectDefinition;
 
-        [SerializeField] float m_MoveSpeed = 10f;
+        [SerializeField] float m_MoveSpeed = 200f;
+        [SerializeField] float m_ExistDuration = 1f;
         IEntity m_Actor;
         public IEntity actor => m_Actor;
         Vector3 m_PreviousPosition;
+        Timer m_LifeTime;
+
+        void Awake()
+        {
+            m_LifeTime = new Countdown(m_ExistDuration);
+            m_LifeTime.OnTimerStop += Disappear;
+        }
+        void OnDestroy()
+        {
+            if (m_LifeTime != null)
+            {
+                m_LifeTime.OnTimerStop -= Disappear;
+                m_LifeTime.Stop();
+            }
+        }
+
+        void Disappear()
+        {
+            Destroy(gameObject);
+        }
 
         void Start()
         {
             // 위치 초기화
             m_PreviousPosition = transform.position;
+            m_LifeTime.Start();
         }
 
         public void Initialize(IEntity actorEntity)
@@ -38,7 +61,6 @@ namespace Dave6.CharacterKit
             if (Physics.Raycast(m_PreviousPosition, rayDirection.normalized, out hit, rayDistance))
             {
                 // 여기서 충돌 로직 처리
-
                 if (hit.collider.TryGetComponent<IStatReceiver>(out var entity))
                 {
                     entity.Accept(this);
@@ -51,20 +73,17 @@ namespace Dave6.CharacterKit
 
         public void Invoke<T>(T target) where T : Component, IStatReceiver
         {
+            // 상대 스탯 가져오기
             IEntity entity = target as IEntity;
             var stat = entity.statHandler.GetHealthStat();
 
+            // 본인 스텟을 상대 스탯에 때려박기
             m_Actor.statHandler.ApplyEffect(effectDefinition, stat);
             Debug.Log($"target Helth: {stat.currentValue}/{stat.finalValue}");
 
-            if (stat.currentValue <= 0)
-            {
-                Destroy(target.gameObject);
-            }
+            entity.CheckHealth();
 
-            Destroy(gameObject);
+            m_LifeTime.Stop();
         }
-
-
     }
 }

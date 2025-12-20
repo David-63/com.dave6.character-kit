@@ -21,6 +21,11 @@ namespace Dave6.CharacterKit.States
         bool bufferInput = false;
 
 
+        // 공격시 회전시킴
+        float m_LastRotation;
+        float m_CurrentVelocity;
+
+
         public ActionMeleeState(PlayerController controller) : base(controller)
         {
             // 공격 유효시간
@@ -40,9 +45,13 @@ namespace Dave6.CharacterKit.States
 
         public override  void Update()
         {
-            // 진입 조건
+            HandleMeleeAttack();
 
-            // 공격 입력을 받거나, 버퍼가 등록되어 있으면
+            UpdateCharacterDirection();
+        }
+
+        void HandleMeleeAttack()
+        {
             if (controller.attackInputTap || bufferInput)
             {
                 if (controller.combatHandler.TryMeleeAttack())
@@ -54,6 +63,25 @@ namespace Dave6.CharacterKit.States
                     bufferInput = true;
                 }
             }
+        }
+
+        void UpdateCharacterDirection()
+        {
+            if (!controller.attacking) return;
+
+            float rotation;
+
+            if (controller.combatHandler.TryGetMeleeTargetYaw(out float yaw))
+            {
+                rotation = controller.mover.SmoothYawUpdate(yaw, ref m_CurrentVelocity);
+            }
+            else
+            {
+                rotation = controller.mover.SmoothYawUpdate(controller.mover.lastTargetInputRotation, ref m_CurrentVelocity);
+            }
+
+            controller.mover.ApplyCharacterRotation(rotation);
+            controller.moveDirection = controller.mover.CalcMoveDirByInput(rotation, Time.deltaTime);
         }
 
         /// <summary>

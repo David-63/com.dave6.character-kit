@@ -39,7 +39,7 @@ namespace Dave6.CharacterKit
         // public float GroundedOffset = -0.14f; // 이거를 어디..에 써야할지 모르곘네, 없어도 될것같음
 
         bool m_IsUsingExtendedSensorRange = true; // Use extended range for smoother ground transitions // 이것도 rigidbody에 쓰던거라 필요없을듯?
-        private bool m_IsGrounded;
+        public bool m_IsGrounded;
         public bool isGrounded => m_IsGrounded;
         float m_BaseSensorRange;
         int m_CurrentLayer;
@@ -57,7 +57,10 @@ namespace Dave6.CharacterKit
             }
             return m_MovementProfile;
         }
-        protected float m_TargetRotation = 0f;                          // FreeMove 상태에서 회전값 기록하는 용도        
+        protected float m_TargetInputRotation = 0f;                          // FreeMove 상태에서 회전값 기록하는 용도
+        public float targetInputRotation => m_TargetInputRotation;
+        protected float m_LastTargetInputRotation;
+        public float lastTargetInputRotation => m_LastTargetInputRotation;
         protected float m_InterpCache;                                  // 이제 안씀
         protected const float m_SpeedOffset = 0.1f;
         protected const float m_TerminalVelocity = 53.0f;               // 가속 제한인듯
@@ -206,29 +209,51 @@ namespace Dave6.CharacterKit
             Jump();
             ApplyGravity();
             CheckForGround();
+            UpdateFinalSpeed();
             ApplyMovement();
         }
 
         #region 속도 계산
-        public virtual void CalcGroundSpeed(float deltaTime)
+        public virtual void CalcBaseSpeed(float deltaTime)
         {
-            if (Mathf.Abs(controller.horizontalSpeed - controller.targetSpeed) > m_SpeedOffset)
+            if (controller.mover.isGrounded)
             {
-                controller.horizontalSpeed = Mathf.Lerp
-                (
-                    controller.horizontalSpeed, controller.targetSpeed, deltaTime * m_MovementProfile.SpeedChangeRate
-                );
-                controller.horizontalSpeed = Mathf.Round(controller.horizontalSpeed * 1000f) / 1000f;
+                if (Mathf.Abs(controller.baseSpeed - controller.targetSpeed) > m_SpeedOffset)
+                {
+                    controller.baseSpeed = Mathf.Lerp(controller.baseSpeed, controller.targetSpeed, deltaTime * m_MovementProfile.SpeedChangeRate);
+                    controller.baseSpeed = Mathf.Round(controller.baseSpeed * 1000f) / 1000f;
+                }
+                else
+                {
+                    controller.baseSpeed = controller.targetSpeed;
+                }
             }
             else
             {
-                controller.horizontalSpeed = controller.targetSpeed;
+                float airPenalty = 0.5f;
+                controller.baseSpeed = Mathf.Lerp(controller.baseSpeed, 0, deltaTime * airPenalty);
+                controller.baseSpeed = Mathf.Round(controller.baseSpeed * 1000f) / 1000f;
             }
         }
-        public virtual void CalcAirborneSpeed(float deltaTime)
+
+        public virtual void CalcImpulseSpeed(float deltaTime)
         {
-            controller.horizontalSpeed = Mathf.Lerp(controller.horizontalSpeed, 0, deltaTime * 0.5f);
-            controller.horizontalSpeed = Mathf.Round(controller.horizontalSpeed * 1000f) / 1000f;
+            if (Mathf.Abs(controller.impulseSpeed) > m_SpeedOffset)
+            {
+                controller.impulseSpeed = Mathf.Lerp(controller.impulseSpeed, 0, deltaTime * m_MovementProfile.SpeedChangeRate);
+            }
+            else
+            {
+                controller.impulseSpeed = 0;
+            }
+        }
+
+        public virtual void UpdateFinalSpeed()
+        {
+            float deltaTime = Time.deltaTime;
+            CalcBaseSpeed(deltaTime);
+            CalcImpulseSpeed(deltaTime);
+            controller.horizontalSpeed = controller.baseSpeed + controller.impulseSpeed;
         }
         #endregion
 
@@ -240,8 +265,9 @@ namespace Dave6.CharacterKit
         /// <returns> 계산된 목표 yaw 회전값 </returns>
         public virtual float CalcTargetYawByInput()
         {
-            m_TargetRotation = Mathf.Atan2(controller.inputMove.x, controller.inputMove.z) * Mathf.Rad2Deg + m_CameraHandler.yawAngle;
-            return m_TargetRotation;
+            m_TargetInputRotation = Mathf.Atan2(controller.inputMove.x, controller.inputMove.z) * Mathf.Rad2Deg + m_CameraHandler.yawAngle;
+            m_LastTargetInputRotation = m_TargetInputRotation;
+            return m_TargetInputRotation;
         }
         /// <summary>
         /// 카메라기준 캐릭터 회전 방향 계산
@@ -283,6 +309,18 @@ namespace Dave6.CharacterKit
             float targetPitch = -Mathf.Atan2(aimDirection.y, new Vector2(aimDirection.x, aimDirection.z).magnitude) * Mathf.Rad2Deg;
             //m_CharacterAim = Quaternion.Euler(targetPitch, )
             return targetPitch;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetYaw">Last Target Rotation</param>
+        /// <param name="currentVelocity">Ref</param>
+        /// <returns></returns>
+        public virtual float SmoothYawUpdate(float targetYaw, ref float currentVelocity)
+        {
+            m_CurrentYaw = Mathf.SmoothDampAngle(m_CurrentYaw, targetYaw, ref currentVelocity, 0.05f);
+            return m_CurrentYaw;
         }
         /// <summary>
         /// SmoothDamp를 사용하여 Yaw 보간 (정해진 시간에 수렴)
@@ -332,7 +370,7 @@ namespace Dave6.CharacterKit
         public virtual Vector3 CalcMoveDirByInput(float rotation, float deltaTime)
         {
             float changeSpeed = 1f;
-            float baseRotation = m_IsGrounded ? rotation : m_TargetRotation;
+            float baseRotation = m_IsGrounded ? rotation : m_TargetInputRotation;
             float lerpRotation = baseRotation;
             float currentYaw = GetCurrentYaw();
 

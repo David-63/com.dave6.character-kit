@@ -9,6 +9,8 @@ namespace Dave6.CharacterKit.States
     {
         StatHandler m_StatHandler;
         bool m_PrevHasInput;
+        float m_LastRotation;
+        float m_CurrentVelocity;
 
         public FreeLookState(PlayerController controller) : base(controller)
         {
@@ -25,38 +27,33 @@ namespace Dave6.CharacterKit.States
 
         public override void OnExit()
         {
+            controller.combatHandler.HideTargetMark();
         }
 
         public override void Update()
         {
-            float deltaTime = Time.deltaTime;
-
             // 속도 계산
             UpdateTargetSpeed();
-            if (controller.mover.isGrounded)
-            {
-                controller.mover.CalcGroundSpeed(deltaTime);
-            }
-            else
-            {
-                controller.mover.CalcAirborneSpeed(deltaTime);
-            }
 
-            // 당장은 수평속도를 사용했는데, 키입력 여부에 따라 애니메이션이 설정되도록 해야함(여기서 말고 Editor에 조건 추가)
-            controller.animatorHandler.UpdateMoveSpeed();
-            controller.animatorHandler.UpdateHasMovementInput();
-
+            // 애니메이션 업데이트
             bool hasInput = controller.HasMovementInput();
-            if (m_PrevHasInput && !hasInput)
-            {
-                controller.animatorHandler.UpdateLastMoveSpeed();
-            }
+            UpdateAnimationParams(hasInput);
 
-            m_PrevHasInput = hasInput;
+            // 입력이 없거나, 공격중이면 회전 금지
+            UpdateCharacterRotation(hasInput);
 
+            // UI 업데이트
+            controller.combatHandler.UpdateTargetMark();
+        }
+
+        void UpdateCharacterRotation(bool hasInput)
+        {
             if (!hasInput) return;
+            if (controller.attacking) return;
 
-            // 회전 계산
+            float deltaTime = Time.deltaTime;
+            
+            // 입력 기반으로 회전값 구해서 캐릭터와 이동방향 적용
             float targetRotation = controller.mover.CalcTargetYawByInput();
             float rotation = controller.mover.SmoothYawUpdate(targetRotation, deltaTime);
 
@@ -64,18 +61,31 @@ namespace Dave6.CharacterKit.States
             controller.moveDirection = controller.mover.CalcMoveDirByInput(rotation, deltaTime);
         }
 
+        void UpdateAnimationParams(bool hasInput)
+        {
+            controller.animatorHandler.UpdateMoveSpeed();
+            controller.animatorHandler.UpdateHasMovementInput();
+
+            if (m_PrevHasInput && !hasInput)
+            {
+                controller.animatorHandler.UpdateLastMoveSpeed();
+            }
+
+            m_PrevHasInput = hasInput;
+        }
+
         //public virtual void FixedUpdate();
 
         void UpdateTargetSpeed()
         {
             float targetSpeed = 0;
-            if (controller.movementLocked)
+            SecondaryStat moveStat = m_StatHandler.GetStat("S_MoveSpeed") as SecondaryStat;
+
+            if (controller.attacking)
             {
                 controller.targetSpeed = targetSpeed;
                 return;
             }
-
-            SecondaryStat moveStat = m_StatHandler.GetStat("S_MoveSpeed") as SecondaryStat;
 
             if (controller.HasMovementInput())
             {

@@ -121,6 +121,10 @@ namespace Dave6.CharacterKit
         #endregion
 
         #region 카메라 업데이트
+
+        /// <summary>
+        /// 기본적인 카메라 회전, AimAnchor, m_BaseAim 계산
+        /// </summary>
         public void LookRotation()
         {
             ProcessInputLook();
@@ -257,8 +261,6 @@ namespace Dave6.CharacterKit
         float targetRecoilPitch = 0f;    // 누적 목표 pitch (음수로 위로 올라감)
         float currentRecoilYaw = 0f;     // 현재 yaw offset
         float targetRecoilYaw = 0f;      // 누적 목표 yaw
-
-        float recoilRiseSpeed = 12f;     // target으로 향하는 상승 속도
 
         // 반동 복귀 속도
         [SerializeField] float minTargetDecaySpeed = 15f;    // 최소 감쇄 속도
