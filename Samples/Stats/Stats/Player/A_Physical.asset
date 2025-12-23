@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37929ae89bc025f4cb305326c4bcd264, type: 3}
   m_Name: A_Physical
   m_EditorClassIdentifier: StatSystem::Dave6.StatSystem.Stat.StatDefinition
-  m_InitialValue: 6
+  m_InitialValue: 8
   m_FormulaStats: []

@@ -21,6 +21,20 @@ namespace Dave6.CharacterKit.AnimHandler
             m_Controller = controller;
         }
 
+        public void ResetAnimHandler()
+        {
+            m_Animator.SetFloat("moveSpeed", 0);
+            m_Animator.SetFloat("lastMoveSpeed", 0);
+            m_Animator.SetFloat("verticalSpeed", 0);
+            m_Animator.SetFloat("lastVerticalSpeed", 0);
+            m_Animator.SetBool("isGrounded", true);
+            m_Animator.SetBool("hasMoveInput", false);
+            m_Animator.SetBool("useStrafe", false);
+            m_Animator.SetBool("useShift", false);
+            m_Animator.SetFloat("directionX", 0);
+            m_Animator.SetFloat("directionY", 0);
+        }
+
         public void UpdateMoveSpeed()
         {
             m_Animator.SetFloat("moveSpeed", m_Controller.horizontalSpeed);

@@ -13,8 +13,8 @@ namespace Dave6.CharacterKit
 
         [SerializeField] float m_MoveSpeed = 200f;
         [SerializeField] float m_ExistDuration = 1f;
-        IEntity m_Actor;
-        public IEntity actor => m_Actor;
+        IStatController m_Actor;
+        public IStatController actor => m_Actor;
         Vector3 m_PreviousPosition;
         Timer m_LifeTime;
 
@@ -44,7 +44,7 @@ namespace Dave6.CharacterKit
             m_LifeTime.Start();
         }
 
-        public void Initialize(IEntity actorEntity)
+        public void Initialize(IStatController actorEntity)
         {
             m_Actor = actorEntity;
         }
@@ -74,7 +74,7 @@ namespace Dave6.CharacterKit
         public void Invoke<T>(T target) where T : Component, IStatReceiver
         {
             // 상대 스탯 가져오기
-            IEntity entity = target as IEntity;
+            IStatController entity = target as IStatController;
             var stat = entity.statHandler.GetHealthStat();
 
             // 본인 스텟을 상대 스탯에 때려박기

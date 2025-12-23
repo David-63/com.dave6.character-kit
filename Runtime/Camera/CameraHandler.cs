@@ -120,6 +120,13 @@ namespace Dave6.CharacterKit
         }
         #endregion
 
+        #region GameFlow
+        public void ResetCameraHandler()
+        {
+            
+        }
+        #endregion
+
         #region 카메라 업데이트
 
         /// <summary>
@@ -171,7 +178,7 @@ namespace Dave6.CharacterKit
         {
             float fov = 50f;
             float sideLength = 0.85f;
-            float distnace = 1.5f;
+            float distnace = 1.0f;
             if (shift)
             {
                 StartTransition(fov, sideLength, distnace);

@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: StatSystem::Dave6.StatSystem.Effect.EffectDefinition
   m_OperationType: 1
   m_ApplyMode: 0
-  m_FlatValue: 2
+  m_FlatValue: 6
   m_SourceStats:
   - key: {fileID: 11400000, guid: 2c92d13abd887ca4c97e1f07b015b657, type: 2}
     value: 1
+  m_OutputMultiplier: 1
   m_Duration: -1

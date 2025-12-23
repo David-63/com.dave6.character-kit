@@ -1,13 +1,13 @@
-using System;
 using Dave6.CharacterKit.AnimHandler;
 using Dave6.CharacterKit.Input;
+using Dave6.GameStateFlow;
 using Dave6.StateMachine;
 using UnityEngine;
 using UnityUtils;
 
 namespace Dave6.CharacterKit
 {
-    public abstract class BasicPlayerController : MonoBehaviour
+    public abstract class BasicPlayerController : MonoBehaviour, IEntity
     {
         #region control field
         public bool showInitialDebug = false;
@@ -40,6 +40,8 @@ namespace Dave6.CharacterKit
         public bool attackInput => m_AttackInput;
         bool m_AttackInputTap = false;
         public bool attackInputTap => m_AttackInputTap;
+        bool m_InteractInputTap = false;
+        public bool interactInputTap => m_InteractInputTap;
         #endregion
 
         #region movement value field
@@ -68,7 +70,11 @@ namespace Dave6.CharacterKit
         }
         #endregion
 
+        // 이거 아직 사용처를 못정했음 UI에 쓰려고 한건데
         [SerializeField] LayerMask ignorePlayerLayerMask;
+
+        protected IInteractable m_CurrentInteractable;
+        public IInteractable currentInteractable => m_CurrentInteractable;
 
 
         public virtual void Awake()
@@ -148,9 +154,58 @@ namespace Dave6.CharacterKit
             ClearTapInput();
         }
 
+        #region GameFlow
+
+        protected bool m_Paused;
+        public bool paused => m_Paused;
+
+        void OnEnable()
+        {
+            GameFlowController.instance.onStateChanged += HandleGameStateChanged;
+        }
+
+        void OnDisable()
+        {
+            GameFlowController.instance.onStateChanged -= HandleGameStateChanged;
+        }
+
+        public void ResetController()
+        {
+            Debug.Log("플레이어 초기화");
+            m_CurrentInteractable = null;
+            m_Mover.ResetMover();
+            m_AnimatorHandler.ResetAnimHandler();
+        }
+
+        void HandleGameStateChanged(eGameState prev, eGameState next)
+        {
+            switch (next)
+            {
+                // 로딩하면 입력도 막고, 세팅 초기화
+                case eGameState.Loading:
+                ResetController();
+                m_Paused = true;
+                break;
+                // 멈춘거면 입력만 막기
+                case eGameState.Paused:
+                m_Paused = true;
+                break;
+
+                case eGameState.Running:
+                m_Paused = false;                    
+                if (prev != eGameState.Running)
+                {
+                    ResetController();
+                }
+                break;
+            }
+        }
+        #endregion
+
         protected virtual void ClearTapInput()
         {
             m_AttackInputTap = false;
+            m_InteractInputTap = false;
         }
 
         protected virtual void InputEventBind()
@@ -164,6 +219,8 @@ namespace Dave6.CharacterKit
             m_Input.Shift += (value) => m_ShiftInput = value;
             m_Input.Attack += (value) => m_AttackInput = value;
             m_Input.AttackTap += () => m_AttackInputTap = true;
+            m_Input.InteractTap += () => m_InteractInputTap = true;
+            
             
         }
         protected abstract void SetupStateMachine();

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37929ae89bc025f4cb305326c4bcd264, type: 3}
   m_Name: S_AttackDamage
   m_EditorClassIdentifier: StatSystem::Dave6.StatSystem.Stat.StatDefinition
-  m_InitialValue: 2
+  m_InitialValue: 6
   m_FormulaStats:
   - key: {fileID: 11400000, guid: f47c87f0ef8bc2446bebae38477f6da1, type: 2}
     value: 0.5

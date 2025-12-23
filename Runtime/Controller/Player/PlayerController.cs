@@ -1,5 +1,6 @@
 using Dave6.CharacterKit.Combat;
 using Dave6.CharacterKit.States;
+using Dave6.GameStateFlow;
 using Dave6.StateMachine;
 using Dave6.StatSystem;
 using Dave6.StatSystem.Interaction;
@@ -8,7 +9,7 @@ using UnityEngine;
 
 namespace Dave6.CharacterKit
 {
-    public class PlayerController : BasicPlayerController, IEntity, IStatReceiver
+    public class PlayerController : BasicPlayerController, IStatController, IStatReceiver
     {
         #region stat field
         [SerializeField] StatDatabase m_StatDatabase;
@@ -24,6 +25,10 @@ namespace Dave6.CharacterKit
 
         CombatHandler m_CombatHandler;
         public CombatHandler combatHandler => m_CombatHandler;
+
+        [SerializeField] string LobbySceneName = "Lobby";
+
+        bool isDead;
 
         public override void Awake()
         {
@@ -50,6 +55,7 @@ namespace Dave6.CharacterKit
 
         public override void Update()
         {
+            if (m_Paused) return;
             m_LocomotionStateMachine.Update();
 
             m_Mover.OnUpdate();
@@ -59,11 +65,15 @@ namespace Dave6.CharacterKit
 
         public override void FixedUpdate()
         {
+            if (m_Paused) return;
             m_LocomotionStateMachine.FixedUpdate();
             m_ActionStateMachine.FixedUpdate();
         }
         public override void LateUpdate()
         {
+            ClearTapInput();
+
+            if (m_Paused) return;
             m_LocomotionStateMachine.LateUpdate();
 
             m_CameraHandler.OnLateUpdate();
@@ -71,7 +81,6 @@ namespace Dave6.CharacterKit
 
             m_ActionStateMachine.LateUpdate();
 
-            ClearTapInput();
         }
 
         protected override void SetupStateMachine()
@@ -133,7 +142,18 @@ namespace Dave6.CharacterKit
         }
         public void CheckHealth()
         {
-            
+            ResourceStat health = statHandler.GetHealthStat();
+
+            if (health.currentValue <= 0)
+            {
+                ResetHealth();
+                SceneDirector.instance.RequestSceneLoad(LobbySceneName, LobbySceneName + "Enter");
+                // 로비로 돌아가기
+            }
+        }
+        public void ResetHealth()
+        {
+            statHandler.GetHealthStat().ResetCurrentValue();
         }
         #endregion
 
@@ -171,6 +191,23 @@ namespace Dave6.CharacterKit
         public GameObject InstantiatePrefab(GameObject obj, Vector3 position, Quaternion rotation)
         {
             return Instantiate(obj, position, rotation);
+        }
+
+        void OnTriggerEnter(Collider other)
+        {
+            if (other.TryGetComponent<IInteractable>(out var interactable))
+            {
+                m_CurrentInteractable = interactable;
+            }
+        }
+
+        void OnTriggerExit(Collider other)
+        {
+            if (other.TryGetComponent<IInteractable>(out var interactable))
+            {
+                if (m_CurrentInteractable == interactable)
+                    m_CurrentInteractable = null;
+            }
         }
     }
 }

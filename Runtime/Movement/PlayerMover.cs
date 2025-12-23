@@ -1,6 +1,3 @@
-using Dave6.StatSystem;
-using UnityEngine;
-
 namespace Dave6.CharacterKit
 {
 
@@ -15,6 +12,15 @@ namespace Dave6.CharacterKit
         {
             base.Setup();
             m_PlayerController = controller as PlayerController;
+        }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            if (controller.interactInputTap && m_PlayerController.currentInteractable != null)
+            {
+                m_PlayerController.currentInteractable.Interact();
+            }
         }
 
     }

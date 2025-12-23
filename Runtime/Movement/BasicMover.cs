@@ -61,7 +61,6 @@ namespace Dave6.CharacterKit
         public float targetInputRotation => m_TargetInputRotation;
         protected float m_LastTargetInputRotation;
         public float lastTargetInputRotation => m_LastTargetInputRotation;
-        protected float m_InterpCache;                                  // 이제 안씀
         protected const float m_SpeedOffset = 0.1f;
         protected const float m_TerminalVelocity = 53.0f;               // 가속 제한인듯
         protected const float m_Gravity = -15f;
@@ -203,6 +202,15 @@ namespace Dave6.CharacterKit
             m_CameraHandler = camera;
         }
         #endregion
+
+        #region GameFlow
+        public void ResetMover()
+        {
+            
+        }
+
+        #endregion
+
 
         public virtual void OnUpdate()
         {

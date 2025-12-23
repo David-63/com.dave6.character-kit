@@ -6,7 +6,7 @@ using UnityUtils.Timer;
 
 namespace Dave6.CharacterKit
 {
-    public class EnemyController : MonoBehaviour, IEntity, IStatReceiver, ITargetable
+    public class EnemyController : MonoBehaviour, IStatController, IStatReceiver, ITargetable
     {
         [SerializeField] StatDatabase m_StatDatabase;
         public StatDatabase statDatabase => m_StatDatabase;

@@ -147,6 +147,15 @@ namespace Dave6.CharacterKit.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""841d11ce-e4ad-4c00-92b6-f123281435a5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -369,6 +378,28 @@ namespace Dave6.CharacterKit.Input
                     ""action"": ""Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2f92f91d-740d-465d-a39b-9d5d61e4cb17"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PC"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6583ad47-6072-4c52-be70-f9166253354c"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Controller"",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -411,6 +442,7 @@ namespace Dave6.CharacterKit.Input
             m_Character_Aim = m_Character.FindAction("Aim", throwIfNotFound: true);
             m_Character_Shift = m_Character.FindAction("Shift", throwIfNotFound: true);
             m_Character_Attack = m_Character.FindAction("Attack", throwIfNotFound: true);
+            m_Character_Interact = m_Character.FindAction("Interact", throwIfNotFound: true);
         }
 
         ~@DaveInput()
@@ -497,6 +529,7 @@ namespace Dave6.CharacterKit.Input
         private readonly InputAction m_Character_Aim;
         private readonly InputAction m_Character_Shift;
         private readonly InputAction m_Character_Attack;
+        private readonly InputAction m_Character_Interact;
         /// <summary>
         /// Provides access to input actions defined in input action map "Character".
         /// </summary>
@@ -532,6 +565,10 @@ namespace Dave6.CharacterKit.Input
             /// Provides access to the underlying input action "Character/Attack".
             /// </summary>
             public InputAction @Attack => m_Wrapper.m_Character_Attack;
+            /// <summary>
+            /// Provides access to the underlying input action "Character/Interact".
+            /// </summary>
+            public InputAction @Interact => m_Wrapper.m_Character_Interact;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -576,6 +613,9 @@ namespace Dave6.CharacterKit.Input
                 @Attack.started += instance.OnAttack;
                 @Attack.performed += instance.OnAttack;
                 @Attack.canceled += instance.OnAttack;
+                @Interact.started += instance.OnInteract;
+                @Interact.performed += instance.OnInteract;
+                @Interact.canceled += instance.OnInteract;
             }
 
             /// <summary>
@@ -605,6 +645,9 @@ namespace Dave6.CharacterKit.Input
                 @Attack.started -= instance.OnAttack;
                 @Attack.performed -= instance.OnAttack;
                 @Attack.canceled -= instance.OnAttack;
+                @Interact.started -= instance.OnInteract;
+                @Interact.performed -= instance.OnInteract;
+                @Interact.canceled -= instance.OnInteract;
             }
 
             /// <summary>
@@ -713,6 +756,13 @@ namespace Dave6.CharacterKit.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnAttack(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Interact" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnInteract(InputAction.CallbackContext context);
         }
     }
 }

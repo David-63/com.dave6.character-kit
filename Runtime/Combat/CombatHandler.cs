@@ -49,7 +49,7 @@ namespace Dave6.CharacterKit.Combat
         Timer m_StepTimer;                              // 각 공격은 0.8 ~ 1.2초 걸림
         float m_StepDuration = 3f;
         Timer m_HitboxExistTimer;
-        float m_HitboxDuration = 0.5f;
+        float m_HitboxDuration = 0.3f;
         #endregion
 
         #region 에임 계산        
@@ -90,11 +90,11 @@ namespace Dave6.CharacterKit.Combat
             m_Hitbox.transform.localPosition = new Vector3(0, 1, 1);
             m_Hitbox.gameObject.SetActive(false);
 
-            CrosshairCanvas crosshair = m_Controller.InstantiatePrefab(crosshairPrefab).GetComponent<CrosshairCanvas>();
+            CrosshairCanvas crosshair = m_Controller.InstantiatePrefabSetParent(crosshairPrefab).GetComponent<CrosshairCanvas>();
             m_BodyCrosshairUI = crosshair.bodyCrosshairUI;
             m_CameraCrosshairUI = crosshair.cameraCrosshairUI;
 
-            m_TargetMarkUI = m_Controller.InstantiatePrefab(targetMarkPrefab).GetComponent<TargettingCanvas>().targettingUI;
+            m_TargetMarkUI = m_Controller.InstantiatePrefabSetParent(targetMarkPrefab).GetComponent<TargettingCanvas>().targettingUI;
             m_TargetMarkUI.gameObject.SetActive(false);
         }
 
@@ -141,16 +141,16 @@ namespace Dave6.CharacterKit.Combat
             // 콤보에 따른 애니메이션 호출
             if (m_ComboStep == 0)
             {
-                m_Controller.animatorHandler.ChangeAnimation("LeftPunch", 0.1f);
+                m_Controller.animatorHandler.ChangeAnimation("RightHook", 0.1f);
             }
             else if (m_ComboStep == m_ComboEnd -1)
             {
-                m_Controller.animatorHandler.ChangeAnimation("CrossPunch");
+                m_Controller.animatorHandler.ChangeAnimation("CrossPunch", 0.1f);
                 isComboEnd = true;
             }
             else
             {
-                m_Controller.animatorHandler.ChangeAnimation("RightHook");
+                m_Controller.animatorHandler.ChangeAnimation("LeftPunch", 0.1f);
             }
 
             // 움직임 제어
