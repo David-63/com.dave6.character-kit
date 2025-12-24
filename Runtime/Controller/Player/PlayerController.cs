@@ -1,4 +1,5 @@
 using Dave6.CharacterKit.Combat;
+using Dave6.CharacterKit.Item;
 using Dave6.CharacterKit.States;
 using Dave6.GameStateFlow;
 using Dave6.StateMachine;
@@ -9,7 +10,7 @@ using UnityEngine;
 
 namespace Dave6.CharacterKit
 {
-    public class PlayerController : BasicPlayerController, IStatController, IStatReceiver
+    public class PlayerController : BasicPlayerController, IStatController, IStatReceiver, IInteractor
     {
         #region stat field
         [SerializeField] StatDatabase m_StatDatabase;
@@ -21,14 +22,35 @@ namespace Dave6.CharacterKit
         public ResourceStat health { get; set; }
         #endregion
 
+        #region Action StateMachine
         MinimumStateMachine m_ActionStateMachine;
+        #endregion
 
+        #region CombatHandler
         CombatHandler m_CombatHandler;
         public CombatHandler combatHandler => m_CombatHandler;
+        #endregion
 
+        #region GameFlow
         [SerializeField] string LobbySceneName = "Lobby";
+        #endregion
 
-        bool isDead;
+        #region Item & Inventory
+        Inventory m_Inventory;
+        public Inventory inventory => m_Inventory;
+        OwnedItem m_SelectedItem;
+        int m_CurrentIndex = -1;
+        int m_PrevIndex;
+
+
+        public float inputScroll => m_Input.InputScroll;
+
+        #endregion
+
+        #region Interact field
+        public Transform origin => transform;
+        #endregion
+
 
         public override void Awake()
         {
@@ -36,6 +58,7 @@ namespace Dave6.CharacterKit
             InitializeStat();
             m_CombatHandler = GetComponent<CombatHandler>();
             m_CombatHandler.RegisterCombat(this);
+            m_Inventory = new();
         }
 
         public override void Start()
@@ -61,6 +84,8 @@ namespace Dave6.CharacterKit
             m_Mover.OnUpdate();
 
             m_ActionStateMachine.Update();
+            CheckInteract();
+            HandleSelectionItem();
         }
 
         public override void FixedUpdate()
@@ -126,16 +151,7 @@ namespace Dave6.CharacterKit
         {
             m_StatHandler = new StatHandler(m_StatDatabase);
             m_StatHandler.InitializeStat();
-
-            // if (showInitialDebug)
-            // {
-            //     foreach (var stat in m_StatHandler.stats)
-            //     {
-            //         Debug.Log($"{stat.Key}");
-            //     }
-            // }
         }
-
         public void Accept(IStatInvoker invoker)
         {
             invoker.Invoke(this);
@@ -161,11 +177,6 @@ namespace Dave6.CharacterKit
         public bool enterAttackFlag;
         public bool exitMeleeFlag;
         public bool exitRangeFlag;
-
-        /*
-            Idle 진입 조건
-            1. 공격이 끝나야함
-        */
         bool ConsumeExitMelee()
         {
             if (!exitMeleeFlag) return false;
@@ -180,6 +191,7 @@ namespace Dave6.CharacterKit
         }
         #endregion
 
+        #region Create Prefab
         public GameObject InstantiatePrefab(GameObject obj)
         {
             return Instantiate(obj);
@@ -192,7 +204,9 @@ namespace Dave6.CharacterKit
         {
             return Instantiate(obj, position, rotation);
         }
+        #endregion
 
+        #region Interaction
         void OnTriggerEnter(Collider other)
         {
             if (other.TryGetComponent<IInteractable>(out var interactable))
@@ -209,5 +223,59 @@ namespace Dave6.CharacterKit
                     m_CurrentInteractable = null;
             }
         }
+        void CheckInteract()
+        {
+            if (interactInputTap && currentInteractable != null)
+            {
+                currentInteractable.Interact(this);
+            }
+        }
+        #endregion
+
+        #region Inventory
+
+        public void HandleSelectionItem()
+        {
+            var items = m_Inventory.items;
+
+            if (items.Count == 0)
+            {
+                m_SelectedItem = null;
+                m_CurrentIndex = -1;
+                return;
+            }
+            if (inputScroll == 0) return;
+            int prevIndex = m_CurrentIndex;
+
+            if (m_CurrentIndex < 0)
+            {
+                m_CurrentIndex = 0;
+            }
+            else if (inputScroll > 0)
+            {
+                // select next
+                m_CurrentIndex = (m_CurrentIndex + 1) % items.Count;
+            }
+            else if (inputScroll < 0)
+            {
+                // select prev
+                m_CurrentIndex = (m_CurrentIndex - 1 + items.Count) % items.Count;
+            }
+            if (prevIndex != m_CurrentIndex)
+            {
+                Debug.Log($"Current select index: {m_CurrentIndex}");
+                m_SelectedItem = items[m_CurrentIndex];
+                Debug.Log($"Selected: {m_SelectedItem.definition.displayName}");
+                m_PrevIndex = m_CurrentIndex;
+            }
+        }
+        public void DropSelected()
+        {
+            if (m_SelectedItem == null) return;
+            m_Inventory.Drop(m_SelectedItem, transform.position);
+            m_SelectedItem = null;
+            m_CurrentIndex = -1;
+        }
+        #endregion
     }
 }

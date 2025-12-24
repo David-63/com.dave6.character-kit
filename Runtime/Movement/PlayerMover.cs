@@ -17,11 +17,6 @@ namespace Dave6.CharacterKit
         public override void OnUpdate()
         {
             base.OnUpdate();
-            if (controller.interactInputTap && m_PlayerController.currentInteractable != null)
-            {
-                m_PlayerController.currentInteractable.Interact();
-            }
         }
-
     }
 }

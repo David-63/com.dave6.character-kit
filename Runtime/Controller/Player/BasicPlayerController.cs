@@ -29,6 +29,8 @@ namespace Dave6.CharacterKit
         #region input messenger
         public Vector3 inputMove => new Vector3(m_Input.InputMove.x, 0, m_Input.InputMove.y);
         public Vector2 inputLook => m_Input.InputLook;
+        
+        
 
         bool m_JumpInput = false;
         public bool jumpInput => m_JumpInput;
@@ -201,7 +203,7 @@ namespace Dave6.CharacterKit
             }
         }
         #endregion
-
+        #region Input Event Func
         protected virtual void ClearTapInput()
         {
             m_AttackInputTap = false;
@@ -220,11 +222,11 @@ namespace Dave6.CharacterKit
             m_Input.Attack += (value) => m_AttackInput = value;
             m_Input.AttackTap += () => m_AttackInputTap = true;
             m_Input.InteractTap += () => m_InteractInputTap = true;
-            
-            
         }
+        #endregion
         protected abstract void SetupStateMachine();
 
+        #region Aim Func
         public Vector3 CalculateAimPoint(Vector3 origin, Vector3 direction)
         {
             Ray ray = new Ray(origin, direction);
@@ -234,5 +236,6 @@ namespace Dave6.CharacterKit
             }
             return origin + direction * m_CameraHandler.cameraLookProfile.MaxLookRange;
         }
+        #endregion
     }
 }

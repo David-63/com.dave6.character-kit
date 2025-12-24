@@ -156,6 +156,15 @@ namespace Dave6.CharacterKit.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ScrollSelect"",
+                    ""type"": ""Value"",
+                    ""id"": ""a6a19ee6-215f-4371-9185-492103996893"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -400,6 +409,17 @@ namespace Dave6.CharacterKit.Input
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dcc9ee2d-4a99-472d-bda0-2a3a767b91fc"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PC"",
+                    ""action"": ""ScrollSelect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -443,6 +463,7 @@ namespace Dave6.CharacterKit.Input
             m_Character_Shift = m_Character.FindAction("Shift", throwIfNotFound: true);
             m_Character_Attack = m_Character.FindAction("Attack", throwIfNotFound: true);
             m_Character_Interact = m_Character.FindAction("Interact", throwIfNotFound: true);
+            m_Character_ScrollSelect = m_Character.FindAction("ScrollSelect", throwIfNotFound: true);
         }
 
         ~@DaveInput()
@@ -530,6 +551,7 @@ namespace Dave6.CharacterKit.Input
         private readonly InputAction m_Character_Shift;
         private readonly InputAction m_Character_Attack;
         private readonly InputAction m_Character_Interact;
+        private readonly InputAction m_Character_ScrollSelect;
         /// <summary>
         /// Provides access to input actions defined in input action map "Character".
         /// </summary>
@@ -569,6 +591,10 @@ namespace Dave6.CharacterKit.Input
             /// Provides access to the underlying input action "Character/Interact".
             /// </summary>
             public InputAction @Interact => m_Wrapper.m_Character_Interact;
+            /// <summary>
+            /// Provides access to the underlying input action "Character/ScrollSelect".
+            /// </summary>
+            public InputAction @ScrollSelect => m_Wrapper.m_Character_ScrollSelect;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -616,6 +642,9 @@ namespace Dave6.CharacterKit.Input
                 @Interact.started += instance.OnInteract;
                 @Interact.performed += instance.OnInteract;
                 @Interact.canceled += instance.OnInteract;
+                @ScrollSelect.started += instance.OnScrollSelect;
+                @ScrollSelect.performed += instance.OnScrollSelect;
+                @ScrollSelect.canceled += instance.OnScrollSelect;
             }
 
             /// <summary>
@@ -648,6 +677,9 @@ namespace Dave6.CharacterKit.Input
                 @Interact.started -= instance.OnInteract;
                 @Interact.performed -= instance.OnInteract;
                 @Interact.canceled -= instance.OnInteract;
+                @ScrollSelect.started -= instance.OnScrollSelect;
+                @ScrollSelect.performed -= instance.OnScrollSelect;
+                @ScrollSelect.canceled -= instance.OnScrollSelect;
             }
 
             /// <summary>
@@ -763,6 +795,13 @@ namespace Dave6.CharacterKit.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnInteract(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "ScrollSelect" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnScrollSelect(InputAction.CallbackContext context);
         }
     }
 }

@@ -22,12 +22,14 @@ namespace Dave6.CharacterKit.Input
         public event UnityAction AttackTap = delegate {};
         public event UnityAction<bool> Interact = delegate {};
         public event UnityAction InteractTap = delegate {};
+        public event UnityAction<float> ScrollSelect = delegate {};
 
         bool _shiftToggle;
 
         // 입력 값을 즉시 받으려면 여기에
         public Vector2 InputMove => actions.Character.Move.ReadValue<Vector2>();
         public Vector2 InputLook => actions.Character.Look.ReadValue<Vector2>();
+        public float InputScroll => actions.Character.ScrollSelect.ReadValue<float>();
 
         void OnDestroy()
         {
@@ -144,6 +146,11 @@ namespace Dave6.CharacterKit.Input
                 Interact?.Invoke(false);
                 break;
             }
+        }
+
+        public void OnScrollSelect(InputAction.CallbackContext context)
+        {
+            ScrollSelect?.Invoke(context.ReadValue<float>());
         }
     }
 }
