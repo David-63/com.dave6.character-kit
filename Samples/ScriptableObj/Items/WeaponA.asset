@@ -15,3 +15,5 @@ MonoBehaviour:
   icon: {fileID: 0}
   displayName: WeaponA
   worldPrefab: {fileID: 7171301322629313202, guid: a7719d8b066ee244bab54d62b0a6c4f0, type: 3}
+  category: 0
+  allowedSlots: 0000000001000000

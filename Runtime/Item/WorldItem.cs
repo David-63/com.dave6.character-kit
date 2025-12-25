@@ -20,7 +20,7 @@ namespace Dave6.CharacterKit.Item
             // IInventoryUser 이런걸로 체크하게 변경해도 좋을듯?
             if (interactor is PlayerController owner)
             {
-                if (owner.inventory.Pickup(this))
+                if (owner.inventory.AddOwned(this))
                 {
                     // 직후 이 객체는 제거됨
                     Destroy(gameObject);

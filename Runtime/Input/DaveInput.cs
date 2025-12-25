@@ -165,6 +165,24 @@ namespace Dave6.CharacterKit.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Equip"",
+                    ""type"": ""Button"",
+                    ""id"": ""50cfb403-0ef0-4e7f-ab8c-2f32c94be26e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Drop"",
+                    ""type"": ""Button"",
+                    ""id"": ""1663cc41-fe10-4ef2-9cfb-697ac12774d5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -420,6 +438,28 @@ namespace Dave6.CharacterKit.Input
                     ""action"": ""ScrollSelect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c3ee6ef1-14b4-42c1-b505-12a414346472"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PC"",
+                    ""action"": ""Equip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fbbd43ca-c769-4cfe-9536-18511c993367"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PC"",
+                    ""action"": ""Drop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -464,6 +504,8 @@ namespace Dave6.CharacterKit.Input
             m_Character_Attack = m_Character.FindAction("Attack", throwIfNotFound: true);
             m_Character_Interact = m_Character.FindAction("Interact", throwIfNotFound: true);
             m_Character_ScrollSelect = m_Character.FindAction("ScrollSelect", throwIfNotFound: true);
+            m_Character_Equip = m_Character.FindAction("Equip", throwIfNotFound: true);
+            m_Character_Drop = m_Character.FindAction("Drop", throwIfNotFound: true);
         }
 
         ~@DaveInput()
@@ -552,6 +594,8 @@ namespace Dave6.CharacterKit.Input
         private readonly InputAction m_Character_Attack;
         private readonly InputAction m_Character_Interact;
         private readonly InputAction m_Character_ScrollSelect;
+        private readonly InputAction m_Character_Equip;
+        private readonly InputAction m_Character_Drop;
         /// <summary>
         /// Provides access to input actions defined in input action map "Character".
         /// </summary>
@@ -595,6 +639,14 @@ namespace Dave6.CharacterKit.Input
             /// Provides access to the underlying input action "Character/ScrollSelect".
             /// </summary>
             public InputAction @ScrollSelect => m_Wrapper.m_Character_ScrollSelect;
+            /// <summary>
+            /// Provides access to the underlying input action "Character/Equip".
+            /// </summary>
+            public InputAction @Equip => m_Wrapper.m_Character_Equip;
+            /// <summary>
+            /// Provides access to the underlying input action "Character/Drop".
+            /// </summary>
+            public InputAction @Drop => m_Wrapper.m_Character_Drop;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -645,6 +697,12 @@ namespace Dave6.CharacterKit.Input
                 @ScrollSelect.started += instance.OnScrollSelect;
                 @ScrollSelect.performed += instance.OnScrollSelect;
                 @ScrollSelect.canceled += instance.OnScrollSelect;
+                @Equip.started += instance.OnEquip;
+                @Equip.performed += instance.OnEquip;
+                @Equip.canceled += instance.OnEquip;
+                @Drop.started += instance.OnDrop;
+                @Drop.performed += instance.OnDrop;
+                @Drop.canceled += instance.OnDrop;
             }
 
             /// <summary>
@@ -680,6 +738,12 @@ namespace Dave6.CharacterKit.Input
                 @ScrollSelect.started -= instance.OnScrollSelect;
                 @ScrollSelect.performed -= instance.OnScrollSelect;
                 @ScrollSelect.canceled -= instance.OnScrollSelect;
+                @Equip.started -= instance.OnEquip;
+                @Equip.performed -= instance.OnEquip;
+                @Equip.canceled -= instance.OnEquip;
+                @Drop.started -= instance.OnDrop;
+                @Drop.performed -= instance.OnDrop;
+                @Drop.canceled -= instance.OnDrop;
             }
 
             /// <summary>
@@ -802,6 +866,20 @@ namespace Dave6.CharacterKit.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnScrollSelect(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Equip" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnEquip(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Drop" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnDrop(InputAction.CallbackContext context);
         }
     }
 }

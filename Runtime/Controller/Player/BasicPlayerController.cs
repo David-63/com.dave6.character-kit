@@ -32,17 +32,17 @@ namespace Dave6.CharacterKit
         
         
 
-        bool m_JumpInput = false;
+        protected bool m_JumpInput = false;
         public bool jumpInput => m_JumpInput;
-        bool m_AimInput = false;
+        protected bool m_AimInput = false;
         public bool aimInput => m_AimInput;
-        bool m_ShiftInput = false;
+        protected bool m_ShiftInput = false;
         public bool shiftInput => m_ShiftInput;
-        bool m_AttackInput = false;
+        protected bool m_AttackInput = false;
         public bool attackInput => m_AttackInput;
-        bool m_AttackInputTap = false;
+        protected bool m_AttackInputTap = false;
         public bool attackInputTap => m_AttackInputTap;
-        bool m_InteractInputTap = false;
+        protected bool m_InteractInputTap = false;
         public bool interactInputTap => m_InteractInputTap;
         #endregion
 

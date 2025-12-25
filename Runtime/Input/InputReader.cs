@@ -23,6 +23,10 @@ namespace Dave6.CharacterKit.Input
         public event UnityAction<bool> Interact = delegate {};
         public event UnityAction InteractTap = delegate {};
         public event UnityAction<float> ScrollSelect = delegate {};
+        public event UnityAction<bool> Equip = delegate {};
+        public event UnityAction EquipTap = delegate {};
+        public event UnityAction<bool> Drop = delegate {};
+        public event UnityAction DropTap = delegate {};
 
         bool _shiftToggle;
 
@@ -151,6 +155,34 @@ namespace Dave6.CharacterKit.Input
         public void OnScrollSelect(InputAction.CallbackContext context)
         {
             ScrollSelect?.Invoke(context.ReadValue<float>());
+        }
+
+        public void OnEquip(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Equip?.Invoke(true);
+                EquipTap?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Equip?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnDrop(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Drop?.Invoke(true);
+                DropTap?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Drop?.Invoke(false);
+                break;
+            }
         }
     }
 }

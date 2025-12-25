@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca5ee1caf7cf4a14ca1d9296fa7dfd50, type: 3}
-  m_Name: HealingPotion
+  m_Name: WeaponB
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Item.ItemDefinition
   icon: {fileID: 0}
-  displayName: HealingPotion
-  worldPrefab: {fileID: 6918235443649445616, guid: 9e6114820ed5b79428168741b772940b, type: 3}
+  displayName: WeaponB
+  worldPrefab: {fileID: 7171301322629313202, guid: a7719d8b066ee244bab54d62b0a6c4f0, type: 3}
   category: 0
-  allowedSlots: 0700000008000000
+  allowedSlots: 0000000001000000

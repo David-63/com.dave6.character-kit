@@ -38,12 +38,13 @@ namespace Dave6.CharacterKit
         #region Item & Inventory
         Inventory m_Inventory;
         public Inventory inventory => m_Inventory;
-        OwnedItem m_SelectedItem;
-        int m_CurrentIndex = -1;
-        int m_PrevIndex;
-
+        EquipHandler m_EquipHandler;
 
         public float inputScroll => m_Input.InputScroll;
+        bool m_EquipInputTap = false;
+        public bool equipInputTap => m_EquipInputTap;
+        bool m_DropInputTap = false;
+        public bool dropInputTap => m_DropInputTap;
 
         #endregion
 
@@ -59,6 +60,7 @@ namespace Dave6.CharacterKit
             m_CombatHandler = GetComponent<CombatHandler>();
             m_CombatHandler.RegisterCombat(this);
             m_Inventory = new();
+            m_EquipHandler = new(this, m_Inventory);
         }
 
         public override void Start()
@@ -80,12 +82,12 @@ namespace Dave6.CharacterKit
         {
             if (m_Paused) return;
             m_LocomotionStateMachine.Update();
-
             m_Mover.OnUpdate();
-
             m_ActionStateMachine.Update();
+
             CheckInteract();
-            HandleSelectionItem();
+
+            m_EquipHandler.OnUpdate();
         }
 
         public override void FixedUpdate()
@@ -106,6 +108,31 @@ namespace Dave6.CharacterKit
 
             m_ActionStateMachine.LateUpdate();
 
+        }
+
+
+        protected override void InputEventBind()
+        {
+            if (showInitialDebug)
+            {
+                Debug.Log("인풋 초기화");
+            }
+            m_Input.Jump += (value) => m_JumpInput = value;
+            m_Input.Aim += (value) => m_AimInput = value;
+            m_Input.Shift += (value) => m_ShiftInput = value;
+            m_Input.Attack += (value) => m_AttackInput = value;
+            m_Input.AttackTap += () => m_AttackInputTap = true;
+            m_Input.InteractTap += () => m_InteractInputTap = true;
+            m_Input.EquipTap += () => m_EquipInputTap = true;
+            m_Input.DropTap += () => m_DropInputTap = true;
+        }
+
+        protected override void ClearTapInput()
+        {
+            m_AttackInputTap = false;
+            m_InteractInputTap = false;
+            m_EquipInputTap = false;
+            m_DropInputTap = false;
         }
 
         protected override void SetupStateMachine()
@@ -234,48 +261,6 @@ namespace Dave6.CharacterKit
 
         #region Inventory
 
-        public void HandleSelectionItem()
-        {
-            var items = m_Inventory.items;
-
-            if (items.Count == 0)
-            {
-                m_SelectedItem = null;
-                m_CurrentIndex = -1;
-                return;
-            }
-            if (inputScroll == 0) return;
-            int prevIndex = m_CurrentIndex;
-
-            if (m_CurrentIndex < 0)
-            {
-                m_CurrentIndex = 0;
-            }
-            else if (inputScroll > 0)
-            {
-                // select next
-                m_CurrentIndex = (m_CurrentIndex + 1) % items.Count;
-            }
-            else if (inputScroll < 0)
-            {
-                // select prev
-                m_CurrentIndex = (m_CurrentIndex - 1 + items.Count) % items.Count;
-            }
-            if (prevIndex != m_CurrentIndex)
-            {
-                Debug.Log($"Current select index: {m_CurrentIndex}");
-                m_SelectedItem = items[m_CurrentIndex];
-                Debug.Log($"Selected: {m_SelectedItem.definition.displayName}");
-                m_PrevIndex = m_CurrentIndex;
-            }
-        }
-        public void DropSelected()
-        {
-            if (m_SelectedItem == null) return;
-            m_Inventory.Drop(m_SelectedItem, transform.position);
-            m_SelectedItem = null;
-            m_CurrentIndex = -1;
-        }
         #endregion
     }
 }
