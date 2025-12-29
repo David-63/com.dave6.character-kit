@@ -1,21 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Dave6.CharacterKit.Item
 {
-    public enum eEquipSlotType
-    {
-        PrimaryWeapon,
-        SecondaryWeapon,
-        MeleeWeapon,
-        Head,
-        Chest,
-        Leg,
-        Charm,
-        ConsumableA,
-        ConsumableB,
-        None,
-    }
+    
     /// <summary>
     /// 아이템은 4개의 레이어로 구성해야함
     /// 
@@ -30,8 +19,11 @@ namespace Dave6.CharacterKit.Item
         List<OwnedItem> m_OwnedItems = new();
         public IReadOnlyList<OwnedItem> ownedItems => m_OwnedItems;
 
-        Dictionary<eEquipSlotType, EquippedItem> m_EquippedItems = new();
-        public IReadOnlyDictionary<eEquipSlotType, EquippedItem> euippedItems => m_EquippedItems;
+        Dictionary<EEquipSlotType, EquippedItem> m_EquippedItems = new();
+        public IReadOnlyDictionary<EEquipSlotType, EquippedItem> euippedItems => m_EquippedItems;
+
+        public event Action<EquippedItem> onItemEquipped;
+        public event Action<EquippedItem> onItemUnEquipped;
 
         internal bool AddOwned(WorldItem pickupItem)
         {
@@ -46,11 +38,11 @@ namespace Dave6.CharacterKit.Item
 
             Debug.Log($"드랍한 아이템: {item.definition.displayName}");
 
-            Object.Instantiate(item.definition.worldPrefab, dropPosition, Quaternion.identity);
+            UnityEngine.Object.Instantiate(item.definition.worldPrefab, dropPosition, Quaternion.identity);
             return true;
         }
 
-        internal bool AttachToSlot(eEquipSlotType slot, OwnedItem item)
+        internal bool AttachToSlot(EEquipSlotType slot, OwnedItem item)
         {
             // 아이템 무결성 체크
             if (!m_OwnedItems.Contains(item)) return false;
@@ -58,13 +50,15 @@ namespace Dave6.CharacterKit.Item
             if (IsEquipped(item, out _)) return false;
 
             m_EquippedItems[slot] = new EquippedItem(item);
+            onItemEquipped?.Invoke(m_EquippedItems[slot]);
 
             return true;
         }
-        internal bool DetachFromSlot(eEquipSlotType slot)
+        internal bool DetachFromSlot(EEquipSlotType slot)
         {
             if (m_EquippedItems.TryGetValue(slot, out var prev))
             {
+                onItemUnEquipped?.Invoke(prev);
                 m_EquippedItems.Remove(slot);
                 return true;
             }
@@ -79,13 +73,13 @@ namespace Dave6.CharacterKit.Item
             return m_OwnedItems[index];
         }
 
-        public bool IsSlotEmpty(eEquipSlotType slot)
+        public bool IsSlotEmpty(EEquipSlotType slot)
         {
             if (m_EquippedItems.ContainsKey(slot)) return false;
 
             return true;
         }
-        public bool IsEquipped(OwnedItem item, out eEquipSlotType slot)
+        public bool IsEquipped(OwnedItem item, out EEquipSlotType slot)
         {
             foreach (var kv in m_EquippedItems)
             {
@@ -95,8 +89,14 @@ namespace Dave6.CharacterKit.Item
                     return true;
                 }
             }
-            slot = eEquipSlotType.None;
+            slot = EEquipSlotType.None;
             return false;
+        }
+
+        public EquippedItem GetEquippedItem(EEquipSlotType slot)
+        {
+            euippedItems.TryGetValue(slot, out var equippedItem);
+            return equippedItem;
         }
     }
 }

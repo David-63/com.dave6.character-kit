@@ -16,10 +16,9 @@ namespace Dave6.CharacterKit
         [SerializeField] StatDatabase m_StatDatabase;
         public StatDatabase statDatabase => m_StatDatabase;
 
-        StatHandler m_StatHandler;
-        public StatHandler statHandler => m_StatHandler;
+        public StatHandler statHandler { get; private set; }
 
-        public ResourceStat health { get; set; }
+        public ResourceStat myHealth { get; set; }
         #endregion
 
         #region Action StateMachine
@@ -27,8 +26,7 @@ namespace Dave6.CharacterKit
         #endregion
 
         #region CombatHandler
-        CombatHandler m_CombatHandler;
-        public CombatHandler combatHandler => m_CombatHandler;
+        public CombatHandler combatHandler { get; private set; }
         #endregion
 
         #region GameFlow
@@ -41,10 +39,8 @@ namespace Dave6.CharacterKit
         EquipHandler m_EquipHandler;
 
         public float inputScroll => m_Input.InputScroll;
-        bool m_EquipInputTap = false;
-        public bool equipInputTap => m_EquipInputTap;
-        bool m_DropInputTap = false;
-        public bool dropInputTap => m_DropInputTap;
+        public bool equipInputTap {get; private set;}
+        public bool dropInputTap {get; private set;}
 
         #endregion
 
@@ -52,42 +48,84 @@ namespace Dave6.CharacterKit
         public Transform origin => transform;
         #endregion
 
+        #region Stat Tag Reference
+
+        [Header("참조 스탯 태그")]
+        [SerializeField] StatTag m_HealthStatTag;
+        [SerializeField] StatTag m_MoveSpeedStatTag;
+
+        public ResourceStat playerHealth {get; private set;}
+
+        #endregion
+
 
         public override void Awake()
         {
             base.Awake();
-            InitializeStat();
-            m_CombatHandler = GetComponent<CombatHandler>();
-            m_CombatHandler.RegisterCombat(this);
+            InitCoreSystem();
+            InitHandler();
+        }
+
+        #region 초기화
+
+        void InitCoreSystem()
+        {
+            Init_StatHandler();
+            combatHandler = GetComponent<CombatHandler>();
+            combatHandler.RegisterCombat(this);
+        }
+        void InitHandler()
+        {
             m_Inventory = new();
             m_EquipHandler = new(this, m_Inventory);
         }
 
+        #endregion
+
+        void OnDestroy()
+        {
+            m_Inventory.onItemEquipped -= m_EquipHandler.EquipItem;
+            m_Inventory.onItemUnEquipped -= m_EquipHandler.UnequipItem;
+            playerHealth.onCurrentValueChanged -= CheckHealth;
+        }
+
         public override void Start()
         {
-            health = m_StatHandler.GetHealthStat();
+            BindEvent();
+
+            // State Machine 설정 (가장 마지막에 할것)
+            SetupStateMachine();
+        }
+
+        #region 외부 시스템 연결
+        void BindEvent()
+        {
+            // 인벤토리 기능
+            m_Inventory.onItemEquipped += m_EquipHandler.EquipItem;
+            m_Inventory.onItemUnEquipped += m_EquipHandler.UnequipItem;
+            // 인풋 기능
             m_Input.EnablePlayerAction();
+            // 스텟 기능
+            statHandler.TryGetStat(m_HealthStatTag, out var health);
+            playerHealth = health as ResourceStat;
+            playerHealth.onCurrentValueChanged -= CheckHealth;
             // 애니메이션 이벤트 바인딩
             m_AnimEventProxy.onAttackFinishEvent += animatorHandler.OnAttackAnimationEnd;
             m_AnimEventProxy.onAttackImpulseEvent += animatorHandler.OnAttackImpulse;
-
-            // 상태 처리
-            SetupStateMachine();
-
-            m_LocomotionStateMachine.SetState(m_LocomotionStateMachine.GetStateByType(typeof(FreeLookState)));
-            m_ActionStateMachine.SetState(m_ActionStateMachine.GetStateByType(typeof(ActionIdleState)));
         }
+        #endregion
 
         public override void Update()
         {
             if (m_Paused) return;
             m_LocomotionStateMachine.Update();
-            m_Mover.OnUpdate();
+            mover.OnUpdate();
             m_ActionStateMachine.Update();
 
             CheckInteract();
 
             m_EquipHandler.OnUpdate();
+            statHandler.OnUpdate();
         }
 
         public override void FixedUpdate()
@@ -103,8 +141,8 @@ namespace Dave6.CharacterKit
             if (m_Paused) return;
             m_LocomotionStateMachine.LateUpdate();
 
-            m_CameraHandler.OnLateUpdate();
-            m_CombatHandler.OnLateUpdate();
+            cameraHandler.OnLateUpdate();
+            combatHandler.OnLateUpdate();
 
             m_ActionStateMachine.LateUpdate();
 
@@ -117,22 +155,22 @@ namespace Dave6.CharacterKit
             {
                 Debug.Log("인풋 초기화");
             }
-            m_Input.Jump += (value) => m_JumpInput = value;
-            m_Input.Aim += (value) => m_AimInput = value;
-            m_Input.Shift += (value) => m_ShiftInput = value;
-            m_Input.Attack += (value) => m_AttackInput = value;
-            m_Input.AttackTap += () => m_AttackInputTap = true;
-            m_Input.InteractTap += () => m_InteractInputTap = true;
-            m_Input.EquipTap += () => m_EquipInputTap = true;
-            m_Input.DropTap += () => m_DropInputTap = true;
+            m_Input.Jump += (value) => jumpInput = value;
+            m_Input.Aim += (value) => aimInput = value;
+            m_Input.Shift += (value) => shiftInput = value;
+            m_Input.Attack += (value) => attackInput = value;
+            m_Input.AttackTap += () => attackInputTap = true;
+            m_Input.InteractTap += () => interactInputTap = true;
+            m_Input.EquipTap += () => equipInputTap = true;
+            m_Input.DropTap += () => dropInputTap = true;
         }
 
         protected override void ClearTapInput()
         {
-            m_AttackInputTap = false;
-            m_InteractInputTap = false;
-            m_EquipInputTap = false;
-            m_DropInputTap = false;
+            attackInputTap = false;
+            interactInputTap = false;
+            equipInputTap = false;
+            dropInputTap = false;
         }
 
         protected override void SetupStateMachine()
@@ -144,8 +182,9 @@ namespace Dave6.CharacterKit
 
             // Locomotion
             m_LocomotionStateMachine = new();
-            var freeLook = new FreeLookState(this);
-            var strafeMove = new StrafeMoveState(this);
+            statHandler.TryGetStat(m_MoveSpeedStatTag, out var moveStat);
+            var freeLook = new FreeLookState(this, moveStat);
+            var strafeMove = new StrafeMoveState(this, moveStat);
             m_LocomotionStateMachine.At(freeLook, strafeMove, new FuncPredicate(() => aimInput));
             m_LocomotionStateMachine.At(strafeMove, freeLook, new FuncPredicate(() => !aimInput));
 
@@ -171,13 +210,18 @@ namespace Dave6.CharacterKit
             ///%%%
             m_ActionStateMachine.At(actionRange, actionIdle, new FuncPredicate(() => !aimInput && ConsumeExitRange()));
 
+
+            // 초기 상태 설정
+            m_LocomotionStateMachine.SetState(m_LocomotionStateMachine.GetStateByType(typeof(FreeLookState)));
+            m_ActionStateMachine.SetState(m_ActionStateMachine.GetStateByType(typeof(ActionIdleState)));
+
         }
 
         #region Stat System
-        public void InitializeStat()
+        public void Init_StatHandler()
         {
-            m_StatHandler = new StatHandler(m_StatDatabase);
-            m_StatHandler.InitializeStat();
+            statHandler = new StatHandler(m_StatDatabase);
+            statHandler.InitializeStat();
         }
         public void Accept(IStatInvoker invoker)
         {
@@ -185,9 +229,8 @@ namespace Dave6.CharacterKit
         }
         public void CheckHealth()
         {
-            ResourceStat health = statHandler.GetHealthStat();
-
-            if (health.currentValue <= 0)
+            Debug.Log($"player Helth: {playerHealth.currentValue}/{playerHealth.finalValue}");
+            if (playerHealth.currentValue <= 0)
             {
                 ResetHealth();
                 SceneDirector.instance.RequestSceneLoad(LobbySceneName, LobbySceneName + "Enter");
@@ -196,14 +239,15 @@ namespace Dave6.CharacterKit
         }
         public void ResetHealth()
         {
-            statHandler.GetHealthStat().ResetCurrentValue();
+            playerHealth.ResetCurrentValue();
         }
+
         #endregion
 
         #region 상태 제어
-        public bool enterAttackFlag;
-        public bool exitMeleeFlag;
-        public bool exitRangeFlag;
+        public bool enterAttackFlag { get; set; }
+        public bool exitMeleeFlag { get; set; }
+        public bool exitRangeFlag { get; set; }
         bool ConsumeExitMelee()
         {
             if (!exitMeleeFlag) return false;
@@ -256,6 +300,10 @@ namespace Dave6.CharacterKit
             {
                 currentInteractable.Interact(this);
             }
+        }
+        public void ClearInteractable()
+        {
+            m_CurrentInteractable = null;
         }
         #endregion
 

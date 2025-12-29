@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using Dave6.CharacterKit.Item;
+using Dave6.StatSystem.Stat;
 using UnityEngine;
 
 namespace Dave6.CharacterKit
@@ -98,7 +100,7 @@ namespace Dave6.CharacterKit
                 foreach (var equip in m_Inventory.euippedItems)
                 {
                     EquippedItem equipItem = equip.Value;
-                    Debug.Log($"장착된 아이템{i}/Slot{equip.Key} : {equipItem.itemDefinition.displayName}");
+                    Debug.Log($"장착된 아이템{i}/Slot{equip.Key} : {equipItem.definition.displayName}");
                     i++;
                 }
             }
@@ -117,20 +119,19 @@ namespace Dave6.CharacterKit
         /// <returns></returns>
         bool TryEquip(OwnedItem selectItem)
         {
-            // 선택된 아이템이 이미 장착되있으면 해제
+            // 선택한 아이템이 장착한 아이템과 같으면 장비 해제
             if (m_Inventory.IsEquipped(selectItem, out var usedSlot))
             {
-                m_Inventory.DetachFromSlot(usedSlot);
-                return true;
+                return m_Inventory.DetachFromSlot(usedSlot);
             }
 
             // 목표 슬롯 찾기
             var targetSlot = ResolveSlot(selectItem);
-            if (targetSlot == eEquipSlotType.None) return false;
-            
+            if (targetSlot == EEquipSlotType.None) return false;
 
             // 비여있는 슬롯이 아니라면 해제 먼저 진행
-            if (!m_Inventory.IsSlotEmpty(targetSlot))
+            var targetSlotItem = m_Inventory.GetEquippedItem(targetSlot);
+            if (targetSlotItem != null)
             {
                 m_Inventory.DetachFromSlot(targetSlot);
             }
@@ -138,7 +139,7 @@ namespace Dave6.CharacterKit
             return m_Inventory.AttachToSlot(targetSlot, selectItem);
         }
 
-        eEquipSlotType ResolveSlot(OwnedItem item)
+        EEquipSlotType ResolveSlot(OwnedItem item)
         {
             var slots = item.definition.allowedSlots;
 
@@ -152,12 +153,41 @@ namespace Dave6.CharacterKit
             }
 
             // 2. 빈 슬롯이 없으면 스왑 대상 선택
-            return ResolveSlot(slots);
+            return slots.First();
         }
 
-        eEquipSlotType ResolveSlot(eEquipSlotType[] slots)
+        public void EquipItem(EquippedItem equippedItem)
         {
-            return slots[^1];
+            // 무기는 나중에 예외처리할 예정
+            if (equippedItem.definition.category == EItemCategory.Weapon) return;
+
+            // 스텟 반영
+            // StatValue 타입일 경우에만 반영
+            if (equippedItem.definition.affectMode == StatAffectMode.StatValueType)
+            {
+                foreach (var option in equippedItem.definition.statValueOptions)
+                {
+                    m_Controller.statHandler.TryGetStat(option.tag, out var stat);
+                    Debug.Log($"기존 {option.tag}값: {stat.finalValue}");
+                    m_Controller.statHandler.AddBaseContribution(option.tag, 
+                        new BaseContribution(option.valueType, option.magnitude, equippedItem));
+                    Debug.Log($"{option.tag}값 변경: {stat.finalValue}");
+                }
+            }
+        }
+        public void UnequipItem(EquippedItem equippedItem)
+        {
+            // 스텟 반영 제거
+            if (equippedItem.definition.affectMode == StatAffectMode.StatValueType)
+            {
+                foreach (var option in equippedItem.definition.statValueOptions)
+                {
+                    m_Controller.statHandler.TryGetStat(option.tag, out var stat);
+                    Debug.Log($"기존 {option.tag}값: {stat.finalValue}");
+                    m_Controller.statHandler.RemoveBaseContribution(option.tag, equippedItem);
+                    Debug.Log($"{option.tag}값 변경: {stat.finalValue}");
+                }
+            }
         }
     }
 }

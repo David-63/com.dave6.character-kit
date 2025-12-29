@@ -8,15 +8,13 @@ namespace Dave6.CharacterKit.Item
     /// </summary>
     public class EquippedItem
     {
-        OwnedItem m_OwnedItem;
-        public OwnedItem ownedItem => m_OwnedItem;
-        ItemDefinition m_ItemDefinition;
-        public ItemDefinition itemDefinition => m_ItemDefinition;
+        public OwnedItem ownedItem { get; private set; }
+        public ItemDefinition definition { get; private set; }
 
         public EquippedItem(OwnedItem ownedItem)
         {
-            m_OwnedItem = ownedItem;
-            m_ItemDefinition = ownedItem.definition;
+            this.ownedItem = ownedItem;
+            definition = ownedItem.definition;
         }
     }
 }

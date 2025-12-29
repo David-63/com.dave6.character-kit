@@ -1,23 +1,26 @@
 using Dave6.StatSystem;
 using Dave6.StatSystem.Effect;
 using Dave6.StatSystem.Interaction;
+using Dave6.StatSystem.Stat;
 using UnityEngine;
 
 namespace Dave6.CharacterKit
 {
     public class MeleeHitbox : MonoBehaviour, IStatInvoker
     {
+        [Header("충돌체 세팅")]
         [SerializeField] EffectDefinition m_EffectDefinition;
         public EffectDefinition effectDefinition => m_EffectDefinition;
-        IStatController m_Actor;
-        public IStatController actor => m_Actor;
+        public IStatController actor { get; private set; }
+
+        [SerializeField] StatTag healthStatTag;
 
         /// <summary>
         /// 생성될 때, 스텟을 받도록 할수도 있음
         /// </summary>
         public void Initialize(IStatController actorEntity)
         {
-            m_Actor = actorEntity;
+            actor = actorEntity;
         }
 
         void OnTriggerEnter(Collider other)
@@ -33,13 +36,11 @@ namespace Dave6.CharacterKit
         {
             // 상대 스탯 가져오기
             IStatController entity = target as IStatController;
-            var stat = entity.statHandler.GetHealthStat();
+
+            entity.statHandler.TryGetStat(healthStatTag, out var targetHealth);
 
             // 본인 스탯을 상대에게 때려박기
-            m_Actor.statHandler.ApplyEffect(effectDefinition, stat);
-            Debug.Log($"target Helth: {stat.currentValue}/{stat.finalValue}");
-
-            entity.CheckHealth();
+            actor.statHandler.CreateEffectInstance(effectDefinition, targetHealth);
         }
     }
 }

@@ -14,9 +14,12 @@ namespace Dave6.CharacterKit.States
         //const float m_RotateDuration = 0.06f;
         const float m_SpeedLess = 0.4f;
 
-        public StrafeMoveState(PlayerController controller) : base(controller)
+        BaseStat m_MoveStat;
+
+        public StrafeMoveState(PlayerController controller, BaseStat moveStat) : base(controller)
         {
             m_StatHandler = controller.statHandler;
+            m_MoveStat = moveStat;
             if (m_StatHandler == null)
             {
                 Debug.Log("잘못연결된것같아요");
@@ -52,8 +55,7 @@ namespace Dave6.CharacterKit.States
         {
             float targetSpeed = 0;
 
-            SecondaryStat moveStat = m_StatHandler.GetStat("S_MoveSpeed") as SecondaryStat;
-            float moveSpeed = moveStat.finalValue;
+            float moveSpeed = m_MoveStat.finalValue;
 
             if (controller.HasMovementInput())
             {

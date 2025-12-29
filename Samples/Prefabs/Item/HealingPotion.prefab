@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7906963109449123230}
-  - component: {fileID: 2613503781434143806}
   - component: {fileID: 3212769060451079939}
+  - component: {fileID: 2613503781434143806}
   m_Layer: 0
   m_Name: HealingPotion
   m_TagString: Untagged
@@ -34,6 +34,20 @@ Transform:
   - {fileID: 4602997103009160276}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3212769060451079939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6918235443649445616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25810c7f7db823c41babbf1f9bd85cab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Item.WorldItem
+  m_Definition: {fileID: 11400000, guid: e56aae2ca4fdfac4da8b73b679657641, type: 2}
+  m_Stack: 1
 --- !u!136 &2613503781434143806
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -57,20 +71,6 @@ CapsuleCollider:
   m_Height: 3
   m_Direction: 1
   m_Center: {x: 0, y: 0.4, z: 0}
---- !u!114 &3212769060451079939
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6918235443649445616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25810c7f7db823c41babbf1f9bd85cab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Item.WorldItem
-  m_Definition: {fileID: 11400000, guid: 30ac3f63043d3a840867b845def120ed, type: 2}
-  m_Stack: 1
 --- !u!1 &7438388855130822798
 GameObject:
   m_ObjectHideFlags: 0

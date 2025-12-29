@@ -1,6 +1,7 @@
 using Dave6.StatSystem;
 using Dave6.StatSystem.Effect;
 using Dave6.StatSystem.Interaction;
+using Dave6.StatSystem.Stat;
 using UnityEngine;
 using UnityUtils.Timer;
 
@@ -8,13 +9,14 @@ namespace Dave6.CharacterKit
 {
     public class ProjectileMover : MonoBehaviour, IStatInvoker
     {
+        [Header("투사체 세팅")]
         [SerializeField] EffectDefinition m_EffectDefinition;
         public EffectDefinition effectDefinition => m_EffectDefinition;
 
         [SerializeField] float m_MoveSpeed = 200f;
         [SerializeField] float m_ExistDuration = 1f;
-        IStatController m_Actor;
-        public IStatController actor => m_Actor;
+        public IStatController actor { get; private set; }
+        [SerializeField] StatTag healthStatTag;
         Vector3 m_PreviousPosition;
         Timer m_LifeTime;
 
@@ -46,7 +48,7 @@ namespace Dave6.CharacterKit
 
         public void Initialize(IStatController actorEntity)
         {
-            m_Actor = actorEntity;
+            actor = actorEntity;
         }
         // Update is called once per frame
         void Update()
@@ -75,13 +77,11 @@ namespace Dave6.CharacterKit
         {
             // 상대 스탯 가져오기
             IStatController entity = target as IStatController;
-            var stat = entity.statHandler.GetHealthStat();
+
+            entity.statHandler.TryGetStat(healthStatTag, out var targetHealth);
 
             // 본인 스텟을 상대 스탯에 때려박기
-            m_Actor.statHandler.ApplyEffect(effectDefinition, stat);
-            Debug.Log($"target Helth: {stat.currentValue}/{stat.finalValue}");
-
-            entity.CheckHealth();
+            actor.statHandler.CreateEffectInstance(effectDefinition, targetHealth);
 
             m_LifeTime.Stop();
         }

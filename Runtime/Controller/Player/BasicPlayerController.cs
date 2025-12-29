@@ -13,12 +13,9 @@ namespace Dave6.CharacterKit
         public bool showInitialDebug = false;
         [SerializeField] protected InputReader m_Input;
         public InputReader GetInputReader() => m_Input;
-        protected BasicMover m_Mover;
-        public BasicMover mover => m_Mover;
-        protected CameraHandler m_CameraHandler;
-        public CameraHandler cameraHandler => m_CameraHandler;
-        protected AnimatorHandler m_AnimatorHandler;
-        public AnimatorHandler animatorHandler => m_AnimatorHandler;
+        public BasicMover mover { get; protected set; }
+        public CameraHandler cameraHandler { get; protected set; }
+        public AnimatorHandler animatorHandler { get; protected set; }
 
         protected AnimatorEventProxy m_AnimEventProxy;
         public bool movementLocked; // 이건 숨길거임
@@ -32,33 +29,21 @@ namespace Dave6.CharacterKit
         
         
 
-        protected bool m_JumpInput = false;
-        public bool jumpInput => m_JumpInput;
-        protected bool m_AimInput = false;
-        public bool aimInput => m_AimInput;
-        protected bool m_ShiftInput = false;
-        public bool shiftInput => m_ShiftInput;
-        protected bool m_AttackInput = false;
-        public bool attackInput => m_AttackInput;
-        protected bool m_AttackInputTap = false;
-        public bool attackInputTap => m_AttackInputTap;
-        protected bool m_InteractInputTap = false;
-        public bool interactInputTap => m_InteractInputTap;
+        public bool jumpInput {get; protected set;}
+        public bool aimInput {get; protected set;}
+        public bool shiftInput {get; protected set;}
+        public bool attackInput {get; protected set;}
+        public bool attackInputTap {get; protected set;}
+        public bool interactInputTap {get; protected set;}
         #endregion
 
         #region movement value field
-        protected float m_BaseSpeed;
-        public float baseSpeed { get => m_BaseSpeed; set => m_BaseSpeed = value; }
-        protected float m_ImpulseSpeed;
-        public float impulseSpeed { get => m_ImpulseSpeed; set => m_ImpulseSpeed = value; }
-        protected float m_TargetSpeed;
-        public float targetSpeed { get => m_TargetSpeed; set => m_TargetSpeed = value; }
-        protected float m_HorizontalSpeed;
-        public float horizontalSpeed { get => m_HorizontalSpeed; set => m_HorizontalSpeed = value; }
-        protected float m_VerticalSpeed;
-        public float verticalSpeed { get => m_VerticalSpeed; set => m_VerticalSpeed = value; }
-        protected Vector3 m_MoveDirection;
-        public Vector3 moveDirection { get => m_MoveDirection; set => m_MoveDirection = value; }
+        public float baseSpeed { get; set; }
+        public float impulseSpeed { get; set; }
+        public float targetSpeed { get; set; }
+        public float horizontalSpeed { get; set; }
+        public float verticalSpeed { get; set; }
+        public Vector3 moveDirection { get; set; }
         public bool HasMovementInput() => inputMove.x != 0 || inputMove.z != 0;
         #endregion
         protected MinimumStateMachine m_LocomotionStateMachine;
@@ -84,13 +69,13 @@ namespace Dave6.CharacterKit
             // 애니메이션 세팅
             if (this.TryGetComponentInChildren<Animator>(out var animator))
             {
-                m_AnimatorHandler = new AnimatorHandler(this, animator);
+                animatorHandler = new AnimatorHandler(this, animator);
             }
             if (this.TryGetComponentInChildren<AnimatorEventProxy>(out var proxy))
             {
                 m_AnimEventProxy = proxy;
             }
-            if (showInitialDebug && m_AnimatorHandler != null && m_AnimEventProxy != null)
+            if (showInitialDebug && animatorHandler != null && m_AnimEventProxy != null)
             {
                 Debug.Log("애니메이터 초기화 완료");
             }
@@ -99,10 +84,10 @@ namespace Dave6.CharacterKit
                 Debug.Log("애니메이터 초기화 실패");
             }
             // 카메라 세팅
-            m_CameraHandler = GetComponent<CameraHandler>();
-            m_CameraHandler.RegisterCamera(this);
+            cameraHandler = GetComponent<CameraHandler>();
+            cameraHandler.RegisterCamera(this);
 
-            if (showInitialDebug && m_CameraHandler != null)
+            if (showInitialDebug && cameraHandler != null)
             {
                 Debug.Log("카메라 초기화 완료");
             }
@@ -112,10 +97,10 @@ namespace Dave6.CharacterKit
             }
 
             // 무버 세팅
-            m_Mover = GetComponent<BasicMover>();
-            m_Mover.RegisterMover(this, m_CameraHandler);
+            mover = GetComponent<BasicMover>();
+            mover.RegisterMover(this, cameraHandler);
 
-            if (showInitialDebug && m_CameraHandler != null)
+            if (showInitialDebug && cameraHandler != null)
             {
                 Debug.Log("무버 초기화 완료");
             }
@@ -142,7 +127,7 @@ namespace Dave6.CharacterKit
         // Update is called once per frame
         public virtual void Update()
         {
-            m_Mover.OnUpdate();
+            mover.OnUpdate();
             m_LocomotionStateMachine.Update();
         }
         public virtual void FixedUpdate()
@@ -152,7 +137,7 @@ namespace Dave6.CharacterKit
         public virtual void LateUpdate()
         {
             m_LocomotionStateMachine.LateUpdate();
-            m_CameraHandler.OnLateUpdate();
+            cameraHandler.OnLateUpdate();
             ClearTapInput();
         }
 
@@ -175,8 +160,8 @@ namespace Dave6.CharacterKit
         {
             Debug.Log("플레이어 초기화");
             m_CurrentInteractable = null;
-            m_Mover.ResetMover();
-            m_AnimatorHandler.ResetAnimHandler();
+            mover.ResetMover();
+            animatorHandler.ResetAnimHandler();
         }
 
         void HandleGameStateChanged(eGameState prev, eGameState next)
@@ -206,8 +191,8 @@ namespace Dave6.CharacterKit
         #region Input Event Func
         protected virtual void ClearTapInput()
         {
-            m_AttackInputTap = false;
-            m_InteractInputTap = false;
+            attackInputTap = false;
+            interactInputTap = false;
         }
 
         protected virtual void InputEventBind()
@@ -216,12 +201,12 @@ namespace Dave6.CharacterKit
             {
                 Debug.Log("인풋 초기화");
             }
-            m_Input.Jump += (value) => m_JumpInput = value;
-            m_Input.Aim += (value) => m_AimInput = value;
-            m_Input.Shift += (value) => m_ShiftInput = value;
-            m_Input.Attack += (value) => m_AttackInput = value;
-            m_Input.AttackTap += () => m_AttackInputTap = true;
-            m_Input.InteractTap += () => m_InteractInputTap = true;
+            m_Input.Jump += (value) => jumpInput = value;
+            m_Input.Aim += (value) => aimInput = value;
+            m_Input.Shift += (value) => shiftInput = value;
+            m_Input.Attack += (value) => attackInput = value;
+            m_Input.AttackTap += () => attackInputTap = true;
+            m_Input.InteractTap += () => interactInputTap = true;
         }
         #endregion
         protected abstract void SetupStateMachine();
@@ -230,11 +215,11 @@ namespace Dave6.CharacterKit
         public Vector3 CalculateAimPoint(Vector3 origin, Vector3 direction)
         {
             Ray ray = new Ray(origin, direction);
-            if (Physics.Raycast(ray, out RaycastHit hit, m_CameraHandler.cameraLookProfile.MaxLookRange, ignorePlayerLayerMask))
+            if (Physics.Raycast(ray, out RaycastHit hit, cameraHandler.cameraLookProfile.MaxLookRange, ignorePlayerLayerMask))
             {
                 return hit.point;
             }
-            return origin + direction * m_CameraHandler.cameraLookProfile.MaxLookRange;
+            return origin + direction * cameraHandler.cameraLookProfile.MaxLookRange;
         }
         #endregion
     }

@@ -102,6 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee2472512b61dd443854efe35a37a663, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.ProjectileMover
-  m_EffectDefinition: {fileID: 11400000, guid: 1eee3ff80ac771c45839392eb8fd01a2, type: 2}
+  m_EffectDefinition: {fileID: 11400000, guid: 1689fb22a2691cf448e2614adf3bc93e, type: 2}
   m_MoveSpeed: 15
   m_ExistDuration: 2
+  healthStatTag: {fileID: 11400000, guid: a582982233fc8b148931795f2cd0de9d, type: 2}

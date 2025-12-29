@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca5ee1caf7cf4a14ca1d9296fa7dfd50, type: 3}
+  m_Name: I_RifleA
+  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Item.ItemDefinition
+  icon: {fileID: 0}
+  displayName: Rifle A
+  worldPrefab: {fileID: 7171301322629313202, guid: a7719d8b066ee244bab54d62b0a6c4f0, type: 3}
+  category: 0
+  allowedSlots: 0000000002000000
+  affectMode: 0
+  statValueOptions:
+  - tag: {fileID: 11400000, guid: bbc645bdcb6685d439e9265e9a82189e, type: 2}
+    valueType: 0
+    magnitude: 10
+  valueOperationOptions:
+  - tag: {fileID: 11400000, guid: a582982233fc8b148931795f2cd0de9d, type: 2}
+    operationType: 0
+    magnitude: 3

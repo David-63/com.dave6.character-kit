@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -102,5 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee2472512b61dd443854efe35a37a663, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.ProjectileMover
-  m_EffectDefinition: {fileID: 11400000, guid: 0f84484ef8272d842a0ad80b4e388125, type: 2}
-  m_MoveSpeed: 120
+  m_EffectDefinition: {fileID: 11400000, guid: 4c8bb000e9c9ccb4ab3277eb70737113, type: 2}
+  m_MoveSpeed: 60
+  m_ExistDuration: 1
+  healthStatTag: {fileID: 11400000, guid: a582982233fc8b148931795f2cd0de9d, type: 2}

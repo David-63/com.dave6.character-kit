@@ -12,9 +12,12 @@ namespace Dave6.CharacterKit.States
         float m_LastRotation;
         float m_CurrentVelocity;
 
-        public FreeLookState(PlayerController controller) : base(controller)
+        BaseStat m_MoveStat;
+
+        public FreeLookState(PlayerController controller, BaseStat moveStat) : base(controller)
         {
             m_StatHandler = controller.statHandler;
+            m_MoveStat = moveStat;
             if (m_StatHandler == null)
             {
                 Debug.Log("잘못연결된것같아요");
@@ -79,7 +82,6 @@ namespace Dave6.CharacterKit.States
         void UpdateTargetSpeed()
         {
             float targetSpeed = 0;
-            SecondaryStat moveStat = m_StatHandler.GetStat("S_MoveSpeed") as SecondaryStat;
 
             if (controller.attacking)
             {
@@ -91,11 +93,11 @@ namespace Dave6.CharacterKit.States
             {
                 if (controller.shiftInput)
                 {
-                    targetSpeed = moveStat.finalValue * 1.8f;
+                    targetSpeed = m_MoveStat.finalValue * 1.8f;
                 }
                 else
                 {
-                    targetSpeed = moveStat.finalValue;
+                    targetSpeed = m_MoveStat.finalValue;
                 }
             }
 

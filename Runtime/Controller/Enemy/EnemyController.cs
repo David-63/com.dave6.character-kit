@@ -8,19 +8,17 @@ namespace Dave6.CharacterKit
 {
     public class EnemyController : MonoBehaviour, IStatController, IStatReceiver, ITargetable
     {
+        [Header("스텟 세팅")]
         [SerializeField] StatDatabase m_StatDatabase;
         public StatDatabase statDatabase => m_StatDatabase;
+        public StatHandler statHandler { get; private set; }
+        public ResourceStat myHealth { get; set; }
 
-        StatHandler m_StatHandler;
-        public StatHandler statHandler => m_StatHandler;
-
-        public ResourceStat health { get; set; }
-
+        [Header("공격 세팅")]
         [SerializeField] GameObject projectilePrefab;
-
-        Timer m_AttackTimer;
+        [SerializeField] StatTag healthTag;
         [SerializeField] float attackDelay = 3f;
-
+        Timer m_AttackTimer;
 
         [SerializeField] Transform m_TargetTransform;
         public Transform targetTransform => m_TargetTransform;
@@ -28,12 +26,13 @@ namespace Dave6.CharacterKit
         void Awake()
         {
             gameObject.layer = 6;
-            InitializeStat();
+            Init_StatHandler();
             m_AttackTimer = new Countdown(attackDelay);
             m_AttackTimer.OnTimerStop += DoFire;
         }
         void OnDestroy()
         {
+            myHealth.onCurrentValueChanged -= CheckHealth;
             if (m_AttackTimer != null)
             {
                 m_AttackTimer.OnTimerStop -= DoFire;
@@ -43,14 +42,21 @@ namespace Dave6.CharacterKit
 
         void Start()
         {
-            health = m_StatHandler.GetHealthStat();
             m_AttackTimer.Start();
         }
 
-        public void InitializeStat()
+        void Update()
         {
-            m_StatHandler = new StatHandler(m_StatDatabase);
-            m_StatHandler.InitializeStat();
+            statHandler.OnUpdate();
+        }
+
+        public void Init_StatHandler()
+        {
+            statHandler = new StatHandler(m_StatDatabase);
+            statHandler.InitializeStat();
+            statHandler.TryGetStat(healthTag, out var healthStat);
+            myHealth = healthStat as ResourceStat;
+            myHealth.onCurrentValueChanged += CheckHealth;
         }
 
         public void Accept(IStatInvoker invoker)
@@ -59,7 +65,8 @@ namespace Dave6.CharacterKit
         }
         public void CheckHealth()
         {
-            if (health.currentValue <= 0)
+            Debug.Log($"enemy Helth: {myHealth.currentValue}/{myHealth.finalValue}");
+            if (myHealth.currentValue <= 0)
             {
                 Destroy(gameObject);
             }

@@ -258,9 +258,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cf03d971f35e9844b1e8ecab88e4f4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.EnemyController
-  m_StatDatabase: {fileID: 11400000, guid: a087edaeff9cf7d41998ad405d709aa1, type: 2}
+  m_StatDatabase: {fileID: 11400000, guid: 4773bc707740c204b8f82f0792f34dea, type: 2}
   projectilePrefab: {fileID: 2011244684452411310, guid: ffab3dcd21c5fdc4d833e3f542ce7f8b, type: 3}
-  attackDelay: 3
+  healthTag: {fileID: 11400000, guid: a582982233fc8b148931795f2cd0de9d, type: 2}
+  attackDelay: 1
   m_TargetTransform: {fileID: 8052275774746996735}
 --- !u!65 &5464452933606778726
 BoxCollider:

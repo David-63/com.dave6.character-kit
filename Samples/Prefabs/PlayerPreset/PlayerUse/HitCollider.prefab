@@ -124,4 +124,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9435a2183d295e7448fc7238fbbb1173, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.MeleeHitbox
-  m_EffectDefinition: {fileID: 11400000, guid: f435745761ba6484caf6048d7b6306d7, type: 2}
+  m_EffectDefinition: {fileID: 11400000, guid: 477342c93ab064149a7c43f941c53490, type: 2}
+  healthStatTag: {fileID: 11400000, guid: a582982233fc8b148931795f2cd0de9d, type: 2}
