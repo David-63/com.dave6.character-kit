@@ -1,0 +1,233 @@
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.InputSystem;
+
+namespace Dave6.CharacterKit.Input
+{
+    using static DaveInput;
+
+    [CreateAssetMenu(fileName = "Inputs", menuName = "DaveAssets/Input/InputReader")]
+    public class InputReader : ScriptableObject, ICharacterActions
+    {
+        DaveInput actions;
+
+        // 이벤트 바인딩이 필요하면 여기에
+        public event UnityAction<Vector2> Move = delegate {};
+        public event UnityAction<Vector2> Look = delegate {};
+        public event UnityAction<bool> Jump = delegate {};
+        public event UnityAction<bool> Focus = delegate {};
+        public event UnityAction<bool> Shift = delegate {};
+        public event UnityAction ShiftToggleChanged = delegate {};
+        public event UnityAction<bool> Attack = delegate {};
+        public event UnityAction AttackTap = delegate {};
+        public event UnityAction<bool> Interact = delegate {};
+        public event UnityAction InteractTap = delegate {};
+        public event UnityAction<float> ScrollSelect = delegate {};
+        public event UnityAction<bool> Equip = delegate {};
+        public event UnityAction EquipTap = delegate {};
+        public event UnityAction<bool> Drop = delegate {};
+        public event UnityAction DropTap = delegate {};
+
+        public event UnityAction<bool> Reload = delegate {};
+        public event UnityAction ReloadTap = delegate {};
+        public event UnityAction ReloadHold = delegate {};
+
+        public event UnityAction WeaponSwitchToggleChanged = delegate {};
+
+
+
+        bool _shiftToggle;
+        bool _weaponSwitchToggle;
+
+        // 입력 값을 즉시 받으려면 여기에
+        public Vector2 InputMove => actions.Character.Move.ReadValue<Vector2>();
+        public Vector2 InputLook => actions.Character.Look.ReadValue<Vector2>();
+        public float InputScroll => actions.Character.ScrollSelect.ReadValue<float>();
+
+        void OnDestroy()
+        {
+            actions.Dispose();                  // Destroy asset object.
+        }
+
+        void OnEnable()
+        {
+            if (actions == null)
+            {
+                actions = new DaveInput();
+                actions.Character.SetCallbacks(this);
+            }
+        }
+
+        public void EnablePlayerAction()
+        {
+            actions.Enable();                 // Enable all actions within map.
+        }
+
+        void OnDisable()
+        {
+            actions.Disable();                // Disable all actions within map.
+        }
+
+        ///     #region Interface implementation of MyActions.IPlayerActions
+        ///
+        ///     // Invoked when "Move" action is either started, performed or canceled.
+        ///     public void OnMove(InputAction.CallbackContext context)
+        ///     {
+        ///         Debug.Log($"OnMove: {context.ReadValue&lt;Vector2&gt;()}");
+        ///     }
+        ///
+        ///     // Invoked when "Attack" action is either started, performed or canceled.
+        ///     public void OnAttack(InputAction.CallbackContext context)
+        ///     {
+        ///         Debug.Log($"OnAttack: {context.ReadValue&lt;float&gt;()}");
+        ///     }
+
+        public void OnMove(InputAction.CallbackContext context)
+        {
+            Move?.Invoke(context.ReadValue<Vector2>());
+        }
+
+        public void OnLook(InputAction.CallbackContext context)
+        {
+            Look?.Invoke(context.ReadValue<Vector2>());
+        }
+
+        public void OnJump(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Jump?.Invoke(true);
+                break;
+                case InputActionPhase.Canceled:
+                Jump?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnShift(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Shift?.Invoke(true);
+
+                _shiftToggle = !_shiftToggle;
+                ShiftToggleChanged?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Shift?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnAttack(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Attack?.Invoke(true);
+                AttackTap?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Attack?.Invoke(false);
+                break;
+            }
+        }
+        public void OnInteract(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Interact?.Invoke(true);
+                InteractTap?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Interact?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnScrollSelect(InputAction.CallbackContext context)
+        {
+            ScrollSelect?.Invoke(context.ReadValue<float>());
+        }
+
+        public void OnEquip(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Equip?.Invoke(true);
+                EquipTap?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Equip?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnDrop(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Drop?.Invoke(true);
+                DropTap?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Drop?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnReload(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Reload?.Invoke(true);
+                ReloadTap?.Invoke();
+                break;
+                case InputActionPhase.Performed:
+                ReloadHold?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Reload?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnWeaponSwitch(InputAction.CallbackContext context)
+        {
+
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Shift?.Invoke(true);
+
+                _weaponSwitchToggle = !_weaponSwitchToggle;
+                WeaponSwitchToggleChanged?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Shift?.Invoke(false);
+                break;
+            }
+
+            
+        }
+
+        public void OnFocus(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Focus?.Invoke(true);
+                break;
+                case InputActionPhase.Canceled:
+                Focus?.Invoke(false);
+                break;
+            }
+        }
+    }
+}

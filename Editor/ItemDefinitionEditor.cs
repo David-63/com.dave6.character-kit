@@ -19,6 +19,8 @@ namespace Dave6.CharacterKitEditor
 
         SerializedProperty category;
         SerializedProperty allowedSlots;
+        SerializedProperty activePrefab;
+
         EItemCategory prevCategory;
         bool slotsAutoCleaned;
         
@@ -26,6 +28,7 @@ namespace Dave6.CharacterKitEditor
         SerializedProperty affectMode;
         SerializedProperty statValueOptions;
         SerializedProperty valueOperationOptions;
+
 
 
         void OnEnable()
@@ -37,6 +40,7 @@ namespace Dave6.CharacterKitEditor
             worldPrefab = serializedObject.FindProperty("worldPrefab");
             category = serializedObject.FindProperty("category");
             allowedSlots = serializedObject.FindProperty("allowedSlots");
+            activePrefab = serializedObject.FindProperty("activePrefab");
 
             prevCategory = (EItemCategory)category.enumValueIndex;
 
@@ -44,6 +48,7 @@ namespace Dave6.CharacterKitEditor
             affectMode = serializedObject.FindProperty("affectMode");
             statValueOptions = serializedObject.FindProperty("statValueOptions");
             valueOperationOptions = serializedObject.FindProperty("valueOperationOptions");
+
         }
         public override void OnInspectorGUI()
         {
@@ -64,6 +69,7 @@ namespace Dave6.CharacterKitEditor
                 AutoCleanAllowedSlots();
             }
             EditorGUILayout.PropertyField(allowedSlots, true);
+            EditorGUILayout.PropertyField(activePrefab);
             EditorGUILayout.EndVertical();
 
             if (slotsAutoCleaned)
@@ -74,22 +80,22 @@ namespace Dave6.CharacterKitEditor
             EditorGUILayout.Space(16);
             EditorGUILayout.BeginVertical("box");
             EditorGUILayout.PropertyField(affectMode);
-
             DrawAffectOptions();
             EditorGUILayout.EndVertical();
+
 
             serializedObject.ApplyModifiedProperties();
         }
 
         void DrawAffectOptions()
         {
-            var mode = (StatAffectMode)affectMode.enumValueIndex;
+            var mode = (EStatAffectMode)affectMode.enumValueIndex;
             switch (mode)
             {
-                case StatAffectMode.StatValueType:
+                case EStatAffectMode.StatValueType:
                     EditorGUILayout.PropertyField(statValueOptions, true);
                     break;
-                case StatAffectMode.ValueOperationType:
+                case EStatAffectMode.ValueOperationType:
                     EditorGUILayout.PropertyField(valueOperationOptions, true);
                     break;
             }
@@ -196,16 +202,16 @@ namespace Dave6.CharacterKitEditor
         {
             var statTag = tag.objectReferenceValue as StatTag;
             var name = statTag != null ? statTag.tagName : "None";
-            string valueTypeName = ((StatValueType)valueType.enumValueIndex).ToString();
+            string valueTypeName = ((EStatValueType)valueType.enumValueIndex).ToString();
 
             string sign = "";
 
             switch (valueType.enumValueIndex)
             {
-                case (int)StatValueType.Percent:
+                case (int)EStatValueType.Percent:
                     sign = "%";
                 break;
-                case (int)StatValueType.finalMultiplier:
+                case (int)EStatValueType.finalMultiplier:
                     sign = "x";
                 break;
             }
@@ -239,17 +245,17 @@ namespace Dave6.CharacterKitEditor
         {
             var statTag = tag.objectReferenceValue as StatTag;
             var name = statTag != null ? statTag.tagName : "None";
-            string valueTypeName = ((ValueOperationType)operationType.enumValueIndex).ToString();
+            string valueTypeName = ((EValueOperationType)operationType.enumValueIndex).ToString();
 
             string sign = "";
 
             switch (operationType.enumValueIndex)
             {
-                case (int)ValueOperationType.Current:
+                case (int)EValueOperationType.Current:
                     sign = "";
                 break;
-                case (int)ValueOperationType.CurrentPercent:
-                case (int)ValueOperationType.MaxPercent:
+                case (int)EValueOperationType.CurrentPercent:
+                case (int)EValueOperationType.MaxPercent:
                     sign = "%";
                 break;
             }

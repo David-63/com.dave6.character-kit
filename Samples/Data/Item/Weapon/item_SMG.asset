@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca5ee1caf7cf4a14ca1d9296fa7dfd50, type: 3}
+  m_Name: item_SMG
+  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Item.ItemDefinition
+  icon: {fileID: 0}
+  displayName: SMG
+  worldPrefab: {fileID: 1069103472680076226, guid: 1111aff03b01a5643829e7d1dbcb45c2, type: 3}
+  category: 0
+  allowedSlots: 0000000001000000
+  affectMode: 0
+  statValueOptions:
+  - tag: {fileID: 11400000, guid: bbc645bdcb6685d439e9265e9a82189e, type: 2}
+    valueType: 0
+    magnitude: 1.5
+  valueOperationOptions: []
+  activePrefab: {fileID: 1069103472680076226, guid: 8845af1a642f6594ea9a7b080e9b1057, type: 3}

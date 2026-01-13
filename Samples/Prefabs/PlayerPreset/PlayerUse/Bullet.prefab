@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2297705483711802413}
   - component: {fileID: 7179125233070189377}
   - component: {fileID: 7269589863571404610}
+  - component: {fileID: -2739447639495081830}
   - component: {fileID: 8648570071014347469}
   m_Layer: 0
   m_Name: Bullet
@@ -90,6 +91,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &-2739447639495081830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011244684452411310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f73bf9b3c51ce8e4d85d67fd255160b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ObjectPoolingSystem::Dave6.ObjectPoolingSystem.PoolableObject
 --- !u!114 &8648570071014347469
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,7 +115,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee2472512b61dd443854efe35a37a663, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.ProjectileMover
-  m_EffectDefinition: {fileID: 11400000, guid: 4c8bb000e9c9ccb4ab3277eb70737113, type: 2}
+  m_HitLayer:
+    serializedVersion: 2
+    m_Bits: 1
   m_MoveSpeed: 60
   m_ExistDuration: 1
+  m_EffectDefinition: {fileID: 11400000, guid: 4c8bb000e9c9ccb4ab3277eb70737113, type: 2}
   healthStatTag: {fileID: 11400000, guid: a582982233fc8b148931795f2cd0de9d, type: 2}
+  impactType: {fileID: 11400000, guid: 8da23023c01d4514ea94244e1f8b0d77, type: 2}

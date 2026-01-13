@@ -1374,6 +1374,7 @@ GameObject:
   - component: {fileID: 6334786993863572514}
   - component: {fileID: 172162477524901018}
   - component: {fileID: 8986219821873860264}
+  - component: {fileID: 6539724702687423586}
   m_Layer: 3
   m_Name: MinimalPlayer
   m_TagString: Untagged
@@ -1441,6 +1442,7 @@ MonoBehaviour:
   m_ColliderHeight: 1.8
   m_ColliderRadius: 0.28
   m_ColliderOffset: {x: 0, y: 0.5, z: 0}
+  m_IsGrounded: 0
   m_MovementProfile: {fileID: 11400000, guid: 825738b170be1d44ba8f33e930ad5820, type: 2}
   m_JumpDuration: 0.2
 --- !u!114 &172162477524901018
@@ -1458,6 +1460,13 @@ MonoBehaviour:
   showInitialDebug: 0
   m_Input: {fileID: 11400000, guid: 2f261d4683d151f42904e9e057487137, type: 2}
   movementLocked: 0
+  attacking: 0
+  m_CharacterAimLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  m_CameraAimLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &8986219821873860264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1498,6 +1507,29 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  minTargetDecaySpeed: 15
+  targetDecayMultiplier: 20
+  recoilApplySpeed: 15
+  recoveryApplySpeed: 10
+--- !u!114 &6539724702687423586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4822889400758563661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ec8f6c92e02ea44d99ad9c5583ed406, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.AnimHandler.AnimatorHandler
+  attackFinished: 1
+  m_LeftHandIKTaret: {fileID: 0}
+  m_RightHandIKTaret: {fileID: 0}
+  m_LeftElbowIKTaret: {fileID: 0}
+  m_RightElbowIKTaret: {fileID: 0}
+  m_HandIKAmount: 0
+  m_ElbowIKAmount: 0
 --- !u!1 &4944088590278392599
 GameObject:
   m_ObjectHideFlags: 0

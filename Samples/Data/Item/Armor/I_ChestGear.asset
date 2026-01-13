@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca5ee1caf7cf4a14ca1d9296fa7dfd50, type: 3}
+  m_Name: I_ChestGear
+  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Item.ItemDefinition
+  icon: {fileID: 0}
+  displayName: ChestGear
+  worldPrefab: {fileID: 6302979100921411439, guid: 69cb301449df4a24e8a7b5d4b3664d9b, type: 3}
+  category: 1
+  allowedSlots: 04000000
+  affectMode: 0
+  statValueOptions:
+  - tag: {fileID: 11400000, guid: 0bf65bc14acec56448684a799056ab04, type: 2}
+    valueType: 0
+    magnitude: 10
+  valueOperationOptions: []
