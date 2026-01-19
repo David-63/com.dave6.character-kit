@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6564892549055528762}
   - component: {fileID: 6064314933379323536}
   - component: {fileID: 3769740094574298860}
+  - component: {fileID: 5602790159496402429}
   m_Layer: 0
   m_Name: active_Pistol
   m_TagString: Untagged
@@ -46,16 +47,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eef819b399a7cd244b77ad3a3c3c26b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Item.Firearm
-  maxCapacity: 9
-  isReloading: 0
-  socketProfile: {fileID: 11400000, guid: eb1c3059a04797d4a860840ad3949d11, type: 2}
-  firearmProfile: {fileID: 11400000, guid: 014e7e8aa35ca564b9d71f7283a5db8c, type: 2}
   m_IkTransforms:
     leftHand: {fileID: 5490393722189442622}
     rightHand: {fileID: 8606121779812117410}
     leftElbow: {fileID: 8621674803748517665}
     rightElbow: {fileID: 4268949253411918544}
   m_OverrideAnimator: {fileID: 22100000, guid: 2c5ff7410e84f384c8f3d6de1c7314d9, type: 2}
+  firearmContext: {fileID: 11400000, guid: 014e7e8aa35ca564b9d71f7283a5db8c, type: 2}
+  socketProfile: {fileID: 11400000, guid: eb1c3059a04797d4a860840ad3949d11, type: 2}
+  muzzle: {fileID: 940451943701476213}
+  boundCount: 2
+  pierceCount: 0
 --- !u!1773428102 &3769740094574298860
 ParentConstraint:
   m_ObjectHideFlags: 0
@@ -79,6 +81,19 @@ ParentConstraint:
   m_Active: 1
   m_IsLocked: 1
   m_Sources: []
+--- !u!114 &5602790159496402429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8602806224964738345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e061b38e127e296498993ceb38732774, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Item.Ammunition
+  m_Config: {fileID: 11400000, guid: 6dd4377b1c8e0f64f8466a2e3450d473, type: 2}
 --- !u!1001 &6998559931027619125
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -240,6 +255,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a1461f8ba51dd2248a126948e29728ca, type: 3}
+--- !u!4 &940451943701476213 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7787507853619105344, guid: a1461f8ba51dd2248a126948e29728ca, type: 3}
+  m_PrefabInstance: {fileID: 6998559931027619125}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4180694849910915599 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6564892549055528762, guid: a1461f8ba51dd2248a126948e29728ca, type: 3}

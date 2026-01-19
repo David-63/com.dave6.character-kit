@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Dave6.CharacterKit.Item;
 using Dave6.ObjectPoolingSystem;
 using UnityEngine;
 using UnityUtils.Timer;
@@ -32,11 +33,8 @@ namespace Dave6.CharacterKit.Combat
         public GameObject meleeHitPrefab => m_MeleeHitPrefab;
         MeleeHitbox m_Hitbox;
 
-        [SerializeField] GameObject m_ProjectilePrefab;
-        public GameObject projectilePrefab => m_ProjectilePrefab;
         [SerializeField] GameObject crosshairPrefab;
         [SerializeField] GameObject targetMarkPrefab;
-        public Transform muzzle;
         Transform m_AimTargetTransform;
         #endregion
 
@@ -113,18 +111,26 @@ namespace Dave6.CharacterKit.Combat
 
         public void OnLateUpdate()
         {
-            // Pitch 계산!!
-            float targetPitch = m_Controller.mover.CalcTargetPitchByAimPoint(m_Controller.combatHandler.muzzle.position);
-            m_Controller.mover.SmoothPitchUpdate(targetPitch, Time.deltaTime);
-            m_Controller.mover.CharacterAimUpdate();
+            if (m_Controller.equipHandler.HasFirearm())
+            {
+                var curFirearm = m_Controller.equipHandler.selectedFirearm as Firearm;
 
-            Vector3 origin = m_Controller.combatHandler.muzzle.position;
-            Vector3 direction = m_Controller.mover.characterAim * Vector3.forward;
-            m_CharacterAimPoint = m_Controller.CalculateAimPoint(origin, direction, m_Controller.characterAimLayerMask);
-            m_AimTargetTransform.position = m_CharacterAimPoint;
+                Vector3 muzzlePos = curFirearm.GetMuzzle().position;
+                // Pitch 계산!!
+                float targetPitch = m_Controller.mover.CalcTargetPitchByAimPoint(muzzlePos);
+                m_Controller.mover.SmoothPitchUpdate(targetPitch, Time.deltaTime);
+                m_Controller.mover.CharacterAimUpdate();
 
-            m_BodyCrosshairUI?.LateUpdateCrosshair(m_CharacterAimPoint);
-            m_CameraCrosshairUI?.LateUpdateCrosshair(m_Controller.cameraHandler.baseAimPoint);
+                Vector3 origin = muzzlePos;
+                Vector3 direction = m_Controller.mover.characterAim * Vector3.forward;
+                m_CharacterAimPoint = m_Controller.CalculateAimPoint(origin, direction, m_Controller.characterAimLayerMask);
+
+                m_BodyCrosshairUI?.LateUpdateCrosshair(m_CharacterAimPoint);
+            }
+
+            var baseAimPoint = m_Controller.cameraHandler.baseAimPoint;            
+            m_AimTargetTransform.position = baseAimPoint;
+            m_CameraCrosshairUI?.LateUpdateCrosshair(baseAimPoint);
         }
 
         public void RegisterCombat(PlayerCharacter controller)
@@ -190,6 +196,8 @@ namespace Dave6.CharacterKit.Combat
         public void HandleReloadEnd()
         {
             reloading = false;
+            var firearm = m_Controller.equipHandler.selectedFirearm as Firearm;
+            firearm.RefillAmmo();
         }
         #endregion
 
@@ -296,20 +304,59 @@ namespace Dave6.CharacterKit.Combat
         #endregion
 
 
+
+        float m_LastFireTime;
+        /// <summary>
+        /// state로 부터 요청을 받음
+        /// 현재 장착 아이템 찾기 / 얻기
+        /// 아이템에게
+        ///     탄약 소모
+        ///     머즐 트랜스폼 참조
+        ///     투사체 구성 요청
+        /// 성공 시
+        ///     애니메이션
+        ///     반동
+        ///     타이머
+        /// 
+        /// 즉, 연출 및 실행 흐름만 진행
+        /// </summary>
         public void TryFireProjectile()
         {
+            // 아이템 찾기
+            var curWeapon = m_Controller.equipHandler.selectedFirearm as Firearm;
+
+            if (Time.time - m_LastFireTime < 60f / curWeapon.GetFireRate()) return;
+
+            m_LastFireTime = Time.time;
+
+            // 탄약 체크
+            if (curWeapon.TryConsume())
+            {
+                // 투사체 생성
+                ProjectileMover projectile = CreateProjectile(curWeapon);
+
+                // 아이템에게 투사체 구성 요청
+                curWeapon.BuildProjectile(projectile, characterAimPoint);
+
+                // 반동 강도는 아이템이 가지고 있어야함
+                float amplitude = 6f;
+                m_Controller.cameraHandler.PlayRecoil(amplitude);
+            }
+
+            // 애니메이션 (성공 실패에 따라 달라져야함)
             m_Controller.animatorHandler.ChangeAnimation("Firearm_Fire", 0f, true);
-            // 투사체 생성
-            //GameObject projectileOjb = m_Controller.InstantiatePrefab(projectilePrefab, m_Controller.combatHandler.muzzle.position, m_Controller.mover.characterAim);
-            GameObject projectileOjb = ObjectPoolService.instance.Get(projectilePrefab);
-            projectileOjb.transform.SetPositionAndRotation(m_Controller.combatHandler.muzzle.position, m_Controller.mover.characterAim);
-            projectileOjb.GetComponent<ProjectileMover>().Initialize(m_Controller);
 
-            // 반동 강도는 아이템이 가지고 있어야함
-            float amplitude = 6f;
-            m_Controller.cameraHandler.PlayRecoil(amplitude);
-
+            // 타이머 진행
             m_Controller.attackTimer.RestartTimer();
+            // =========================
+        }
+
+        ProjectileMover CreateProjectile(Firearm firearm)
+        {
+            GameObject projectileOjb = ObjectPoolService.instance.Get(firearm.GetProjectilePrefab());
+            var projectile = projectileOjb.GetComponent<ProjectileMover>();
+            projectile.BindOwner(m_Controller);
+            return projectile;
         }
 
         public void TryReload()
@@ -324,5 +371,13 @@ namespace Dave6.CharacterKit.Combat
                 m_Controller.animatorHandler.ChangeAnimation("Firearm_Reload_Freelook", 0f, true);
             }
         }
+    }
+
+    // 이건 안씀
+    public class FireContext
+    {
+        //public IWeapon weapon;
+        //public ISkill activeSkill;
+        public List<IHitModifier> extraModifiers;
     }
 }

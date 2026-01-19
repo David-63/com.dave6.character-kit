@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7419878973206328174}
   - component: {fileID: 3311306461216037166}
   - component: {fileID: 1854809809634932724}
+  - component: {fileID: 5014325689338341658}
   m_Layer: 0
   m_Name: active_SMG
   m_TagString: Untagged
@@ -46,16 +47,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eef819b399a7cd244b77ad3a3c3c26b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Item.Firearm
-  maxCapacity: 20
-  isReloading: 0
-  socketProfile: {fileID: 11400000, guid: d5d9f87c367222943b9a93eab8e50e15, type: 2}
-  firearmProfile: {fileID: 11400000, guid: 0909bdb53ab989740bc8b3df6f2129ba, type: 2}
   m_IkTransforms:
     leftHand: {fileID: 4040285418092980639}
     rightHand: {fileID: 5939057352362625911}
     leftElbow: {fileID: 6925448351433391956}
     rightElbow: {fileID: 3209787268571026079}
   m_OverrideAnimator: {fileID: 22100000, guid: 1fc7b211521ac584fa44d449828e5f52, type: 2}
+  firearmContext: {fileID: 11400000, guid: 0909bdb53ab989740bc8b3df6f2129ba, type: 2}
+  socketProfile: {fileID: 11400000, guid: d5d9f87c367222943b9a93eab8e50e15, type: 2}
+  muzzle: {fileID: 1820512916922203636}
+  boundCount: 1
+  pierceCount: 0
 --- !u!1773428102 &1854809809634932724
 ParentConstraint:
   m_ObjectHideFlags: 0
@@ -79,6 +81,19 @@ ParentConstraint:
   m_Active: 1
   m_IsLocked: 0
   m_Sources: []
+--- !u!114 &5014325689338341658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1069103472680076226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e061b38e127e296498993ceb38732774, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Item.Ammunition
+  m_Config: {fileID: 11400000, guid: bfa73918f2dc4d444a21864b8a9136c3, type: 2}
 --- !u!1001 &1516763557622453403
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -159,6 +174,11 @@ PrefabInstance:
 --- !u!4 &583364979586983639 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2095342817151251020, guid: d6c4a5aa1d1d8cd49bf175dcebc29d96, type: 3}
+  m_PrefabInstance: {fileID: 1516763557622453403}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1820512916922203636 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 887036165548435823, guid: d6c4a5aa1d1d8cd49bf175dcebc29d96, type: 3}
   m_PrefabInstance: {fileID: 1516763557622453403}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &3209787268571026079 stripped

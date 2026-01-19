@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01141deb1fa9cb3449c825bf0eee2e2d, type: 3}
   m_Name: firearm_smg
   m_EditorClassIdentifier: CharacterKit::Dave6.CharacterKit.Item.FirearmProfile
-  fireRate: 650
+  shootSoundPrefab: {fileID: 2311098167890970279, guid: 1d2b9e882005f3e4e9e20545284e37d7, type: 3}
+  muzzleFlashPrefab: {fileID: 1743301284569550, guid: 95f47371ee22e324281914d18b4f9723, type: 3}

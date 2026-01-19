@@ -15,6 +15,7 @@ namespace Dave6.CharacterKit
         public ResourceStat myHealth { get; set; }
 
         [Header("공격 세팅")]
+        public bool isAttacking;
         [SerializeField] GameObject projectilePrefab;
         [SerializeField] StatTag healthTag;
         [SerializeField] float attackDelay = 3f;
@@ -74,8 +75,12 @@ namespace Dave6.CharacterKit
 
         void DoFire()
         {
+            if (!isAttacking) return;
             GameObject projectileObj = Instantiate(projectilePrefab, m_TargetTransform.position, m_TargetTransform.rotation);
-            projectileObj.GetComponent<ProjectileMover>().Initialize(this);
+            var projectile = projectileObj.GetComponent<ProjectileMover>();
+            projectile.BindOwner(this);
+            projectile.SetDirection(transform.forward);
+            
             m_AttackTimer.RestartTimer();
         }
     }

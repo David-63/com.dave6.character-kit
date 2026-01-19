@@ -20,6 +20,7 @@ namespace Dave6.CharacterKit.Input
         public event UnityAction ShiftToggleChanged = delegate {};
         public event UnityAction<bool> Attack = delegate {};
         public event UnityAction AttackTap = delegate {};
+        public event UnityAction AttackHold = delegate {};
         public event UnityAction<bool> Interact = delegate {};
         public event UnityAction InteractTap = delegate {};
         public event UnityAction<float> ScrollSelect = delegate {};

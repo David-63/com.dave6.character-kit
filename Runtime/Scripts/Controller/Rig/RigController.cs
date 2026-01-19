@@ -31,7 +31,7 @@ namespace Dave6.CharacterKit.RigControl
             m_AnimProxy = animProxy;
         }
 
-        void Update()
+        void LateUpdate()
         {
             UpdateAimRig();
             UpdateHandIkWeight();

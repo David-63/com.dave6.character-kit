@@ -27,8 +27,8 @@ namespace Dave6.CharacterKit
         public OwnedItem selectedItem {get; private set;}
         int m_CurrentIndex = -1;
 
-        public Transform m_HandSocket;
-        public Transform m_CombatSocket;
+        Transform m_HandSocket;
+        Transform m_CombatSocket;
         [SerializeField] List<ActiveItemSocketEntry> m_ActiveItemSockets;
         Dictionary<EEquipSlotType, Transform> m_SocketMap = new();
         Dictionary<EEquipSlotType, IActiveItem> m_ActiveItemMap = new();

@@ -16,7 +16,7 @@ namespace Dave6.CharacterKit.States
 
         public override void OnExit() { }
 
-        public override  void Update()
+        public override void Update()
         {
             controller.EvaluateAttackExit(false);
             AttackInput();
@@ -25,7 +25,7 @@ namespace Dave6.CharacterKit.States
         void AttackInput()
         {
             // 조건을 tap이 아니라 hold로 두고 내부에 RPM을 둬서 제어하는 방식으로 변경하기
-            if (!controller.attackInputTap) return;
+            if (!controller.attackInput) return;
 
             controller.combatHandler.TryFireProjectile();
         }
