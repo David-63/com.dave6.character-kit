@@ -15,7 +15,7 @@ namespace Dave6.CharacterKit
             }
             
             var impactcontext = new ImpactContext(context.hitTarget, context.hit.point, context.hit.normal, context.projectile.impactType);
-            SurfaceReactionService.instance.ProcessImpact(impactcontext);
+            SurfaceReactionService.Instance.ProcessImpact(impactcontext);
 
             return true;
         }

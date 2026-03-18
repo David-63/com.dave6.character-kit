@@ -11,96 +11,86 @@ namespace Dave6.CharacterKit.AnimHandler
     /// </summary>
     public class AnimatorHandler : MonoBehaviour
     {
-        Animator m_Animator;
-        AnimatorEventProxy m_AnimatorEventProxy;
-        string m_CurrentAnimation = "";
+        Animator _Animator;
+        AnimatorEventProxy _AnimatorEventProxy;
+        string _CurrentAnimation = "";
+        bool _PrevHasMoveInput;
 
-        bool m_PrevGrounded;
-        bool m_PrevHasMoveInput;
+        public bool UseFocus {get; private set;}
 
-        public bool useFocus {get; private set;}
-
-        public event Action onAttackImpulse;
-        public event Action onAttackFinished;
-        public event Action onReloadFinished;
+        public event Action OnAttackImpulseAction;
+        public event Action OnAttackFinishedAction;
+        public event Action OnReloadFinishedAction;
 
         #region 초기화
         public void RegisterAnimator(Animator animator, AnimatorEventProxy animProxy)
         {
-            m_Animator = animator;
-            m_AnimatorEventProxy = animProxy;
+            _Animator = animator;
+            _AnimatorEventProxy = animProxy;
+            Debug.Log("이벤트 프록시 등록됨");
+
+            _AnimatorEventProxy.OnAttackFinishEvent += OnAttackAnimationEnd;
+            _AnimatorEventProxy.OnReloadFinishEvent += OnReloadAnimationEnd;
         }
 
         public void ResetAnimHandler()
         {
-            m_Animator.SetFloat("moveSpeed", 0);
-            m_Animator.SetFloat("lastMoveSpeed", 0);
-            m_Animator.SetFloat("verticalSpeed", 0);
-            m_Animator.SetFloat("lastVerticalSpeed", 0);
-            m_Animator.SetBool("isGrounded", true);
-            m_Animator.SetBool("hasMoveInput", false);
-            m_Animator.SetBool("useFocus", false);
-            m_Animator.SetBool("useShift", false);
-            m_Animator.SetBool("isAim", false);
-            m_Animator.SetFloat("directionX", 0);
-            m_Animator.SetFloat("directionY", 0);
+            _Animator.SetFloat("moveSpeed", 0);
+            _Animator.SetFloat("lastMoveSpeed", 0);
+            _Animator.SetFloat("verticalSpeed", 0);
+            _Animator.SetFloat("lastVerticalSpeed", 0);
+            _Animator.SetBool("isGrounded", true);
+            _Animator.SetBool("hasMoveInput", false);
+            _Animator.SetBool("useFocus", false);
+            _Animator.SetBool("useShift", false);
+            _Animator.SetBool("isAim", false);
+            _Animator.SetFloat("directionX", 0);
+            _Animator.SetFloat("directionY", 0);
         }
         #endregion
 
         public void UpdateMoveInput(float speed, bool hasMoveInput)
         {
-            m_Animator.SetFloat("moveSpeed", speed);
-            m_Animator.SetBool("hasMoveInput", hasMoveInput);
+            _Animator.SetFloat("moveSpeed", speed);
+            _Animator.SetBool("hasMoveInput", hasMoveInput);
         }
         public void EvaluateMoveInputTransition(float speed, bool hasMoveInput)
         {
-            m_Animator.SetFloat("moveSpeed", speed);
-            m_Animator.SetBool("hasMoveInput", hasMoveInput);
+            _Animator.SetFloat("moveSpeed", speed);
+            _Animator.SetBool("hasMoveInput", hasMoveInput);
 
-            if (m_PrevHasMoveInput && !hasMoveInput)
+            if (_PrevHasMoveInput && !hasMoveInput)
             {
                 OnMoveInputReleased(speed);
             }
 
-            m_PrevHasMoveInput = hasMoveInput;
+            _PrevHasMoveInput = hasMoveInput;
         }
         public void OnMoveInputReleased(float speed)
         {
-            m_Animator.SetFloat("lastMoveSpeed", speed);
+            _Animator.SetFloat("lastMoveSpeed", speed);
         }
 
-        public void UpdateVerticalSpeed(float speed)
-        {
-            m_Animator.SetFloat("verticalSpeed", speed);
-        }
 
-        public void UpdateGrounded(bool isGrounded, float speed)
-        {
-            m_Animator.SetBool("isGrounded", isGrounded);
 
-            if (!m_PrevGrounded && isGrounded)
-            {
-                m_Animator.SetFloat("lastVerticalSpeed", speed);
-            }
-            m_PrevGrounded = isGrounded;
-        }
+
         public void UpdateUseStrafe(bool useFocus)
         {
-            this.useFocus = useFocus;
-            m_Animator.SetBool("useFocus", useFocus);
+            this.UseFocus = useFocus;
+            _Animator.SetBool("useFocus", useFocus);
         }
         public void UpdateUseShift(bool useShift)
         {
-            m_Animator.SetBool("useShift", useShift);
+            _Animator.SetBool("useShift", useShift);
         }
         public void UpdateIsAim(bool isAim)
         {
-            m_Animator.SetBool("isAim", isAim);
+            _Animator.SetBool("isAim", isAim);
         }
         public void UpdateDirection(Vector3 direction)
         {
-            m_Animator.SetFloat("directionX", direction.x);
-            m_Animator.SetFloat("directionY", direction.z);
+            _Animator.SetFloat("directionX", direction.x);
+            _Animator.SetFloat("directionY", direction.z);
         }
 
 
@@ -110,18 +100,19 @@ namespace Dave6.CharacterKit.AnimHandler
         /// </summary>
         /// <param name="animation">키 값</param>
         /// <param name="corssfade">전환 시간</param>
-        public void ChangeAnimation(string animation, float corssfade = 0.2f, bool allowSameAnim = false)
+        public void ChangeAnimation(string animation, bool allowSameAnim = true)
         {
+            float corssfade = 0.2f;
             if (!allowSameAnim)
             {
-                if (m_CurrentAnimation == animation) return;
+                if (_CurrentAnimation == animation) return;
             }
-            m_CurrentAnimation = animation;
-            m_Animator.CrossFade(animation, corssfade);
+            _CurrentAnimation = animation;
+            _Animator.CrossFade(animation, corssfade);
         }
         public void ClearCurrentAnimation()
         {
-            m_CurrentAnimation = "";
+            _CurrentAnimation = "";
         }
 
         #region 상태 제어용 애니메이션 세팅
@@ -131,16 +122,16 @@ namespace Dave6.CharacterKit.AnimHandler
         #region 애니메이션 이벤트 콜백
         public void OnAttackImpulse(AnimationEvent animationEvent)
         {
-            onAttackImpulse?.Invoke();
+            OnAttackImpulseAction?.Invoke();
         }
         public void OnAttackAnimationEnd(AnimationEvent animationEvent)
         {
-            onAttackFinished?.Invoke();
+            OnAttackFinishedAction?.Invoke();
             ClearCurrentAnimation();
         }
         public void OnReloadAnimationEnd(AnimationEvent animationEvent)
         {
-            onReloadFinished?.Invoke();
+            OnReloadFinishedAction?.Invoke();
             ClearCurrentAnimation();
         }
         #endregion
@@ -149,9 +140,34 @@ namespace Dave6.CharacterKit.AnimHandler
         {
             if (nextWeaponIK.overrideAnimator != null)
             {
-                m_Animator.runtimeAnimatorController = nextWeaponIK.overrideAnimator;
+                _Animator.runtimeAnimatorController = nextWeaponIK.overrideAnimator;
             }
         }
+        public void UpdateMoveSpeed(float speed)
+        {
+            _Animator.SetFloat("moveSpeed", speed);
+        }
+        public void UpdateVerticalSpeed(float speed)
+        {
+            _Animator.SetFloat("verticalSpeed", speed);
+        }
+        public void UpdateGrounded(bool isGrounded, float speed)
+        {
+            _Animator.SetBool("isGrounded", isGrounded);
+            _Animator.SetFloat("verticalSpeed", speed);
+        }
+        public void UpdateLandVerticalSpeed(float speed)
+        {
+            _Animator.SetFloat("lastVerticalSpeed", speed);
+        }
 
+
+    }
+
+    public class AnimContext
+    {
+        public string m_CurrentAnimation = "";
+        public bool m_PrevGrounded;
+        public bool m_PrevHasMoveInput;
     }
 }

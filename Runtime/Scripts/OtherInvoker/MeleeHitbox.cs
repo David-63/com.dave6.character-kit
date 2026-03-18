@@ -32,15 +32,13 @@ namespace Dave6.CharacterKit
             }
         }
 
-        public void Invoke<T>(T target) where T : Component, IStatReceiver
+        public void Invoke(IStatReceiver target)
         {
             // 상대 스탯 가져오기
-            IStatController entity = target as IStatController;
-
-            entity.statHandler.TryGetStat(healthStatTag, out var targetHealth);
+            target.StatHandler.TryGetStat(healthStatTag, out var targetHealth);
 
             // 본인 스탯을 상대에게 때려박기
-            actor.statHandler.CreateEffectInstance(effectDefinition, targetHealth);
+            actor.StatHandler.CreateEffectInstance(effectDefinition, targetHealth);
         }
     }
 }

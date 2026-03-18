@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d237e49079b1256469dd55068017614b, type: 3}
+  m_Name: RangerStatDB
+  m_EditorClassIdentifier: StatSystem::Dave6.StatSystem.StatDatabase
+  attributeStatTags:
+  - statTag: {fileID: 11400000, guid: 2014e3d86eafe3f4f9867a659cc69509, type: 2}
+    statDefinition: {fileID: 0}
+  secondaryStatTags:
+  - statTag: {fileID: 11400000, guid: 9e363936f202a594ca5b3a9b79dcf616, type: 2}
+    statDefinition: {fileID: 0}
+  - statTag: {fileID: 11400000, guid: 9bb72a6e1437fd841af3f92dfba1f268, type: 2}
+    statDefinition: {fileID: 0}
+  resourceStatTags:
+  - statTag: {fileID: 11400000, guid: 2e5352897d001e245aa10a30b5ac8171, type: 2}
+    statDefinition: {fileID: 0}

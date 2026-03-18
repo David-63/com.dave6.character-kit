@@ -1,13 +1,12 @@
+using Dave6.CharacterKit.Input;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-namespace Dave6.CharacterKit.Input
+namespace Dave6.CharacterKit.Inputs
 {
-    using static DaveInput;
-
     [CreateAssetMenu(fileName = "Inputs", menuName = "DaveAssets/Input/InputReader")]
-    public class InputReader : ScriptableObject, ICharacterActions
+    public class InputReader : ScriptableObject, DaveInput.ICharacterActions, DaveInput.IStatusActions
     {
         DaveInput actions;
 
@@ -15,40 +14,43 @@ namespace Dave6.CharacterKit.Input
         public event UnityAction<Vector2> Move = delegate {};
         public event UnityAction<Vector2> Look = delegate {};
         public event UnityAction<bool> Jump = delegate {};
-        public event UnityAction<bool> Focus = delegate {};
+
         public event UnityAction<bool> Shift = delegate {};
-        public event UnityAction ShiftToggleChanged = delegate {};
+        public event UnityAction ShiftTap = delegate {};
+
+        public event UnityAction<bool> Focus = delegate {};
         public event UnityAction<bool> Attack = delegate {};
         public event UnityAction AttackTap = delegate {};
         public event UnityAction AttackHold = delegate {};
-        public event UnityAction<bool> Interact = delegate {};
-        public event UnityAction InteractTap = delegate {};
-        public event UnityAction<float> ScrollSelect = delegate {};
-        public event UnityAction<bool> Equip = delegate {};
-        public event UnityAction EquipTap = delegate {};
-        public event UnityAction<bool> Drop = delegate {};
-        public event UnityAction DropTap = delegate {};
 
         public event UnityAction<bool> Reload = delegate {};
         public event UnityAction ReloadTap = delegate {};
         public event UnityAction ReloadHold = delegate {};
 
+        public event UnityAction<bool> Interact = delegate {};
+        public event UnityAction InteractTap = delegate {};
+
+        public event UnityAction<float> ScrollSelect = delegate {};
+
+        public event UnityAction<bool> Equip = delegate {};
+        public event UnityAction EquipTap = delegate {};
+        public event UnityAction<bool> Drop = delegate {};
+        public event UnityAction DropTap = delegate {};
+
+
         public event UnityAction WeaponSwitchToggleChanged = delegate {};
 
+        public event UnityAction<bool> OpenStatus = delegate {};
+        public event UnityAction<bool> Close = delegate {};
 
 
-        bool _shiftToggle;
-        bool _weaponSwitchToggle;
+        bool _ShiftToggle;
+        bool _WeaponSwitchToggle;
 
         // 입력 값을 즉시 받으려면 여기에
         public Vector2 InputMove => actions.Character.Move.ReadValue<Vector2>();
         public Vector2 InputLook => actions.Character.Look.ReadValue<Vector2>();
         public float InputScroll => actions.Character.ScrollSelect.ReadValue<float>();
-
-        void OnDestroy()
-        {
-            actions.Dispose();                  // Destroy asset object.
-        }
 
         void OnEnable()
         {
@@ -56,36 +58,30 @@ namespace Dave6.CharacterKit.Input
             {
                 actions = new DaveInput();
                 actions.Character.SetCallbacks(this);
+                actions.Status.SetCallbacks(this);
             }
+            EnableCharacterInput();
         }
-
-        public void EnablePlayerAction()
-        {
-            actions.Enable();                 // Enable all actions within map.
-        }
-
         void OnDisable()
         {
             actions.Disable();                // Disable all actions within map.
         }
+        public void EnableCharacterInput()
+        {
+            actions.Status.Disable();
+            actions.Character.Enable();
+        }
 
-        ///     #region Interface implementation of MyActions.IPlayerActions
-        ///
-        ///     // Invoked when "Move" action is either started, performed or canceled.
-        ///     public void OnMove(InputAction.CallbackContext context)
-        ///     {
-        ///         Debug.Log($"OnMove: {context.ReadValue&lt;Vector2&gt;()}");
-        ///     }
-        ///
-        ///     // Invoked when "Attack" action is either started, performed or canceled.
-        ///     public void OnAttack(InputAction.CallbackContext context)
-        ///     {
-        ///         Debug.Log($"OnAttack: {context.ReadValue&lt;float&gt;()}");
-        ///     }
+        public void EnableStatusInput()
+        {
+            actions.Character.Disable();
+            actions.Status.Enable();
+        }
 
         public void OnMove(InputAction.CallbackContext context)
         {
-            Move?.Invoke(context.ReadValue<Vector2>());
+            if (context.phase == InputActionPhase.Performed) Move?.Invoke(context.ReadValue<Vector2>());
+            else if (context.phase == InputActionPhase.Canceled) Move?.Invoke(Vector2.zero);
         }
 
         public void OnLook(InputAction.CallbackContext context)
@@ -95,15 +91,8 @@ namespace Dave6.CharacterKit.Input
 
         public void OnJump(InputAction.CallbackContext context)
         {
-            switch (context.phase)
-            {
-                case InputActionPhase.Started:
-                Jump?.Invoke(true);
-                break;
-                case InputActionPhase.Canceled:
-                Jump?.Invoke(false);
-                break;
-            }
+            if (context.phase == InputActionPhase.Started) Jump?.Invoke(true);
+            else if (context.phase == InputActionPhase.Canceled) Jump?.Invoke(false);
         }
 
         public void OnShift(InputAction.CallbackContext context)
@@ -113,8 +102,8 @@ namespace Dave6.CharacterKit.Input
                 case InputActionPhase.Started:
                 Shift?.Invoke(true);
 
-                _shiftToggle = !_shiftToggle;
-                ShiftToggleChanged?.Invoke();
+                _ShiftToggle = !_ShiftToggle;
+                ShiftTap?.Invoke();
                 break;
                 case InputActionPhase.Canceled:
                 Shift?.Invoke(false);
@@ -207,7 +196,7 @@ namespace Dave6.CharacterKit.Input
                 case InputActionPhase.Started:
                 Shift?.Invoke(true);
 
-                _weaponSwitchToggle = !_weaponSwitchToggle;
+                _WeaponSwitchToggle = !_WeaponSwitchToggle;
                 WeaponSwitchToggleChanged?.Invoke();
                 break;
                 case InputActionPhase.Canceled:
@@ -227,6 +216,33 @@ namespace Dave6.CharacterKit.Input
                 break;
                 case InputActionPhase.Canceled:
                 Focus?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnOpenStatus(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                OpenStatus?.Invoke(true);
+                break;
+                case InputActionPhase.Canceled:
+                OpenStatus?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnClose(InputAction.CallbackContext context)
+        {
+            
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Close?.Invoke(true);
+                break;
+                case InputActionPhase.Canceled:
+                Close?.Invoke(false);
                 break;
             }
         }
