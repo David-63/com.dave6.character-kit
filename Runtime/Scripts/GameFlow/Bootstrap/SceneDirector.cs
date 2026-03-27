@@ -10,7 +10,7 @@ namespace Dave6.CharacterKit.GameFlow
     // SceneDirector.instance.RequestSceneLoad("GamePlayCore", "LobbyEnter");
     public class SceneDirector : SingletonTemplate<SceneDirector>
     {
-        public event UnityAction<string> onSceneFullyEntered;
+        public event UnityAction<string> OnSceneFullyEntered;
         string _NextSpawnId;
         string _PrevMap;
         Dictionary<string, Portal> _PortalCache = new Dictionary<string, Portal>();
@@ -70,7 +70,7 @@ namespace Dave6.CharacterKit.GameFlow
             yield return LoadSceneCoroutine("Lobby");
             PlayerConnector.Instance.SpawnPlayer(_NextSpawnId, () =>
             {
-                onSceneFullyEntered?.Invoke("Lobby");
+                OnSceneFullyEntered?.Invoke("Lobby");
             });
             _PrevMap = "Lobby";
         }
@@ -85,7 +85,7 @@ namespace Dave6.CharacterKit.GameFlow
 
             PlayerConnector.Instance.SpawnPlayer(_NextSpawnId, () =>
             {
-                onSceneFullyEntered?.Invoke(sceneName);
+                OnSceneFullyEntered?.Invoke(sceneName);
             });
             _PrevMap = sceneName;
         }

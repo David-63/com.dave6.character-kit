@@ -23,7 +23,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
         public override void Bind(IItemContainer container)
         {
-            _container = container;
+            _Container = container;
             _SocketContainer = container as SocketContainer;
 
             if (_SocketView != null) _Contents.Remove(_SocketView);

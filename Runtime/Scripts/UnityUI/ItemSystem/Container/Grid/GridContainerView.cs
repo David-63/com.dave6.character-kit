@@ -37,7 +37,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
         public override void Bind(IItemContainer container)
         {
-            _container = container;
+            _Container = container;
             _GridContainer = container as GridContainer;
 
             var size = _GridContainer.GetGridSize();

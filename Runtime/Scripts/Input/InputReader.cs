@@ -44,6 +44,10 @@ namespace Dave6.CharacterKit.Inputs
         public event UnityAction<bool> Close = delegate {};
 
 
+        public event UnityAction Save = delegate {};
+        public event UnityAction Load = delegate {};
+
+
         bool _ShiftToggle;
         bool _WeaponSwitchToggle;
 
@@ -101,7 +105,6 @@ namespace Dave6.CharacterKit.Inputs
             {
                 case InputActionPhase.Started:
                 Shift?.Invoke(true);
-
                 _ShiftToggle = !_ShiftToggle;
                 ShiftTap?.Invoke();
                 break;
@@ -235,7 +238,6 @@ namespace Dave6.CharacterKit.Inputs
 
         public void OnClose(InputAction.CallbackContext context)
         {
-            
             switch (context.phase)
             {
                 case InputActionPhase.Started:
@@ -243,6 +245,26 @@ namespace Dave6.CharacterKit.Inputs
                 break;
                 case InputActionPhase.Canceled:
                 Close?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnSave(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Save?.Invoke();
+                break;
+            }
+        }
+
+        public void OnLoad(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Load?.Invoke();
                 break;
             }
         }

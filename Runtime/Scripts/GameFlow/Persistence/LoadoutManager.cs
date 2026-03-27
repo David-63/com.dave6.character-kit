@@ -1,0 +1,86 @@
+using System.Collections.Generic;
+using System.IO;
+using Dave6.CharacterKit.UnityUI.ItemSystem;
+using Dave6.ItemSystem.Application.Container;
+using Dave6.ItemSystem.Application.Item;
+using Dave6.ItemSystem.Domain.Item;
+using Dave6.ItemSystem.Persistence.Dto;
+using Dave6.ItemSystem.Persistence.Mapper;
+using UnityEngine;
+
+namespace Dave6.CharacterKit.GameFlow
+{
+    public class LoadoutManager : MonoBehaviour
+    {
+        [Header("Dependencies")]
+        [SerializeField] ItemDatabaseAsset _DatabaseAsset;
+        [SerializeField] List<ItemDefinitionAsset> _StarterItems;
+
+        LoadoutService _LoadoutService;
+        string _SavePath;
+
+        IContainerProvider _PlayerLoadout;
+
+
+        void Awake()
+        {
+            // DB 로드 및 서비스 초기화
+            var itemDb = new ItemDatabase(_DatabaseAsset.Create());
+            _LoadoutService = new LoadoutService(itemDb);
+            _SavePath = Path.Combine(Application.persistentDataPath, "Player_Loadout.json");
+            PlayerConnector.Instance.RegisterLoadoutManager(this);
+        }
+
+        public void BindContext(IContainerProvider provider) => _PlayerLoadout = provider;
+
+        public void Save()
+        {
+            var saveData = _LoadoutService.ExportLoadout(_PlayerLoadout.GetLoadoutContext());
+
+            string json = JsonUtility.ToJson(saveData, true);
+            File.WriteAllText(_SavePath, json);
+            Debug.Log("로드아웃 저장");
+        }
+
+        public void Load()
+        {
+            // 1 세이브 파일이 없음
+            if (!File.Exists(_SavePath))
+            {
+                Debug.Log("초기 세이브 데이터 없음");
+                // 초기 아이템 지급 로직
+                GiveInitializeItems();
+                Save();
+                return;
+            }
+
+            // 2 불러오기 수행
+            string json = File.ReadAllText(_SavePath);
+            var ctx = _PlayerLoadout.GetLoadoutContext();
+            var saveData = JsonUtility.FromJson<SaveData>(json);
+            _LoadoutService.ImportLoadout(ctx, saveData);
+
+            if (ctx.TryGetRoot(RootContainerRole.Inventory, out var inventory))
+            {
+                if (inventory.IsEmpty())
+                {
+                    Debug.Log("인벤토리 아이탬 지급");
+                    GiveInitializeItems();
+                }
+            }
+
+            Debug.Log("로드아웃 불러오기");
+        }
+
+        void GiveInitializeItems()
+        {
+            var ctx = _PlayerLoadout.GetLoadoutContext();
+            if (!ctx.TryGetRoot(RootContainerRole.Inventory, out var inventory)) return;
+
+            foreach (var iDef in _StarterItems)
+            {
+                inventory.TryAdd(new ItemInstance(iDef.Create()));
+            }
+        }
+    }
+}

@@ -1,5 +1,3 @@
-using System;
-using PlasticPipe.PlasticProtocol.Messages;
 using UnityEngine;
 using UnityUtils.Timer;
 
@@ -7,8 +5,11 @@ namespace Dave6.CharacterKit.Handler.Mover
 {
     public class PlayerMover : BaseMover
     {
+        // 상수
         PlayerMoverConfig _Config => (PlayerMoverConfig)_BaseConfig;
+        // 내부에서만 쓰는 변수
         PlayerMoverContext _Context => (PlayerMoverContext)_BaseContext;
+        // 퓨어 로직
         PlayerMoverAction _Action => (PlayerMoverAction)_BaseAction;
 
         Countdown _JumpTimer;

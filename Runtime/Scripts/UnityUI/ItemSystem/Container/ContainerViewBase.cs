@@ -6,7 +6,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
     [UxmlElement]
     public abstract partial class ContainerBaseView : VisualElement
     {
-        protected IItemContainer _container;
+        protected IItemContainer _Container;
 
         public abstract void Initialize(VisualTreeAsset template);
 

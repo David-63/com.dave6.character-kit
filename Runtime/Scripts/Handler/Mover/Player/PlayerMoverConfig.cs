@@ -12,6 +12,5 @@ namespace Dave6.CharacterKit.Handler.Mover
         [Header("회전")]
         [Tooltip("방향 회전에 걸리는 속도")]
         public float DirectionRotateSpeed = 20.0f;      // 이것도 안씀
-
     }
 }

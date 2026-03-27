@@ -11,6 +11,7 @@ namespace Dave6.CharacterKit.Handler.Loadout
         [SerializeField] RootContainerConfigAsset _Config;
 
         public IEnumerable<IItemContainer> GetRootContainers() => _Context.GetRootContainers();
+        public RootContainerContext GetLoadoutContext() => _Context;
 
         void Awake()
         {

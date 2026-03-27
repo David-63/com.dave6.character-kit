@@ -29,8 +29,9 @@ namespace Dave6.CharacterKit.Player
         // 애니메이션 제어
         AnimatorEventProxy _AnimEventProxy;
         public AnimatorHandler AnimHandler {get; private set;}
-        public PlayerLoadout Loadout {get; private set;}
 
+        // 로드아웃 제어
+        public PlayerLoadout Loadout {get; private set;}
 
         // 상태 제어
         StateMachine _LocomotionSM;
@@ -47,7 +48,7 @@ namespace Dave6.CharacterKit.Player
 
             // 컴포넌트 바인딩
             // Mover
-            Mover = GetComponent<Handler.Mover.PlayerMover>();
+            Mover = GetComponent<PlayerMover>();
             // Combat
             Combat = GetComponent<PlayerCombat>();
             Combat.BindInput(InputCtx);
@@ -68,6 +69,8 @@ namespace Dave6.CharacterKit.Player
 
             // 필요하면. Stat, Loadout 도 추가
             Loadout = GetComponent<PlayerLoadout>();
+
+            PlayerConnector.Instance.RegisterLoadout(Loadout);
 
         }
 

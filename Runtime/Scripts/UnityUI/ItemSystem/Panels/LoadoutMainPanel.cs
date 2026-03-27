@@ -8,9 +8,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
     public class LoadoutMainPanel : MonoBehaviour
     {
         VisualElement _Root;
-        [Header("Stash Controller")]
-        // 지금은 직접 받지만, connector에 의해 주입받는 방식으로 수정할것
-        [SerializeField] IContainerProvider _Provider;
+        IContainerProvider _Provider;
 
         [Header("Visual Elements")]
         [SerializeField] VisualTreeAsset _GridContainer;
@@ -24,7 +22,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             var doc = GetComponent<UIDocument>();
             _Root = doc.rootVisualElement.Q<VisualElement>("main-root");
             Initialize();
-            PlayerConnector.Instance.RegisterLoadoutMainPanel(this);
+            PlayerConnector.Instance.RegisterLoadoutUI(this);
         }
 
         void Initialize()
@@ -42,7 +40,8 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             HideUI();
         }
 
-        public void Bind(IContainerProvider provider)
+        public void 
+        Bind(IContainerProvider provider)
         {
             if (_Provider == provider) return;
             _Provider = provider;

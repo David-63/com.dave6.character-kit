@@ -210,6 +210,24 @@ namespace Dave6.CharacterKit.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Save"",
+                    ""type"": ""Button"",
+                    ""id"": ""4dfb73cd-1014-4945-85dc-2b9712025ed5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Load"",
+                    ""type"": ""Button"",
+                    ""id"": ""17fcf8b2-5318-4faf-afac-24836bd25493"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -520,6 +538,28 @@ namespace Dave6.CharacterKit.Input
                     ""action"": ""OpenStatus"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bc527058-4d49-4621-ac97-3a3eae0b5b48"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Save"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""14c235f0-c4d0-461b-a47f-1cf96dc808b1"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Load"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -608,6 +648,8 @@ namespace Dave6.CharacterKit.Input
             m_Character_Reload = m_Character.FindAction("Reload", throwIfNotFound: true);
             m_Character_WeaponSwitch = m_Character.FindAction("WeaponSwitch", throwIfNotFound: true);
             m_Character_OpenStatus = m_Character.FindAction("OpenStatus", throwIfNotFound: true);
+            m_Character_Save = m_Character.FindAction("Save", throwIfNotFound: true);
+            m_Character_Load = m_Character.FindAction("Load", throwIfNotFound: true);
             // Status
             m_Status = asset.FindActionMap("Status", throwIfNotFound: true);
             m_Status_Close = m_Status.FindAction("Close", throwIfNotFound: true);
@@ -705,6 +747,8 @@ namespace Dave6.CharacterKit.Input
         private readonly InputAction m_Character_Reload;
         private readonly InputAction m_Character_WeaponSwitch;
         private readonly InputAction m_Character_OpenStatus;
+        private readonly InputAction m_Character_Save;
+        private readonly InputAction m_Character_Load;
         /// <summary>
         /// Provides access to input actions defined in input action map "Character".
         /// </summary>
@@ -768,6 +812,14 @@ namespace Dave6.CharacterKit.Input
             /// Provides access to the underlying input action "Character/OpenStatus".
             /// </summary>
             public InputAction @OpenStatus => m_Wrapper.m_Character_OpenStatus;
+            /// <summary>
+            /// Provides access to the underlying input action "Character/Save".
+            /// </summary>
+            public InputAction @Save => m_Wrapper.m_Character_Save;
+            /// <summary>
+            /// Provides access to the underlying input action "Character/Load".
+            /// </summary>
+            public InputAction @Load => m_Wrapper.m_Character_Load;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -833,6 +885,12 @@ namespace Dave6.CharacterKit.Input
                 @OpenStatus.started += instance.OnOpenStatus;
                 @OpenStatus.performed += instance.OnOpenStatus;
                 @OpenStatus.canceled += instance.OnOpenStatus;
+                @Save.started += instance.OnSave;
+                @Save.performed += instance.OnSave;
+                @Save.canceled += instance.OnSave;
+                @Load.started += instance.OnLoad;
+                @Load.performed += instance.OnLoad;
+                @Load.canceled += instance.OnLoad;
             }
 
             /// <summary>
@@ -883,6 +941,12 @@ namespace Dave6.CharacterKit.Input
                 @OpenStatus.started -= instance.OnOpenStatus;
                 @OpenStatus.performed -= instance.OnOpenStatus;
                 @OpenStatus.canceled -= instance.OnOpenStatus;
+                @Save.started -= instance.OnSave;
+                @Save.performed -= instance.OnSave;
+                @Save.canceled -= instance.OnSave;
+                @Load.started -= instance.OnLoad;
+                @Load.performed -= instance.OnLoad;
+                @Load.canceled -= instance.OnLoad;
             }
 
             /// <summary>
@@ -1136,6 +1200,20 @@ namespace Dave6.CharacterKit.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnOpenStatus(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Save" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSave(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Load" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnLoad(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Status" which allows adding and removing callbacks.

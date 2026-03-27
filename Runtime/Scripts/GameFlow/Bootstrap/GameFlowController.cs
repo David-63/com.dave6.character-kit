@@ -28,6 +28,7 @@ namespace Dave6.CharacterKit.GameFlow
         void Start()
         {
             SceneDirector.Instance.InitialGameplayCoreLoad();
+            //Newtonsoft
         }
         public void ChangeState(GameState newState)
         {

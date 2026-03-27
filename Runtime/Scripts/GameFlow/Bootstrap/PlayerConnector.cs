@@ -16,6 +16,8 @@ namespace Dave6.CharacterKit.GameFlow
         IInputReceiver _ActiveReceiver;
         LoadoutMainPanel _UiPanel;
         IContainerProvider _CachedLoadout;
+        LoadoutManager _LoadoutManager;
+
 
         public bool HasPlayer => _PlayerInstance != null;
 
@@ -25,10 +27,21 @@ namespace Dave6.CharacterKit.GameFlow
             if (receiver is Component instance)
             {
                 _PlayerInstance = instance.gameObject;
-                _CachedLoadout = instance.GetComponent<PlayerLoadout>();
             }
         }
-        public void RegisterLoadoutMainPanel(LoadoutMainPanel uiPanel) => _UiPanel = uiPanel;
+
+        public void RegisterLoadoutManager(LoadoutManager manager)
+        {
+            _LoadoutManager = manager;            
+            _Input.Save += _LoadoutManager.Save;
+            _Input.Load += _LoadoutManager.Load;
+        }
+        public void RegisterLoadout(PlayerLoadout loadout)
+        {
+            _CachedLoadout = loadout;
+            _LoadoutManager.BindContext(_CachedLoadout);
+        }
+        public void RegisterLoadoutUI(LoadoutMainPanel uiPanel) => _UiPanel = uiPanel;
 
         public void SpawnPlayer(string spawnId, Action onComplete = null)
         {
@@ -83,6 +96,8 @@ namespace Dave6.CharacterKit.GameFlow
             _Input.Interact += InputInteract;
             _Input.OpenStatus += HandleOpenStatus;
             _Input.Close += HandleClose;
+
+
         }
         void OnDisable()
         {
@@ -101,6 +116,10 @@ namespace Dave6.CharacterKit.GameFlow
             _Input.Interact -= InputInteract;
             _Input.OpenStatus -= HandleOpenStatus;
             _Input.Close -= HandleClose;
+
+
+            _Input.Save -= _LoadoutManager.Save;
+            _Input.Load -= _LoadoutManager.Load;
         }
 
         void InputMove(Vector2 value) => _ActiveReceiver?.OnMove(value);
@@ -111,6 +130,15 @@ namespace Dave6.CharacterKit.GameFlow
         void InputAttack(bool value) => _ActiveReceiver?.OnAction(ActionType.Attack, value);
         void InputReload(bool value) => _ActiveReceiver?.OnAction(ActionType.Reload, value);
         void InputInteract(bool value) => _ActiveReceiver?.OnAction(ActionType.Interact, value);
+
+        public void InputBindLoadout()
+        {
+
+        }
+        public void InputBindLoad()
+        {
+            
+        }
 
         void HandleOpenStatus(bool pressed)
         {
