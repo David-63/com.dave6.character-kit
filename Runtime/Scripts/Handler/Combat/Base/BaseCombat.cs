@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Dave6.CharacterKit.AnimHandler;
 using UnityEngine;
-using UnityUtils.Timer;
 
 namespace Dave6.CharacterKit.Handler.Combat
 {

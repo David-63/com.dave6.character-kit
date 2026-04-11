@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Dave6.CharacterKit
+namespace Dave6.CharacterKit.Temp
 {
     /// <summary>
     /// 입력 처리만 하고싶어요

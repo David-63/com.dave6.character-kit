@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Dave6.CharacterKit.Handler.Interact
 {
     // 탐색만 진행
-    public class BaseInteractor : MonoBehaviour, IInteractor
+    public class BaseInteractor : MonoBehaviour, IInteractor1
     {
         protected List<IInteractable> m_Interactables = new();
         protected IInteractable m_TargetInteractable;
@@ -31,10 +31,10 @@ namespace Dave6.CharacterKit.Handler.Interact
 
     public interface IInteractable
     {
-        void Interact(IInteractor interactor);
+        void Interact(IInteractor1 interactor);
     }
 
-    public interface IInteractor
+    public interface IInteractor1
     {
     }
 }

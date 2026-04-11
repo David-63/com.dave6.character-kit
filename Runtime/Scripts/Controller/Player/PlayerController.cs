@@ -69,9 +69,8 @@ namespace Dave6.CharacterKit.Player
 
             // 필요하면. Stat, Loadout 도 추가
             Loadout = GetComponent<PlayerLoadout>();
-
-            PlayerConnector.Instance.RegisterLoadout(Loadout);
-
+            //PlayerConnector.Instance.RegisterLoadout(Loadout);
+            PlayerConnector.Instance.RegisterProvider<PlayerLoadout>(Loadout);
         }
 
         void Start()

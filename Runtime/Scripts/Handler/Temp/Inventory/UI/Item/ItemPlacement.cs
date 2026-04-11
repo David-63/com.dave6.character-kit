@@ -1,7 +1,7 @@
 using Dave6.Foundation.Collections;
 using Dave6.ItemSystem.Domain.Item;
 
-namespace Dave6.CharacterKit
+namespace Dave6.CharacterKit.Temp
 {
     public class ItemPlacement
     {

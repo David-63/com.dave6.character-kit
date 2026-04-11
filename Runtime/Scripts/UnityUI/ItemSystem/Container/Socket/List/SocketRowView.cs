@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 namespace Dave6.CharacterKit.UnityUI.ItemSystem
 {
     [UxmlElement]
-    public partial class SocketLabelRowView : SocketView
+    public partial class SocketRowView : SocketLayoutView
     {
         protected override void Build()
         {
@@ -26,7 +26,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
                 label.style.color = Color.white;
                 label.style.unityFontStyleAndWeight = FontStyle.Bold;
 
-                var slot = new VisualElement();
+                var slot = new SocketSlotView();
                 slot.style.width = 128;
                 slot.style.height = 128;
                 slot.style.borderTopWidth = 1;
@@ -38,11 +38,17 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
                 slot.style.borderBottomColor = Color.gray;
                 slot.style.borderLeftColor = Color.gray;
                 slot.style.borderRightColor = Color.gray;
+                slot.name = "socket-slot";
+                slot.Bind(socket);
+                _SlotViews.Add(socket, slot);
+//                var debugPos = new Vector2(slot.worldBound.xMin, slot.worldBound.yMin);
 
                 row.Add(label);
                 row.Add(slot);
 
                 Add(row);
+
+                Debug.Log($"{socket.SlotCategory}, {socket.SlotId}");
             }
         }
     }

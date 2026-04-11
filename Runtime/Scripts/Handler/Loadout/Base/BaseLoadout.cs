@@ -1,3 +1,4 @@
+using Dave6.CharacterKit.UnityUI.ItemSystem;
 using Dave6.ItemSystem.Application.Container;
 using UnityEngine;
 
@@ -8,8 +9,7 @@ namespace Dave6.CharacterKit.Handler.Loadout
     /// </summary>
     public abstract class BaseLoadout : MonoBehaviour
     {
+        protected LoadoutRootContext _Context;
         protected ContainerService _Service;
-        protected RootContainerContext _Context;
-
     }
 }

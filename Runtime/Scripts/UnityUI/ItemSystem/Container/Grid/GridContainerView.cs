@@ -1,5 +1,7 @@
+using Dave6.Foundation.Math;
 using Dave6.ItemSystem.Domain.Container;
 using Dave6.ItemSystem.Domain.Item;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -10,11 +12,14 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
     {
         VisualElement _Contents;
 
-        GridArea _GridArea;
         GridContainer _GridContainer;
+        GridArea _GridArea;
 
-        public override void Initialize(VisualTreeAsset template)
+        public GridArea GetGridArea() => _GridArea;
+
+        public override void Initialize(VisualTreeAsset template, ItemInteractionController interactionController)
         {
+            _InteractionController = interactionController;
             //Clear();
             style.flexGrow = 1;
             style.flexShrink = 1;
@@ -40,6 +45,11 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             _Container = container;
             _GridContainer = container as GridContainer;
 
+            SetupGrid();
+        }
+
+        void SetupGrid()
+        {
             var size = _GridContainer.GetGridSize();
             _GridArea.Columns = size.X;
             _GridArea.Rows = size.Y;
@@ -49,6 +59,45 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
             _GridArea.MarkDirtyRepaint();
         }
+        #region Input API
+        public Vector2 PanelToLocal(Vector2 panelPos)
+        {
+            return _GridArea.WorldToLocal(panelPos);
+        }
+        public Int2 LocalToGrid(Vector2 localPos)
+        {
+            int x = Mathf.RoundToInt(localPos.x / _GridArea.CellSize);
+            int y = Mathf.RoundToInt(localPos.y / _GridArea.CellSize);
+            return new Int2(x, y);
+        }
+        public override ItemPlacement ResolvePlacement(Vector2 panelPos)
+        {
+            var localPos = PanelToLocal(panelPos);
+            var gridPos = LocalToGrid(localPos);
+            return new GridPlacement(gridPos, false);
+        }
+        #endregion
+
+        #region Output API
+        public Vector2 GridToLocal(Int2 gridPos)
+        {
+            float x = gridPos.X * _GridArea.CellSize;
+            float y = gridPos.Y * _GridArea.CellSize;
+            return new Vector2(x, y);
+        }
+        public Vector2 LocalToPanel(Vector2 localPos)
+        {
+            return _GridArea.LocalToWorld(localPos);
+        }
+        public override Vector2 PlacementToPanel(ItemPlacement placement)
+        {
+            if (placement is not GridPlacement gp) return Vector2.zero;
+            var localPos = GridToLocal(gp.Position);
+            return LocalToPanel(localPos);
+        }
+        #endregion
+        public override bool OverlapView(Rect area) => _GridArea.worldBound.Overlaps(area);
+        
     }
     [UxmlElement]
     public partial class GridArea : VisualElement

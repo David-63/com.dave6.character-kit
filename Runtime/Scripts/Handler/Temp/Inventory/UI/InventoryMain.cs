@@ -4,7 +4,7 @@ using Dave6.ItemSystem.Domain.Item;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Dave6.CharacterKit
+namespace Dave6.CharacterKit.Temp
 {
     /// <summary>
     /// 연결만 할래요

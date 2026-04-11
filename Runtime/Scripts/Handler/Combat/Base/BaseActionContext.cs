@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityUtils.Timer;
 
 namespace Dave6.CharacterKit.Handler.Combat
@@ -12,7 +11,7 @@ namespace Dave6.CharacterKit.Handler.Combat
 }
 
 /*
-// 의도 (FSM이 써줌)
+// 의도 및 예시 (FSM이 사용함)
         public ActionExitReason attackExitReason;
         public bool wantAttack;
 

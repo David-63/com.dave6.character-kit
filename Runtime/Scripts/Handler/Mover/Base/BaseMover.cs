@@ -23,6 +23,7 @@ namespace Dave6.CharacterKit.Handler.Mover
         [SerializeField] float _ColliderRadius = 0.28f;
         [SerializeField] Vector3 _ColliderOffset = new Vector3(0, 0.5f, 0);
         RaycastSensor _GroundChecker;
+        RaycastSensor2 _GroundChecker2;
         int _CurrentLayer;
         float _BaseSensorRange;
 
@@ -38,7 +39,11 @@ namespace Dave6.CharacterKit.Handler.Mover
             {
                 _Controller = gameObject.GetOrAddComponent<CharacterController>();
             }
-            if (_GroundChecker == null)
+            // if (_GroundChecker == null)
+            // {
+            //     RecalibrateSensor();
+            // }
+            if (_GroundChecker2 == null)
             {
                 RecalibrateSensor();
             }
@@ -66,17 +71,28 @@ namespace Dave6.CharacterKit.Handler.Mover
         }
         void RecalibrateSensor()
         {
-            _GroundChecker ??= new RaycastSensor(transform);
+            // _GroundChecker ??= new RaycastSensor(transform);
 
-            _GroundChecker.SetCastOrigin(_Controller.bounds.center);
-            _GroundChecker.SetCastDirection(RaycastSensor.CastDirections.Down);
-            _GroundChecker.SetRadius(_ColliderRadius);
+            // _GroundChecker.SetCastOrigin(_Controller.bounds.center);
+            // _GroundChecker.SetCastDirection(RaycastSensor.CastDirections.Down);
+            // _GroundChecker.SetRadius(_ColliderRadius);
+            _GroundChecker2 ??= new RaycastSensor2(transform);
+
+            _GroundChecker2.SetCastOrigin(_Controller.bounds.center);
+            _GroundChecker2.SetCastDirection(-transform.up);
+            _GroundChecker2.SetRadius(_ColliderRadius);
             RecalculateSensorLayerMask();
 
             const float safetyDistanceFactor = 0.01f; // Small factor added to prevent clipping issues when the sensor range is calcuatetd
             float length = _ColliderHeight * (1f - _StepHeightRatio) * 0.5f + _ColliderHeight * _StepHeightRatio;
             _BaseSensorRange = length * (1f + safetyDistanceFactor) * transform.localScale.x;
-            _GroundChecker.CastLength = length * transform.localScale.x;
+            //_GroundChecker.CastLength = length * transform.localScale.x;
+
+
+            _GroundChecker2.CastLength = length * transform.localScale.x;
+
+
+            
         }
         void RecalculateSensorLayerMask()
         {
@@ -92,7 +108,8 @@ namespace Dave6.CharacterKit.Handler.Mover
 
             int ignoreRaycastLayer = LayerMask.NameToLayer("Ignore Raycast");
             layerMask &= ~(1 << ignoreRaycastLayer);
-            _GroundChecker.Layermask = layerMask;
+            //_GroundChecker.Layermask = layerMask;
+            _GroundChecker2.Layermask = layerMask;
             _CurrentLayer = objectLayer;
         }
         #endregion
@@ -105,10 +122,14 @@ namespace Dave6.CharacterKit.Handler.Mover
                 RecalculateSensorLayerMask();
             }
 
-            _GroundChecker.CastLength = _BaseSensorRange;
-            _GroundChecker.SphereCast();
+            // _GroundChecker.CastLength = _BaseSensorRange;
+            // _GroundChecker.SphereCast();
 
-            _BaseContext.IsGrounded = _GroundChecker.HasDetecteHit();
+            _GroundChecker2.CastLength = _BaseSensorRange;
+            _GroundChecker2.Cast();
+
+            //_BaseContext.IsGrounded = _GroundChecker.HasDetecteHit();
+            _BaseContext.IsGrounded = _GroundChecker2.HasDetecteHit();
         }
         protected void ApplyGravity()
         {

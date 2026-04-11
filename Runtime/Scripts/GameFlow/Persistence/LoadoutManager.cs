@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using Dave6.CharacterKit.Handler.Loadout;
 using Dave6.CharacterKit.UnityUI.ItemSystem;
 using Dave6.ItemSystem.Application.Container;
 using Dave6.ItemSystem.Application.Item;
+using Dave6.ItemSystem.Application.Mapper;
 using Dave6.ItemSystem.Domain.Item;
 using Dave6.ItemSystem.Persistence.Dto;
 using Dave6.ItemSystem.Persistence.Mapper;
@@ -10,7 +13,7 @@ using UnityEngine;
 
 namespace Dave6.CharacterKit.GameFlow
 {
-    public class LoadoutManager : MonoBehaviour
+    public class LoadoutManager : MonoBehaviour, IProvider
     {
         [Header("Dependencies")]
         [SerializeField] ItemDatabaseAsset _DatabaseAsset;
@@ -19,8 +22,9 @@ namespace Dave6.CharacterKit.GameFlow
         LoadoutService _LoadoutService;
         string _SavePath;
 
-        IContainerProvider _PlayerLoadout;
+        ILoadoutProvider _PlayerLoadout;
 
+        public Action OnLoadComplete;
 
         void Awake()
         {
@@ -28,14 +32,15 @@ namespace Dave6.CharacterKit.GameFlow
             var itemDb = new ItemDatabase(_DatabaseAsset.Create());
             _LoadoutService = new LoadoutService(itemDb);
             _SavePath = Path.Combine(Application.persistentDataPath, "Player_Loadout.json");
-            PlayerConnector.Instance.RegisterLoadoutManager(this);
+            PlayerConnector.Instance.RegisterProvider<LoadoutManager>(this);
         }
 
-        public void BindContext(IContainerProvider provider) => _PlayerLoadout = provider;
+        public void BindContext(ILoadoutProvider provider) => _PlayerLoadout = provider;
 
         public void Save()
         {
-            var saveData = _LoadoutService.ExportLoadout(_PlayerLoadout.GetLoadoutContext());
+            var saveData = _LoadoutService.ExportLoadout(_PlayerLoadout.GetContext());
+            // var saveData = _LoadoutService.ExportLoadout(_PlayerLoadout.GetLoadoutContext());
 
             string json = JsonUtility.ToJson(saveData, true);
             File.WriteAllText(_SavePath, json);
@@ -56,31 +61,48 @@ namespace Dave6.CharacterKit.GameFlow
 
             // 2 불러오기 수행
             string json = File.ReadAllText(_SavePath);
-            var ctx = _PlayerLoadout.GetLoadoutContext();
             var saveData = JsonUtility.FromJson<SaveData>(json);
-            _LoadoutService.ImportLoadout(ctx, saveData);
+            _LoadoutService.ImportLoadout(_PlayerLoadout, saveData);
+            //_PlayerLoadout.Import(saveData);
 
-            if (ctx.TryGetRoot(RootContainerRole.Inventory, out var inventory))
-            {
-                if (inventory.IsEmpty())
-                {
-                    Debug.Log("인벤토리 아이탬 지급");
-                    GiveInitializeItems();
-                }
-            }
+            //var ctx = _PlayerLoadout.GetLoadoutContext();
+            //_LoadoutService.ImportLoadout(ctx, saveData);
+
+            // if (ctx.TryGetRoot(RootContainerRole.Inventory, out var inventory))
+            // {
+            //     if (inventory.IsEmpty())
+            //     {
+            //         Debug.Log("인벤토리 아이탬 지급");
+            //         GiveInitializeItems();
+            //     }
+            // }
+
+            // UI 갱신 요청
+            OnLoadComplete?.Invoke();
 
             Debug.Log("로드아웃 불러오기");
         }
 
         void GiveInitializeItems()
         {
-            var ctx = _PlayerLoadout.GetLoadoutContext();
-            if (!ctx.TryGetRoot(RootContainerRole.Inventory, out var inventory)) return;
+            // var ctx = _PlayerLoadout.GetLoadoutContext();
+            // if (!ctx.TryGetRoot(RootContainerRole.Inventory, out var inventory)) return;
 
             foreach (var iDef in _StarterItems)
             {
-                inventory.TryAdd(new ItemInstance(iDef.Create()));
+                Debug.Log($"초기 아이템 지급: {iDef.DisplayName}");
+
+                _PlayerLoadout.Add(new ItemInstance(iDef.Create()), RootContainerRole.Inventory);
+                //ctx.AddItem(new ItemInstance(iDef.Create()), RootContainerRole.Inventory);
+                //inventory.TryAdd(new ItemInstance(iDef.Create()));
             }
         }
+    }
+
+    public class LoadoutComposition
+    {
+        public LoadoutManager Manager;
+        public PlayerLoadout Loadout;
+        public LoadoutMainPanel UI;
     }
 }

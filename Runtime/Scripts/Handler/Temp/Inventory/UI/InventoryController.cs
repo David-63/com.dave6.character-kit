@@ -5,7 +5,7 @@ using Dave6.ItemSystem.Domain.Item;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Dave6.CharacterKit
+namespace Dave6.CharacterKit.Temp
 {
     /// <summary>
     /// 규칙과 계산만 하고싶어요

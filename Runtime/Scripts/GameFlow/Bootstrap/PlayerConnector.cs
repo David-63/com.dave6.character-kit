@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Dave6.CharacterKit.Handler.Loadout;
 using Dave6.CharacterKit.Inputs;
 using Dave6.CharacterKit.UnityUI.ItemSystem;
@@ -15,9 +16,9 @@ namespace Dave6.CharacterKit.GameFlow
 
         IInputReceiver _ActiveReceiver;
         LoadoutMainPanel _UiPanel;
-        IContainerProvider _CachedLoadout;
         LoadoutManager _LoadoutManager;
 
+        Dictionary<Type, IProvider> _ProviderRegistry = new();
 
         public bool HasPlayer => _PlayerInstance != null;
 
@@ -30,18 +31,12 @@ namespace Dave6.CharacterKit.GameFlow
             }
         }
 
-        public void RegisterLoadoutManager(LoadoutManager manager)
+        public void RegisterProvider<T>(IProvider instance) where T : IProvider
         {
-            _LoadoutManager = manager;            
-            _Input.Save += _LoadoutManager.Save;
-            _Input.Load += _LoadoutManager.Load;
+            _ProviderRegistry[typeof(T)] = instance;
+            Debug.Log($"[PlayerConnector] Registered provider for {typeof(T).Name}: {instance.GetType().Name}");
+            TryBind();
         }
-        public void RegisterLoadout(PlayerLoadout loadout)
-        {
-            _CachedLoadout = loadout;
-            _LoadoutManager.BindContext(_CachedLoadout);
-        }
-        public void RegisterLoadoutUI(LoadoutMainPanel uiPanel) => _UiPanel = uiPanel;
 
         public void SpawnPlayer(string spawnId, Action onComplete = null)
         {
@@ -96,8 +91,6 @@ namespace Dave6.CharacterKit.GameFlow
             _Input.Interact += InputInteract;
             _Input.OpenStatus += HandleOpenStatus;
             _Input.Close += HandleClose;
-
-
         }
         void OnDisable()
         {
@@ -131,21 +124,36 @@ namespace Dave6.CharacterKit.GameFlow
         void InputReload(bool value) => _ActiveReceiver?.OnAction(ActionType.Reload, value);
         void InputInteract(bool value) => _ActiveReceiver?.OnAction(ActionType.Interact, value);
 
-        public void InputBindLoadout()
+        void TryBind()
         {
+            if (!_ProviderRegistry.TryGetValue(typeof(LoadoutManager), out var mObj)) return;
+            if (!_ProviderRegistry.TryGetValue(typeof(PlayerLoadout), out var lObj)) return;
+            if (!_ProviderRegistry.TryGetValue(typeof(LoadoutMainPanel), out var uiObj)) return;
 
-        }
-        public void InputBindLoad()
-        {
-            
-        }
+            var loadout = (PlayerLoadout)lObj;
+            _LoadoutManager = (LoadoutManager)mObj;
+            _UiPanel = (LoadoutMainPanel)uiObj;
 
+            // ---- 여기서 전부 연결 ----
+
+            _LoadoutManager.BindContext(loadout);
+            _UiPanel.Bind(loadout);
+
+            _LoadoutManager.OnLoadComplete -= _UiPanel.Rebuild;
+            _LoadoutManager.OnLoadComplete += _UiPanel.Rebuild;
+
+            _Input.Save -= _LoadoutManager.Save;
+            _Input.Save += _LoadoutManager.Save;
+
+            _Input.Load -= _LoadoutManager.Load;
+            _Input.Load += _LoadoutManager.Load;
+        }
         void HandleOpenStatus(bool pressed)
         {
             if (!pressed) return;
             Debug.Log("<color=cyan>[Input] Open Status Triggered. Switching to Status Map.</color>");
             _Input.EnableStatusInput();
-            _UiPanel.Bind(_PlayerInstance.GetComponent<PlayerLoadout>());
+            
             _UiPanel.ShowUI();
         }
         void HandleClose(bool pressed)
