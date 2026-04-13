@@ -22,6 +22,7 @@ namespace Dave6.CharacterKit.Handler.Loadout
         {
             _Service = new();
             _Context = _Config.CreateContext();
+            GameplayHub.Instance.Register(this);
         }
 
         public IEnumerable<(RootContainerRole, IItemContainer)> GetRootContainerPairs()

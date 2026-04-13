@@ -1,5 +1,6 @@
 using Dave6.CharacterKit.AnimHandler;
 using Dave6.CharacterKit.GameFlow;
+using Dave6.CharacterKit.GameFlow.Input;
 using Dave6.CharacterKit.Handler.Combat;
 using Dave6.CharacterKit.Handler.Loadout;
 using Dave6.CharacterKit.Handler.Mover;
@@ -30,16 +31,21 @@ namespace Dave6.CharacterKit.Player
         AnimatorEventProxy _AnimEventProxy;
         public AnimatorHandler AnimHandler {get; private set;}
 
-        // 로드아웃 제어
-        public PlayerLoadout Loadout {get; private set;}
-
         // 상태 제어
         StateMachine _LocomotionSM;
         StateMachine _ActionSM;
 
+        /// <summary>
+        ///  초기화 진행은 partal 클래스로 나눠서
+        ///  초기화 전용 파일을 따로 만들 예정
+        /// </summary>
         void Awake()
         {
-            PlayerConnector.Instance.RegisterTarget(this);
+            //PlayerConnector.Instance.RegisterTarget(this);
+            PlayerSpawner.Instance.SetPlayer(gameObject);
+            //GameplayHub.Instance.Get<PlayerInputRouter>().SetTarget(this);
+            var playerInput = FindFirstObjectByType<PlayerInputRouter>();
+            playerInput.SetTarget(this);
             gameObject.layer = 3;
             // 카메라 바인딩
             CameraSystem = FindAnyObjectByType<ThirdPersonCameraController>();
@@ -66,11 +72,6 @@ namespace Dave6.CharacterKit.Player
             // 애니메이션 이벤트 바인딩
             AnimHandler.OnReloadFinishedAction += Combat.HandleReloadEnd;
             AnimHandler.OnAttackFinishedAction += Combat.HandleAttackEnd;
-
-            // 필요하면. Stat, Loadout 도 추가
-            Loadout = GetComponent<PlayerLoadout>();
-            //PlayerConnector.Instance.RegisterLoadout(Loadout);
-            PlayerConnector.Instance.RegisterProvider<PlayerLoadout>(Loadout);
         }
 
         void Start()

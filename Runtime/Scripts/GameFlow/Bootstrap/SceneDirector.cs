@@ -66,11 +66,13 @@ namespace Dave6.CharacterKit.GameFlow
         IEnumerator InitialBootCoroutine()
         {
             yield return LoadSceneCoroutine("GamePlayCore");
-            yield return new WaitUntil(() => PlayerConnector.Instance.HasPlayer);
+            yield return new WaitUntil(() => PlayerSpawner.Instance.HasPlayer);
+            
             _NextSpawnId = "LobbyEnter";
             yield return LoadSceneCoroutine("Lobby");
-            PlayerConnector.Instance.SpawnPlayer(_NextSpawnId, () =>
+            PlayerSpawner.Instance.Spawn(_NextSpawnId, () =>
             {
+                GameFlowController.Instance.ChangeState(GameState.Running);
                 OnSceneFullyEntered?.Invoke("Lobby");
             });
             _PrevMap = "Lobby";
@@ -84,10 +86,17 @@ namespace Dave6.CharacterKit.GameFlow
             }
             yield return LoadSceneCoroutine(sceneName);
 
-            PlayerConnector.Instance.SpawnPlayer(_NextSpawnId, () =>
+            PlayerSpawner.Instance.Spawn(_NextSpawnId, () =>
             {
+                GameFlowController.Instance.ChangeState(GameState.Running);
                 OnSceneFullyEntered?.Invoke(sceneName);
             });
+
+            // PlayerConnector.Instance.SpawnPlayer(_NextSpawnId, () =>
+            // {
+            //     GameFlowController.Instance.ChangeState(GameState.Running);
+            //     OnSceneFullyEntered?.Invoke(sceneName);
+            // });
             _PrevMap = sceneName;
         }
 

@@ -29,7 +29,8 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             var doc = GetComponent<UIDocument>();
             _Root = doc.rootVisualElement.Q<VisualElement>("main-root");
             Initialize();
-            PlayerConnector.Instance.RegisterProvider<LoadoutMainPanel>(this);
+            GameplayHub.Instance.Register(this);
+            //PlayerConnector.Instance.RegisterProvider<LoadoutMainPanel>(this);
 
         }
 

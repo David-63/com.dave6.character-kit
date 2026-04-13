@@ -80,7 +80,7 @@ namespace Dave6.CharacterKit.Handler.Mover
 
             _GroundChecker2.SetCastOrigin(_Controller.bounds.center);
             _GroundChecker2.SetCastDirection(-transform.up);
-            _GroundChecker2.SetRadius(_ColliderRadius);
+            _GroundChecker2.CastRadius = _ColliderRadius;
             RecalculateSensorLayerMask();
 
             const float safetyDistanceFactor = 0.01f; // Small factor added to prevent clipping issues when the sensor range is calcuatetd

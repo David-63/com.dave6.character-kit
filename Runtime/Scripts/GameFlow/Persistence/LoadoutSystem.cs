@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace Dave6.CharacterKit.GameFlow
 {
-    public class LoadoutManager : MonoBehaviour, IProvider
+    public class LoadoutSystem : MonoBehaviour, IProvider
     {
         [Header("Dependencies")]
         [SerializeField] ItemDatabaseAsset _DatabaseAsset;
@@ -32,7 +32,8 @@ namespace Dave6.CharacterKit.GameFlow
             var itemDb = new ItemDatabase(_DatabaseAsset.Create());
             _LoadoutService = new LoadoutService(itemDb);
             _SavePath = Path.Combine(Application.persistentDataPath, "Player_Loadout.json");
-            PlayerConnector.Instance.RegisterProvider<LoadoutManager>(this);
+            //PlayerConnector.Instance.RegisterProvider<LoadoutManager>(this);
+            GameplayHub.Instance.Register(this);
         }
 
         public void BindContext(ILoadoutProvider provider) => _PlayerLoadout = provider;
@@ -63,19 +64,6 @@ namespace Dave6.CharacterKit.GameFlow
             string json = File.ReadAllText(_SavePath);
             var saveData = JsonUtility.FromJson<SaveData>(json);
             _LoadoutService.ImportLoadout(_PlayerLoadout, saveData);
-            //_PlayerLoadout.Import(saveData);
-
-            //var ctx = _PlayerLoadout.GetLoadoutContext();
-            //_LoadoutService.ImportLoadout(ctx, saveData);
-
-            // if (ctx.TryGetRoot(RootContainerRole.Inventory, out var inventory))
-            // {
-            //     if (inventory.IsEmpty())
-            //     {
-            //         Debug.Log("인벤토리 아이탬 지급");
-            //         GiveInitializeItems();
-            //     }
-            // }
 
             // UI 갱신 요청
             OnLoadComplete?.Invoke();
@@ -85,24 +73,21 @@ namespace Dave6.CharacterKit.GameFlow
 
         void GiveInitializeItems()
         {
-            // var ctx = _PlayerLoadout.GetLoadoutContext();
-            // if (!ctx.TryGetRoot(RootContainerRole.Inventory, out var inventory)) return;
-
             foreach (var iDef in _StarterItems)
             {
                 Debug.Log($"초기 아이템 지급: {iDef.DisplayName}");
 
                 _PlayerLoadout.Add(new ItemInstance(iDef.Create()), RootContainerRole.Inventory);
-                //ctx.AddItem(new ItemInstance(iDef.Create()), RootContainerRole.Inventory);
-                //inventory.TryAdd(new ItemInstance(iDef.Create()));
             }
         }
     }
 
     public class LoadoutComposition
     {
-        public LoadoutManager Manager;
+        public LoadoutSystem Manager;
         public PlayerLoadout Loadout;
         public LoadoutMainPanel UI;
     }
+
+
 }

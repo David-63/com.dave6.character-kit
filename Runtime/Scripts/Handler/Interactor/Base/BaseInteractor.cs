@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using Dave6.CharacterKit.GameFlow;
 using Dave6.CharacterKit.Sensor;
-using Dave6.ThirdPersonCamera;
 using UnityEngine;
 
 namespace Dave6.CharacterKit.Handler.Interactor
@@ -40,9 +38,9 @@ namespace Dave6.CharacterKit.Handler.Interactor
             _Sensor = new RaycastSensor2(transform)
             {
                 CastLength = _CastLength,
+                CastRadius = _CastRadius,
                 Layermask = _InteractableMask
             };
-            _Sensor.SetRadius(_CastRadius);
         }
         protected virtual void FindTargetInteractable()
         {
@@ -58,6 +56,20 @@ namespace Dave6.CharacterKit.Handler.Interactor
 
             _CurrentTarget = interactable;
         }
+        
+        #region Interactor API
+        public IInteractable CurrentTarget => _CurrentTarget;
+        public bool HasTarget => _CurrentTarget != null;
+        public virtual string GetCurrentPrompt()
+        {
+            if (_CurrentTarget == null) return string.Empty;
+            return _CurrentTarget.GetPromptText(this);
+        }
+        public virtual bool CanInteract()
+        {
+            return HasTarget;
+        }
+        #endregion
 
 
         public virtual void RequestInteract()
@@ -65,11 +77,7 @@ namespace Dave6.CharacterKit.Handler.Interactor
             if (_CurrentTarget == null) return;
             _CurrentTarget.Interact(this);
         }
-        public virtual string GetCurrentPrompt()
-        {
-            if (_CurrentTarget == null) return "Empty";
-            return _CurrentTarget.GetPromptText(this);
-        }
+
         protected abstract Vector3 GetCastOrigin();
 
         protected abstract Vector3 GetCastDirection();
@@ -94,33 +102,6 @@ namespace Dave6.CharacterKit.Handler.Interactor
             {
                 _CurrentTarget = null;
             }
-        }
-    }
-
-    public class PlayerInteractor : BaseInteractor
-    {
-        ThirdPersonCameraController _CameraController;
-
-        // prompt UI 객체
-        // 인풋 키 (이건 connector에서 이벤트 바인딩 하면 됨)
-        // Register 패턴으로 카메라 연결..?
-        public void OnUpdate()
-        {
-            Tick();
-
-            HandleInput();
-        }
-
-        protected override Vector3 GetCastOrigin() => _CameraController.CameraPosition;
-        protected override Vector3 GetCastDirection() => _CameraController.CameraForward;
-        protected virtual void HandleInput()
-        {
-            // if (_Input == null) return;
-
-            // if (_Input.interactTap)
-            // {
-            //     RequestInteract();
-            // }
         }
     }
 }
