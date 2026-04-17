@@ -90,9 +90,8 @@ namespace Dave6.CharacterKit.AnimHandler
         public void UpdateDirection(Vector3 direction)
         {
             _Animator.SetFloat("directionX", direction.x);
-            _Animator.SetFloat("directionY", direction.z);
+            _Animator.SetFloat("directionY", direction.y);
         }
-
 
         /// <summary>
         /// 1. 액션 토큰 필요함

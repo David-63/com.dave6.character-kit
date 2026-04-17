@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityUtils.Timer;
 
 namespace Dave6.CharacterKit.Handler.Combat
@@ -26,15 +25,10 @@ namespace Dave6.CharacterKit.Handler.Combat
 
             ComboCount(anim);
         }
-        public bool EvaluateExit(BaseActionContext ctx, out EActionExitReason reason)
+        public bool IsFinished(BaseActionContext ctx)
         {
-            if (!ctx.AttackTimer.IsRunning)
-            {
-                reason = EActionExitReason.LeaseExpired;
-                return true;
-            }
-
-            reason = EActionExitReason.None;
+            var playerCtx = ctx as PlayerCombatContext;
+            if (!playerCtx.AttackTimer.IsRunning) return true;
             return false;
         }
         public void CleanupAction(BaseActionContext ctx)
@@ -48,7 +42,6 @@ namespace Dave6.CharacterKit.Handler.Combat
             yaw = 0f;
             return true;
         }
-
 
         void ComboReset()
         {

@@ -23,6 +23,11 @@ namespace Dave6.CharacterKit.Sensor
             get => _Config.LayerMask;
             set => _Config.LayerMask = value;
         }
+        public QueryTriggerInteraction TriggerInteraction
+        {
+            get => _Config.TriggerInteraction;
+            set => _Config.TriggerInteraction = value;
+        }
 
         readonly CastConfig _Config = new();
         readonly CastResolver _Resolver = new();

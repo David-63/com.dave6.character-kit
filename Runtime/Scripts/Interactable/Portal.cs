@@ -55,7 +55,7 @@ namespace Dave6.CharacterKit.Interactable
 
         public override string GetPromptText(IInteractor interactor)
         {
-            return "[F] Enter";
+            return "Enter";
         }
 
         protected override void OnInteract(IInteractor interactor)
@@ -65,5 +65,4 @@ namespace Dave6.CharacterKit.Interactable
             SceneDirector.Instance.RequestSceneLoad(_TargetScene, _ConnectId);
         }
     }
-
 }

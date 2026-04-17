@@ -1,4 +1,3 @@
-using Dave6.CharacterKit.AnimHandler;
 
 namespace Dave6.CharacterKit.Handler.Combat
 {
@@ -21,15 +20,10 @@ namespace Dave6.CharacterKit.Handler.Combat
                 anim.PlayAction("Firearm_Reload_Freelook");
             }
         }
-        public bool EvaluateExit(BaseActionContext ctx, out EActionExitReason reason)
+        public bool IsFinished(BaseActionContext ctx)
         {
-            PlayerCombatContext playerCtx = ctx as PlayerCombatContext;
-            if (!playerCtx.Reloading)
-            {
-                reason = EActionExitReason.LeaseExpired;
-                return true;
-            }
-            reason = EActionExitReason.None;
+            var playerCtx = ctx as PlayerCombatContext;
+            if (!playerCtx.Reloading) return true;
             return false;
         }
 

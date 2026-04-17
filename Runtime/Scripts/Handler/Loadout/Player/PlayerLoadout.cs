@@ -11,7 +11,7 @@ namespace Dave6.CharacterKit.Handler.Loadout
     /// <summary>
     /// Facade 패턴?
     /// </summary>
-    public class PlayerLoadout : BaseLoadout, IProvider, ILoadoutProvider
+    public class PlayerLoadout : BaseLoadout, ILoadoutProvider
     {
         [SerializeField] RootContainerConfigAsset _Config;
 

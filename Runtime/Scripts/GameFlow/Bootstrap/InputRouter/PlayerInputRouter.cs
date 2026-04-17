@@ -22,8 +22,11 @@ namespace Dave6.CharacterKit.GameFlow.Input
             _Input.Shift += InputShift;
             _Input.Focus += InputFocus;
             _Input.Attack += InputAttack;
+            _Input.AttackTap += InputAttackTap;
             _Input.Reload += InputReload;
+            _Input.ReloadTap += InputReloadTap;
             _Input.Interact += InputInteract;
+            _Input.InteractTap += InputInteractTap;
         }
 
         void OnDisable()
@@ -34,8 +37,11 @@ namespace Dave6.CharacterKit.GameFlow.Input
             _Input.Shift -= InputShift;
             _Input.Focus -= InputFocus;
             _Input.Attack -= InputAttack;
+            _Input.AttackTap -= InputAttackTap;
             _Input.Reload -= InputReload;
             _Input.Interact -= InputInteract;
+            _Input.ReloadTap -= InputReloadTap;
+            _Input.InteractTap -= InputInteractTap;
         }
 
         void InputMove(Vector2 value) => _Target?.OnMove(value);
@@ -44,7 +50,10 @@ namespace Dave6.CharacterKit.GameFlow.Input
         void InputShift(bool value) => _Target?.OnAction(ActionType.Shift, value);
         void InputFocus(bool value) => _Target?.OnAction(ActionType.Focus, value);
         void InputAttack(bool value) => _Target?.OnAction(ActionType.Attack, value);
+        void InputAttackTap() => _Target?.OnTap(ActionType.Attack);
         void InputReload(bool value) => _Target?.OnAction(ActionType.Reload, value);
+        void InputReloadTap() => _Target?.OnTap(ActionType.Reload);
         void InputInteract(bool value) => _Target?.OnAction(ActionType.Interact, value);
+        void InputInteractTap() => _Target?.OnTap(ActionType.Interact);
     }
 }

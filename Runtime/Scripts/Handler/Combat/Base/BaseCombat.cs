@@ -16,7 +16,6 @@ namespace Dave6.CharacterKit.Handler.Combat
         protected AnimatorHandler _AnimHandler;
 
         // === 공통 쿼리 ===
-
         protected virtual void Awake()
         {
             _AnimHandler = GetComponent<AnimatorHandler>();
@@ -31,6 +30,7 @@ namespace Dave6.CharacterKit.Handler.Combat
             
             if (_ActiveModule != null && _ActiveModuleType != nextType)
             {
+                // 종료조건이라기 보단 어떻게 강제 종료했는지 기록을 남기는 느낌?
                 SetExit(EActionExitReason.Chained);
                 _ActiveModule.CleanupAction(_BaseContext);
             }
@@ -39,13 +39,15 @@ namespace Dave6.CharacterKit.Handler.Combat
             _ActiveModuleType = nextType;
             nextModule.TryAction(_BaseContext, this);
         }
-        public bool ExitIs(EActionExitReason reason)
-        {
-            if (_BaseContext.ExitReason != reason) return false;
-            _BaseContext.ExitReason = EActionExitReason.None;
-            return true;
-        }
 
+        public bool CheckExit(EActionExitReason reason)
+        {
+            return _BaseContext.ExitReason == reason;
+        }
+        public void ConsumeExit()
+        {
+            _BaseContext.ExitReason = EActionExitReason.None;
+        }
         public void PlayAction(string anim, bool allowSameAnim = true)
         {
             _AnimHandler.ChangeAnimation(anim, allowSameAnim);

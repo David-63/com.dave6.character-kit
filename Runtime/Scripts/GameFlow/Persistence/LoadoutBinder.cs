@@ -4,7 +4,7 @@ using Dave6.CharacterKit.Handler.Loadout;
 using Dave6.CharacterKit.UnityUI.ItemSystem;
 using UnityEngine;
 
-namespace Dave6.CharacterKit.GameFlow
+namespace Dave6.CharacterKit.GameFlow.Binder
 {
     public class LoadoutBinder : MonoBehaviour
     {
@@ -22,7 +22,6 @@ namespace Dave6.CharacterKit.GameFlow
             GameplayHub.Instance.OnRegistered += HandleRegister;
             TryResolveFromHub();
         }
-
         void OnDisable()
         {
             if (enabled == false) return;
@@ -39,7 +38,7 @@ namespace Dave6.CharacterKit.GameFlow
         }
         void TryResolveFromHub()
         {
-            var hub= GameplayHub.Instance;
+            var hub = GameplayHub.Instance;
             
             if (_Manager == null) _Manager = hub.Get<LoadoutSystem>();
             if (_Loadout == null) _Loadout = hub.Get<PlayerLoadout>();
@@ -62,7 +61,6 @@ namespace Dave6.CharacterKit.GameFlow
             uiInput.SetUI(_UI);
             var systemInput = FindFirstObjectByType<SystemInputHandler>();
             systemInput.Inject(_Manager.Save, _Manager.Load);
-
 
             GameplayHub.Instance.OnRegistered -= HandleRegister;
         }

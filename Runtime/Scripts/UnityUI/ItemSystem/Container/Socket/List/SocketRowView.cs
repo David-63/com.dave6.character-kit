@@ -48,7 +48,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
                 Add(row);
 
-                Debug.Log($"{socket.SlotCategory}, {socket.SlotId}");
+                //Debug.Log($"{socket.SlotCategory}, {socket.SlotId}");
             }
         }
     }

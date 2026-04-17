@@ -2,7 +2,7 @@ using Dave6.CharacterKit.AnimHandler;
 using Dave6.CharacterKit.GameFlow;
 using Dave6.CharacterKit.GameFlow.Input;
 using Dave6.CharacterKit.Handler.Combat;
-using Dave6.CharacterKit.Handler.Loadout;
+using Dave6.CharacterKit.Handler.Interactor;
 using Dave6.CharacterKit.Handler.Mover;
 using Dave6.CharacterKit.Inputs;
 using Dave6.CharacterKit.Player.States;
@@ -20,7 +20,6 @@ namespace Dave6.CharacterKit.Player
         [SerializeField] Transform _CameraFollowTarget;
 
         // 입력 제어
-        //[SerializeField] InputReader m_Input;
         public PlayerInputContext InputCtx {get; private set;}
 
         // 움직임 제어
@@ -35,21 +34,20 @@ namespace Dave6.CharacterKit.Player
         StateMachine _LocomotionSM;
         StateMachine _ActionSM;
 
+        // Interactor 제어
+        public PlayerInteractor Interactor {get; private set;}
+
         /// <summary>
         ///  초기화 진행은 partal 클래스로 나눠서
         ///  초기화 전용 파일을 따로 만들 예정
         /// </summary>
         void Awake()
         {
-            //PlayerConnector.Instance.RegisterTarget(this);
             PlayerSpawner.Instance.SetPlayer(gameObject);
-            //GameplayHub.Instance.Get<PlayerInputRouter>().SetTarget(this);
             var playerInput = FindFirstObjectByType<PlayerInputRouter>();
             playerInput.SetTarget(this);
             gameObject.layer = 3;
-            // 카메라 바인딩
             CameraSystem = FindAnyObjectByType<ThirdPersonCameraController>();
-            // 인풋 바인딩
             InputCtx = new();
 
             // 컴포넌트 바인딩
@@ -72,6 +70,10 @@ namespace Dave6.CharacterKit.Player
             // 애니메이션 이벤트 바인딩
             AnimHandler.OnReloadFinishedAction += Combat.HandleReloadEnd;
             AnimHandler.OnAttackFinishedAction += Combat.HandleAttackEnd;
+
+            // Interactor
+            Interactor = GetComponent<PlayerInteractor>();
+            Interactor.BindCamera(CameraSystem);
         }
 
         void Start()
@@ -99,34 +101,31 @@ namespace Dave6.CharacterKit.Player
             var range = new ActionRangeState(this);
             var reload = new ActionReloadState(this);
 
-            _ActionSM.At(idle, melee, new FuncPredicate(() => Combat.IsMeleeState()));
-            _ActionSM.At(idle, range, new FuncPredicate(() => Combat.IsRangeState()));
-            _ActionSM.At(idle, reload, new FuncPredicate(() => Combat.CanReload()));
+            _ActionSM.Any(melee, new FuncPredicate(() => Combat.ShouldEnterMelee()));
+            _ActionSM.Any(range, new FuncPredicate(() => Combat.ShouldEnterRange()));
+            _ActionSM.Any(reload, new FuncPredicate(() => Combat.ShouldEnterReload()));
 
-            _ActionSM.At(melee, range, new FuncPredicate(() => Combat.IsRangeState()));
-            _ActionSM.At(range, melee, new FuncPredicate(() => Combat.IsMeleeState()));
-            _ActionSM.At(melee, reload, new FuncPredicate(() => Combat.CanReload()));
-            _ActionSM.At(range, reload, new FuncPredicate(() => Combat.CanReload()));
+            _ActionSM.SetDebug(true);
 
-            _ActionSM.At(melee, idle, new FuncPredicate(() => Combat.ExitIs(EActionExitReason.LeaseExpired)));
-            _ActionSM.At(range, idle, new FuncPredicate(() => !InputCtx.focus && Combat.ExitIs(EActionExitReason.LeaseExpired)));
-            _ActionSM.At(reload, idle, new FuncPredicate(() => Combat.ReloadFinished()));
+            // 종료 조건
+            _ActionSM.At(melee, idle, new FuncPredicate(() => true));
+            _ActionSM.At(range, idle, new FuncPredicate(() => true));
+            _ActionSM.At(reload, idle, new FuncPredicate(() => true));
 
             _ActionSM.SetState(_ActionSM.GetStateByType(typeof(ActionIdleState)));
         }
 
-
         void Update()
         {
-            //ReadInput();
             CameraSystem.OnUpdate(InputCtx.look);
 
             MoverFrameInput frameInput = new MoverFrameInput(Time.deltaTime, CameraSystem.ReferenceYaw, CameraSystem.CameraForward);
             Mover.OnUpdate(in frameInput);
             CameraSystem.SetMoveSpeed01(Mover.GetMoveSpeed01());
-            //combat.OnUpdate();
+            Interactor.OnUpdate();
 
             _LocomotionSM.Update();
+            Combat.OnUpdate();
             _ActionSM.Update();
 
             ClearInput();
@@ -142,6 +141,7 @@ namespace Dave6.CharacterKit.Player
             _LocomotionSM.LateUpdate();
         }
 
+        #region 인풋 로직
         bool IsInFocus() => InputCtx.focus;
 
         void ClearInput()
@@ -207,5 +207,6 @@ namespace Dave6.CharacterKit.Player
                 break;
             }
         }
+        #endregion
     }
 }

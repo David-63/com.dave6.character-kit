@@ -1,9 +1,5 @@
-using System;
-using Dave6.Foundation.Math;
 using Dave6.ItemSystem.Application.Container;
 using Dave6.ItemSystem.Application.Mapper;
-using Dave6.ItemSystem.Domain.Container;
-using Dave6.ItemSystem.Domain.Item;
 using UnityEngine;
 
 namespace Dave6.CharacterKit.UnityUI.ItemSystem

@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace Dave6.CharacterKit.GameFlow
 {
-    public class LoadoutSystem : MonoBehaviour, IProvider
+    public class LoadoutSystem : MonoBehaviour
     {
         [Header("Dependencies")]
         [SerializeField] ItemDatabaseAsset _DatabaseAsset;

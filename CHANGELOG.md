@@ -1,20 +1,20 @@
-## [0.0.14] - 2025.04.12
+## [0.0.15] - 2025.04.18
 
 ### Added
+- Interactor 핸들러 추가
+ - Interactor는 상호작용 대상을 감지하는 역할만 수행
+- Interaction UI view 추가
+- Interaction 로직과 UI 를 바인더로 통합함
 
 ### Changed
-- 입력 처리 구조를 Router 기반으로 분리
+- Combat 핸들러의 진행을 리펙토링하여 책임을 분리함
+ - 각 모듈은 액션 실행만 담당함
+ - Combat 핸들러가 ActionState의 라이프사이클 및 종료 조건을 결정하도록 변경
+ - EvaluateExit(판단 포함) 대신에 IsFinised 를 사용하여 모듈 인터페이스의 규모를 축소함
 - UI 입력과 플레이어 입력 흐름 분리
 
 ### Removed
-- PlayerConnector 제거
 
 ### Refactored
-- PlayerConnector를 역할 단위 컴포넌트로 분해 (Input, Binder, System)
-- GameplayHub 기반 의존성 등록 및 참조 구조 도입
-- Binder 패턴으로 초기화 및 연결 책임 분리
-- Loadout 관련 구성 (System, UI, Data) 연결 방식 개선
 
 ### Notes
-빡빡한 초기화 구조를 기존 중압 집중형 대신에 분산 구조로 전환
-이 다음으로 Interactor 를 Loadout처럼 구현할 것..!

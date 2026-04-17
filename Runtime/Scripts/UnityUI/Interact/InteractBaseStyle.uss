@@ -1,0 +1,31 @@
+/* root 위치 */
+.i-root {
+    position: absolute;
+    left: 50%;
+    bottom: 30%;
+    translate: -50% 0;
+}
+
+/* 프롬프트 박스 */
+.i-prompt {
+    flex-direction: row;
+    align-items: center;
+
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+/* 키 표시 */
+.i-key {
+    color: white;
+    font-size: 24px;
+    margin-right: 6px;
+    -unity-font-style: bold;
+}
+
+/* 텍스트 */
+.i-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 24px;
+}

@@ -1,4 +1,3 @@
-using Dave6.Foundation.Collections;
 using Dave6.ItemSystem.Domain.Item;
 using UnityEngine;
 using UnityEngine.UIElements;

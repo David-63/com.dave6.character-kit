@@ -1,0 +1,9 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Packages/com.dave6.character-kit/Runtime/Scripts/UnityUI/Interact/InteractBaseStyle.uss?fileID=7433441132597879392&amp;guid=2f79cac6d16d047458a6b0354d3d9023&amp;type=3#InteractBaseStyle"/>
+    <ui:VisualElement name="main-root" class="i-root">
+        <ui:VisualElement name="prompt" class="i-prompt" style="flex-grow: 1;">
+            <ui:Label text="Label" name="key" class="i-key"/>
+            <ui:Label text="Label" name="text" class="i-text"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

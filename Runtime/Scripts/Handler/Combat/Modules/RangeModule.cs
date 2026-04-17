@@ -7,7 +7,7 @@ namespace Dave6.CharacterKit.Handler.Combat
 {
     public class RangeModule : IActionModule
     {
-        float _FireRate = 60f;
+        float _FireRate = 200f;
         float _LastFireTime;
         public bool IsAvailable {get;}
 
@@ -15,7 +15,7 @@ namespace Dave6.CharacterKit.Handler.Combat
         {
             if (Time.time - _LastFireTime < 60f / _FireRate) return;
             _LastFireTime = Time.time;
-            Debug.Log("Pew Pew!!");
+            Debug.Log("Action: 원거리 공격");
 
             ctx.AttackTimer.RestartTimer();
 
@@ -45,28 +45,18 @@ namespace Dave6.CharacterKit.Handler.Combat
             anim.PlayAction("Firearm_Fire", true);
 
         }
-        public bool EvaluateExit(BaseActionContext ctx, out EActionExitReason reason)
+        public bool IsFinished(BaseActionContext ctx)
         {
-            PlayerCombatContext playerCtx = ctx as PlayerCombatContext;
-
-            if (!playerCtx.AttackTimer.IsRunning)
-            {
-                reason = EActionExitReason.LeaseExpired;
-                return true;
-            }
-            if (!playerCtx.IsFocus)
-            {
-                reason = EActionExitReason.InputCancelled;
-                return true;
-            }
-
-            reason = EActionExitReason.None;
+            var playerCtx = ctx as PlayerCombatContext;
+            if (!playerCtx.AttackTimer.IsRunning) return true;
+            //if (!playerCtx.IsFocus) return true;
             return false;
         }
         public void CleanupAction(BaseActionContext ctx)
         {
             ctx.AttackTimer.Stop();
         }
+        
 
         ProjectileMover CreateProjectile(Firearm firearm)
         {

@@ -1,7 +1,5 @@
 using Dave6.Foundation.Math;
 using Dave6.ItemSystem.Domain.Container;
-using Dave6.ItemSystem.Domain.Item;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 

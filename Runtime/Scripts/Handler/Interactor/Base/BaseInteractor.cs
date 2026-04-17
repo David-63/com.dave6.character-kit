@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Dave6.CharacterKit.GameFlow;
 using Dave6.CharacterKit.Sensor;
 using UnityEngine;
+using UnityUtils;
 
 namespace Dave6.CharacterKit.Handler.Interactor
 {
@@ -16,9 +17,10 @@ namespace Dave6.CharacterKit.Handler.Interactor
         public Transform Origin => transform;
 
         [Header("Detection")]
-        [SerializeField] protected float _CastLength = 4f;
+        [SerializeField] protected float _CastLength = 6f;
         [SerializeField] protected float _CastRadius = 0.25f;
         [SerializeField] protected LayerMask _InteractableMask;
+        [SerializeField] protected QueryTriggerInteraction _CastInteraction;
 
         protected readonly List<IInteractable> _Interactables = new();
         protected IInteractable _CurrentTarget;
@@ -39,18 +41,24 @@ namespace Dave6.CharacterKit.Handler.Interactor
             {
                 CastLength = _CastLength,
                 CastRadius = _CastRadius,
-                Layermask = _InteractableMask
+                Layermask = _InteractableMask,
+                TriggerInteraction = _CastInteraction
             };
         }
         protected virtual void FindTargetInteractable()
         {
             _CurrentTarget = null;
-            _Sensor.SetCastOrigin(GetCastOrigin());
-            _Sensor.SetCastDirection(GetCastDirection());
+            var origin = GetCastOrigin();
+            var direction = GetCastDirection();
+            _Sensor.SetCastOrigin(origin);
+            _Sensor.SetCastDirection(direction);
 
             _Sensor.Cast();
+            Debug.DrawLine(origin, origin + direction * _CastLength, Color.red);
             if (!_Sensor.HasDetecteHit()) return;
-            if (!_Sensor.GetCollider().TryGetComponent<IInteractable>(out var interactable)) return;
+
+            var interactable = _Sensor.GetCollider().GetComponentInParent<IInteractable>();
+            if (interactable == null) return;
             if (!_Interactables.Contains(interactable)) return;
             if (!interactable.CanInteract(this)) return;
 
@@ -84,19 +92,23 @@ namespace Dave6.CharacterKit.Handler.Interactor
 
         protected virtual void OnTriggerEnter(Collider other)
         {
-            if (!other.TryGetComponent<IInteractable>(out var interactable)) return;
+            var interactable = other.GetComponentInParent<IInteractable>();
+            if (interactable == null) return;
 
             if (!_Interactables.Contains(interactable))
             {
+                Debug.Log("Add Interactable");
                 _Interactables.Add(interactable);
             }
         }
 
         protected virtual void OnTriggerExit(Collider other)
         {
-            if (!other.TryGetComponent<IInteractable>(out var interactable)) return;
+            var interactable = other.GetComponentInParent<IInteractable>();
+            if (interactable == null) return;
 
             _Interactables.Remove(interactable);
+            Debug.Log("Remove Interactable");
 
             if (_CurrentTarget == interactable)
             {

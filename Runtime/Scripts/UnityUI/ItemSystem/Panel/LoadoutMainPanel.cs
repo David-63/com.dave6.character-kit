@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Dave6.CharacterKit.GameFlow;
@@ -10,7 +9,7 @@ using UnityEngine.UIElements;
 
 namespace Dave6.CharacterKit.UnityUI.ItemSystem
 {
-    public class LoadoutMainPanel : MonoBehaviour, IProvider, IContainerViewResolver
+    public class LoadoutMainPanel : MonoBehaviour, IContainerViewResolver
     {
         VisualElement _Root;
         ILoadoutProvider _LoadoutProvider;
@@ -31,7 +30,6 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             Initialize();
             GameplayHub.Instance.Register(this);
             //PlayerConnector.Instance.RegisterProvider<LoadoutMainPanel>(this);
-
         }
 
         void Initialize()

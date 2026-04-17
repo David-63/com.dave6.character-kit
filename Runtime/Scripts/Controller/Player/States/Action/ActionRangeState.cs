@@ -11,12 +11,26 @@ namespace Dave6.CharacterKit.Player.States
         {
             _Controller.Combat.EnterAttack();
         }
+        public override void OnExit()
+        {
+            _Controller.Combat.EndAction();
+            _Controller.Combat.ConsumeExit();
+        }
 
         public override void Update()
         {
-            _Controller.Combat.EvaluateActionExit();
             if (!_Controller.InputCtx.attack) return;
             _Controller.Combat.TryAction<RangeModule>();
+        }
+
+        public override bool CanOverrideBy(IState next)
+        {
+            return next is ActionMeleeState || next is ActionReloadState;
+        }
+
+        public override bool CanExit()
+        {
+            return _Controller.Combat.CheckExit(EActionExitReason.LeaseExpired);
         }
     }
 }

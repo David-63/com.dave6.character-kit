@@ -13,7 +13,7 @@ namespace Dave6.CharacterKit.Interactable
     public abstract class WorldActor : MonoBehaviour, IInteractable
     {
         [Header("Interaction")]
-        [SerializeField] protected string _PromptText = "[F] Interact";
+        [SerializeField] protected string _PromptText = "Interact";
         [SerializeField] protected bool _IsEnabled = true;
 
         public virtual bool CanInteract(IInteractor interactor) => _IsEnabled;

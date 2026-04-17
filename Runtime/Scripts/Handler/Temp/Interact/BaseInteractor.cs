@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Dave6.CharacterKit.Handler.Interact
+namespace Dave6.CharacterKit.Handler.Temp
 {
     // 탐색만 진행
     public class BaseInteractor : MonoBehaviour, IInteractor1

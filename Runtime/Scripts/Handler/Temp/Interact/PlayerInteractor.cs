@@ -1,7 +1,7 @@
 using Dave6.ThirdPersonCamera;
 using UnityEngine;
 
-namespace Dave6.CharacterKit.Handler.Interact
+namespace Dave6.CharacterKit.Handler.Temp
 {
     // 선택
     public class PlayerInteractor : BaseInteractor
