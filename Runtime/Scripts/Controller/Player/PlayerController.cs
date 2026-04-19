@@ -74,6 +74,7 @@ namespace Dave6.CharacterKit.Player
             // Interactor
             Interactor = GetComponent<PlayerInteractor>();
             Interactor.BindCamera(CameraSystem);
+            Interactor.BindInput(InputCtx);
         }
 
         void Start()
@@ -100,10 +101,12 @@ namespace Dave6.CharacterKit.Player
             var melee = new ActionMeleeState(this);
             var range = new ActionRangeState(this);
             var reload = new ActionReloadState(this);
+            var interact = new ActionInteractState(this);
 
             _ActionSM.Any(melee, new FuncPredicate(() => Combat.ShouldEnterMelee()));
             _ActionSM.Any(range, new FuncPredicate(() => Combat.ShouldEnterRange()));
             _ActionSM.Any(reload, new FuncPredicate(() => Combat.ShouldEnterReload()));
+            _ActionSM.Any(interact, new FuncPredicate(() => Interactor.ShouldEnterInteract()));
 
             _ActionSM.SetDebug(true);
 
@@ -111,6 +114,7 @@ namespace Dave6.CharacterKit.Player
             _ActionSM.At(melee, idle, new FuncPredicate(() => true));
             _ActionSM.At(range, idle, new FuncPredicate(() => true));
             _ActionSM.At(reload, idle, new FuncPredicate(() => true));
+            _ActionSM.At(interact, idle, new FuncPredicate(() => true));
 
             _ActionSM.SetState(_ActionSM.GetStateByType(typeof(ActionIdleState)));
         }

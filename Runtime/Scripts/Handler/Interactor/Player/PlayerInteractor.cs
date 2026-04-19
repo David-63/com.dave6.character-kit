@@ -8,6 +8,7 @@ namespace Dave6.CharacterKit.Handler.Interactor
     public class PlayerInteractor : BaseInteractor
     {
         ThirdPersonCameraController _CameraController;
+        PlayerInputContext _InputCtx;
 
         IInteractable _LastTarget;
 
@@ -20,7 +21,8 @@ namespace Dave6.CharacterKit.Handler.Interactor
             GameplayHub.Instance.Register(this);
         }
 
-        public void BindCamera(ThirdPersonCameraController camera) => _CameraController = camera;
+        internal void BindCamera(ThirdPersonCameraController camera) => _CameraController = camera;
+        internal void BindInput(PlayerInputContext inputCtx) => _InputCtx = inputCtx;
 
         // prompt UI 객체
         // 인풋 키 (이건 connector에서 이벤트 바인딩 하면 됨)
@@ -34,6 +36,20 @@ namespace Dave6.CharacterKit.Handler.Interactor
                 UpdateUI(_CurrentTarget);
                 _LastTarget = _CurrentTarget;
             }
+        }
+
+        public bool ShouldEnterInteract() => _CurrentTarget != null && _InputCtx.interactTap;
+
+        public void ConsumeExit()
+        {
+            _CurrentTarget = null;
+        }
+
+        public void InteractAction()
+        {
+            Debug.Log("Do Interact");
+            _CurrentTarget?.Interact(this);
+            ConsumeExit();
         }
 
         protected override Vector3 GetCastOrigin() => _CameraController.CameraPosition;

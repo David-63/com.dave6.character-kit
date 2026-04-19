@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Dave6.CharacterKit.GameFlow;
+using Dave6.CharacterKit.GameFlow.Factory;
 using Dave6.ItemSystem.Application.Mapper;
 using Dave6.ItemSystem.Domain.Container;
 using Dave6.ItemSystem.Domain.Item;
@@ -29,7 +30,6 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             _Root = doc.rootVisualElement.Q<VisualElement>("main-root");
             Initialize();
             GameplayHub.Instance.Register(this);
-            //PlayerConnector.Instance.RegisterProvider<LoadoutMainPanel>(this);
         }
 
         void Initialize()
@@ -100,7 +100,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
             foreach (var root in _LoadoutProvider.GetContext().GetRootContainers())
             {
-                ContainerBaseView view = ViewFactory.Instance.CreateContainerView(root.Value, _InteractionController);                
+                ContainerBaseView view = GameplayHub.Instance.Get<ViewFactory>().CreateContainerView(root.Value, _InteractionController);
                 if (view == null) continue;
                 _ContainerViews[root.Value] = view;
 
@@ -112,7 +112,8 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         {
             foreach (var item in _LoadoutProvider.GetContext().GetItemsAll())
             {
-                var itemView = ViewFactory.Instance.CreateItemView(_InteractionController);
+                
+                var itemView = GameplayHub.Instance.Get<ViewFactory>().CreateItemView(_InteractionController);
                 if (itemView == null) continue;
 
                 itemView.Bind(item);
@@ -126,19 +127,11 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             }
         }
 
-        // void RefreshLayout()
-        // {
-        //     foreach (var view in _ContainerViews.Values)
-        //     {
-        //         view.Refresh();
-        //     }
-        // }
-
         #region Handle Item
         void HandleItemAdded(ItemInstance item, IItemContainer target)
         {
             // 아이템 뷰 생성
-            var itemView = ViewFactory.Instance.CreateItemView(_InteractionController);
+            var itemView = GameplayHub.Instance.Get<ViewFactory>().CreateItemView(_InteractionController);
             itemView.Bind(item);
             _itemViews.Add(item, itemView);
 

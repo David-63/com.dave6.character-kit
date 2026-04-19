@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Dave6.CharacterKit.GameFlow.Factory;
 using Dave6.CharacterKit.Handler.Loadout;
 using Dave6.CharacterKit.UnityUI.ItemSystem;
 using Dave6.ItemSystem.Application.Container;
@@ -16,7 +17,7 @@ namespace Dave6.CharacterKit.GameFlow
     public class LoadoutSystem : MonoBehaviour
     {
         [Header("Dependencies")]
-        [SerializeField] ItemDatabaseAsset _DatabaseAsset;
+        //[SerializeField] ItemDatabaseAsset _DatabaseAsset;
         [SerializeField] List<ItemDefinitionAsset> _StarterItems;
 
         LoadoutService _LoadoutService;
@@ -29,10 +30,10 @@ namespace Dave6.CharacterKit.GameFlow
         void Awake()
         {
             // DB 로드 및 서비스 초기화
-            var itemDb = new ItemDatabase(_DatabaseAsset.Create());
-            _LoadoutService = new LoadoutService(itemDb);
+            var itemFactory = GameplayHub.Instance.Get<ItemFactory>();
+            _LoadoutService = new LoadoutService(itemFactory);
+
             _SavePath = Path.Combine(Application.persistentDataPath, "Player_Loadout.json");
-            //PlayerConnector.Instance.RegisterProvider<LoadoutManager>(this);
             GameplayHub.Instance.Register(this);
         }
 
@@ -41,7 +42,6 @@ namespace Dave6.CharacterKit.GameFlow
         public void Save()
         {
             var saveData = _LoadoutService.ExportLoadout(_PlayerLoadout.GetContext());
-            // var saveData = _LoadoutService.ExportLoadout(_PlayerLoadout.GetLoadoutContext());
 
             string json = JsonUtility.ToJson(saveData, true);
             File.WriteAllText(_SavePath, json);

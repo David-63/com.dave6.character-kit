@@ -1,4 +1,4 @@
-## [0.0.15] - 2025.04.18
+## [0.0.16] - 2025.04.19
 
 ### Added
 - Interactor 핸들러 추가
@@ -7,14 +7,16 @@
 - Interaction 로직과 UI 를 바인더로 통합함
 
 ### Changed
-- Combat 핸들러의 진행을 리펙토링하여 책임을 분리함
- - 각 모듈은 액션 실행만 담당함
- - Combat 핸들러가 ActionState의 라이프사이클 및 종료 조건을 결정하도록 변경
- - EvaluateExit(판단 포함) 대신에 IsFinised 를 사용하여 모듈 인터페이스의 규모를 축소함
-- UI 입력과 플레이어 입력 흐름 분리
+- ItemFactory 구현 추가 및 ItemInstance 생성 책임 담당
+- GameplayHub를 통해 ItemFactory 및 ItemDatabase 접근 구조 구성
+- LoadoutSystem에서 아이템 생성 로직 제거 및 Save/Load 책임으로 제한
+- 아이템 생성 경로를 Factory 기반으로 통일
 
 ### Removed
 
 ### Refactored
+- ItemSystem ↔ CharacterKit 간 의존성 분리
+- 아이템 생성 흐름을 외부 주입 기반으로 재구성
+- 생성(Create)과 복원(Load)의 책임 분리
 
 ### Notes

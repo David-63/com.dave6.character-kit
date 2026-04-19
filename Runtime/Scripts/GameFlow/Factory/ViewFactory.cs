@@ -1,18 +1,20 @@
+using Dave6.CharacterKit.UnityUI.ItemSystem;
 using Dave6.ItemSystem.Domain.Container;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityUtils;
 
-namespace Dave6.CharacterKit.UnityUI.ItemSystem
+namespace Dave6.CharacterKit.GameFlow.Factory
 {
-    /// <summary>
-    /// 이걸 싱글톤으로?
-    /// </summary>
-    public class ViewFactory : SingletonTemplate<ViewFactory>
+    public class ViewFactory : MonoBehaviour
     {
         [SerializeField] VisualTreeAsset _ItemTemplate;
         [SerializeField] VisualTreeAsset _GridTemplate;
         [SerializeField] VisualTreeAsset _SocketTemplate;
+
+        void Awake()
+        {
+            GameplayHub.Instance.Register(this);
+        }
 
         public ItemView CreateItemView(ItemInteractionController interactionController)
         {
@@ -44,4 +46,5 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             return null;
         }
     }
+
 }
