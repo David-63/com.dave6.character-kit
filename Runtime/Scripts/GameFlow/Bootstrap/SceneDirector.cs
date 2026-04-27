@@ -74,6 +74,8 @@ namespace Dave6.CharacterKit.GameFlow
             {
                 GameFlowController.Instance.ChangeState(GameState.Running);
                 OnSceneFullyEntered?.Invoke("Lobby");
+                Scene mapScene = SceneManager.GetSceneByName("Lobby");
+                SceneManager.SetActiveScene(mapScene);
             });
             _PrevMap = "Lobby";
         }
@@ -90,6 +92,8 @@ namespace Dave6.CharacterKit.GameFlow
             {
                 GameFlowController.Instance.ChangeState(GameState.Running);
                 OnSceneFullyEntered?.Invoke(sceneName);
+                Scene mapScene = SceneManager.GetSceneByName(sceneName);
+                SceneManager.SetActiveScene(mapScene);
             });
 
             // PlayerConnector.Instance.SpawnPlayer(_NextSpawnId, () =>

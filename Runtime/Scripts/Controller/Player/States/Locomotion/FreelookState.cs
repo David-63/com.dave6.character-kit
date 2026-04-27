@@ -79,5 +79,4 @@ namespace Dave6.CharacterKit.Player.States
             _PrevGrounded = grounded;
         }
     }
-
 }

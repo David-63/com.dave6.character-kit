@@ -42,6 +42,7 @@ namespace Dave6.CharacterKit.Handler.Interactor
 
         public void ConsumeExit()
         {
+            _Interactables.Remove(_CurrentTarget);
             _CurrentTarget = null;
         }
 

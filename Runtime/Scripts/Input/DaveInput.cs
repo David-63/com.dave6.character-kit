@@ -158,6 +158,42 @@ namespace Dave6.CharacterKit.Input
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""476bb78c-f23f-4331-aac0-14cf74b11563"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenLoadout"",
+                    ""type"": ""Button"",
+                    ""id"": ""3305a04e-ded1-47b9-a48e-ec70f01c4747"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Save"",
+                    ""type"": ""Button"",
+                    ""id"": ""4dfb73cd-1014-4945-85dc-2b9712025ed5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Load"",
+                    ""type"": ""Button"",
+                    ""id"": ""17fcf8b2-5318-4faf-afac-24836bd25493"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""ScrollSelect"",
                     ""type"": ""Value"",
                     ""id"": ""a6a19ee6-215f-4371-9185-492103996893"",
@@ -185,45 +221,9 @@ namespace Dave6.CharacterKit.Input
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Reload"",
-                    ""type"": ""Button"",
-                    ""id"": ""476bb78c-f23f-4331-aac0-14cf74b11563"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""WeaponSwitch"",
                     ""type"": ""Button"",
                     ""id"": ""c87d0dfe-0038-47b7-80eb-3497623a6ee9"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""OpenStatus"",
-                    ""type"": ""Button"",
-                    ""id"": ""3305a04e-ded1-47b9-a48e-ec70f01c4747"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Save"",
-                    ""type"": ""Button"",
-                    ""id"": ""4dfb73cd-1014-4945-85dc-2b9712025ed5"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Load"",
-                    ""type"": ""Button"",
-                    ""id"": ""17fcf8b2-5318-4faf-afac-24836bd25493"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -535,7 +535,7 @@ namespace Dave6.CharacterKit.Input
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""OpenStatus"",
+                    ""action"": ""OpenLoadout"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -564,13 +564,22 @@ namespace Dave6.CharacterKit.Input
             ]
         },
         {
-            ""name"": ""Status"",
+            ""name"": ""Loadout"",
             ""id"": ""f9c4e7fd-2d88-4f3d-95b4-0397cff7d0da"",
             ""actions"": [
                 {
                     ""name"": ""Close"",
                     ""type"": ""Button"",
                     ""id"": ""5a4a2557-6569-42fa-bbde-7763d9f050c6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Drop"",
+                    ""type"": ""Button"",
+                    ""id"": ""f4bd2b76-5069-47cd-926a-78e35172be4c"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -597,6 +606,17 @@ namespace Dave6.CharacterKit.Input
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Close"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a79b47d2-0550-4e00-ab4a-d00272c903f6"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";PC"",
+                    ""action"": ""Drop"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -642,23 +662,24 @@ namespace Dave6.CharacterKit.Input
             m_Character_Shift = m_Character.FindAction("Shift", throwIfNotFound: true);
             m_Character_Attack = m_Character.FindAction("Attack", throwIfNotFound: true);
             m_Character_Interact = m_Character.FindAction("Interact", throwIfNotFound: true);
+            m_Character_Reload = m_Character.FindAction("Reload", throwIfNotFound: true);
+            m_Character_OpenLoadout = m_Character.FindAction("OpenLoadout", throwIfNotFound: true);
+            m_Character_Save = m_Character.FindAction("Save", throwIfNotFound: true);
+            m_Character_Load = m_Character.FindAction("Load", throwIfNotFound: true);
             m_Character_ScrollSelect = m_Character.FindAction("ScrollSelect", throwIfNotFound: true);
             m_Character_Equip = m_Character.FindAction("Equip", throwIfNotFound: true);
             m_Character_Drop = m_Character.FindAction("Drop", throwIfNotFound: true);
-            m_Character_Reload = m_Character.FindAction("Reload", throwIfNotFound: true);
             m_Character_WeaponSwitch = m_Character.FindAction("WeaponSwitch", throwIfNotFound: true);
-            m_Character_OpenStatus = m_Character.FindAction("OpenStatus", throwIfNotFound: true);
-            m_Character_Save = m_Character.FindAction("Save", throwIfNotFound: true);
-            m_Character_Load = m_Character.FindAction("Load", throwIfNotFound: true);
-            // Status
-            m_Status = asset.FindActionMap("Status", throwIfNotFound: true);
-            m_Status_Close = m_Status.FindAction("Close", throwIfNotFound: true);
+            // Loadout
+            m_Loadout = asset.FindActionMap("Loadout", throwIfNotFound: true);
+            m_Loadout_Close = m_Loadout.FindAction("Close", throwIfNotFound: true);
+            m_Loadout_Drop = m_Loadout.FindAction("Drop", throwIfNotFound: true);
         }
 
         ~@DaveInput()
         {
             UnityEngine.Debug.Assert(!m_Character.enabled, "This will cause a leak and performance issues, DaveInput.Character.Disable() has not been called.");
-            UnityEngine.Debug.Assert(!m_Status.enabled, "This will cause a leak and performance issues, DaveInput.Status.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Loadout.enabled, "This will cause a leak and performance issues, DaveInput.Loadout.Disable() has not been called.");
         }
 
         /// <summary>
@@ -741,14 +762,14 @@ namespace Dave6.CharacterKit.Input
         private readonly InputAction m_Character_Shift;
         private readonly InputAction m_Character_Attack;
         private readonly InputAction m_Character_Interact;
+        private readonly InputAction m_Character_Reload;
+        private readonly InputAction m_Character_OpenLoadout;
+        private readonly InputAction m_Character_Save;
+        private readonly InputAction m_Character_Load;
         private readonly InputAction m_Character_ScrollSelect;
         private readonly InputAction m_Character_Equip;
         private readonly InputAction m_Character_Drop;
-        private readonly InputAction m_Character_Reload;
         private readonly InputAction m_Character_WeaponSwitch;
-        private readonly InputAction m_Character_OpenStatus;
-        private readonly InputAction m_Character_Save;
-        private readonly InputAction m_Character_Load;
         /// <summary>
         /// Provides access to input actions defined in input action map "Character".
         /// </summary>
@@ -789,6 +810,22 @@ namespace Dave6.CharacterKit.Input
             /// </summary>
             public InputAction @Interact => m_Wrapper.m_Character_Interact;
             /// <summary>
+            /// Provides access to the underlying input action "Character/Reload".
+            /// </summary>
+            public InputAction @Reload => m_Wrapper.m_Character_Reload;
+            /// <summary>
+            /// Provides access to the underlying input action "Character/OpenLoadout".
+            /// </summary>
+            public InputAction @OpenLoadout => m_Wrapper.m_Character_OpenLoadout;
+            /// <summary>
+            /// Provides access to the underlying input action "Character/Save".
+            /// </summary>
+            public InputAction @Save => m_Wrapper.m_Character_Save;
+            /// <summary>
+            /// Provides access to the underlying input action "Character/Load".
+            /// </summary>
+            public InputAction @Load => m_Wrapper.m_Character_Load;
+            /// <summary>
             /// Provides access to the underlying input action "Character/ScrollSelect".
             /// </summary>
             public InputAction @ScrollSelect => m_Wrapper.m_Character_ScrollSelect;
@@ -801,25 +838,9 @@ namespace Dave6.CharacterKit.Input
             /// </summary>
             public InputAction @Drop => m_Wrapper.m_Character_Drop;
             /// <summary>
-            /// Provides access to the underlying input action "Character/Reload".
-            /// </summary>
-            public InputAction @Reload => m_Wrapper.m_Character_Reload;
-            /// <summary>
             /// Provides access to the underlying input action "Character/WeaponSwitch".
             /// </summary>
             public InputAction @WeaponSwitch => m_Wrapper.m_Character_WeaponSwitch;
-            /// <summary>
-            /// Provides access to the underlying input action "Character/OpenStatus".
-            /// </summary>
-            public InputAction @OpenStatus => m_Wrapper.m_Character_OpenStatus;
-            /// <summary>
-            /// Provides access to the underlying input action "Character/Save".
-            /// </summary>
-            public InputAction @Save => m_Wrapper.m_Character_Save;
-            /// <summary>
-            /// Provides access to the underlying input action "Character/Load".
-            /// </summary>
-            public InputAction @Load => m_Wrapper.m_Character_Load;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -867,6 +888,18 @@ namespace Dave6.CharacterKit.Input
                 @Interact.started += instance.OnInteract;
                 @Interact.performed += instance.OnInteract;
                 @Interact.canceled += instance.OnInteract;
+                @Reload.started += instance.OnReload;
+                @Reload.performed += instance.OnReload;
+                @Reload.canceled += instance.OnReload;
+                @OpenLoadout.started += instance.OnOpenLoadout;
+                @OpenLoadout.performed += instance.OnOpenLoadout;
+                @OpenLoadout.canceled += instance.OnOpenLoadout;
+                @Save.started += instance.OnSave;
+                @Save.performed += instance.OnSave;
+                @Save.canceled += instance.OnSave;
+                @Load.started += instance.OnLoad;
+                @Load.performed += instance.OnLoad;
+                @Load.canceled += instance.OnLoad;
                 @ScrollSelect.started += instance.OnScrollSelect;
                 @ScrollSelect.performed += instance.OnScrollSelect;
                 @ScrollSelect.canceled += instance.OnScrollSelect;
@@ -876,21 +909,9 @@ namespace Dave6.CharacterKit.Input
                 @Drop.started += instance.OnDrop;
                 @Drop.performed += instance.OnDrop;
                 @Drop.canceled += instance.OnDrop;
-                @Reload.started += instance.OnReload;
-                @Reload.performed += instance.OnReload;
-                @Reload.canceled += instance.OnReload;
                 @WeaponSwitch.started += instance.OnWeaponSwitch;
                 @WeaponSwitch.performed += instance.OnWeaponSwitch;
                 @WeaponSwitch.canceled += instance.OnWeaponSwitch;
-                @OpenStatus.started += instance.OnOpenStatus;
-                @OpenStatus.performed += instance.OnOpenStatus;
-                @OpenStatus.canceled += instance.OnOpenStatus;
-                @Save.started += instance.OnSave;
-                @Save.performed += instance.OnSave;
-                @Save.canceled += instance.OnSave;
-                @Load.started += instance.OnLoad;
-                @Load.performed += instance.OnLoad;
-                @Load.canceled += instance.OnLoad;
             }
 
             /// <summary>
@@ -923,6 +944,18 @@ namespace Dave6.CharacterKit.Input
                 @Interact.started -= instance.OnInteract;
                 @Interact.performed -= instance.OnInteract;
                 @Interact.canceled -= instance.OnInteract;
+                @Reload.started -= instance.OnReload;
+                @Reload.performed -= instance.OnReload;
+                @Reload.canceled -= instance.OnReload;
+                @OpenLoadout.started -= instance.OnOpenLoadout;
+                @OpenLoadout.performed -= instance.OnOpenLoadout;
+                @OpenLoadout.canceled -= instance.OnOpenLoadout;
+                @Save.started -= instance.OnSave;
+                @Save.performed -= instance.OnSave;
+                @Save.canceled -= instance.OnSave;
+                @Load.started -= instance.OnLoad;
+                @Load.performed -= instance.OnLoad;
+                @Load.canceled -= instance.OnLoad;
                 @ScrollSelect.started -= instance.OnScrollSelect;
                 @ScrollSelect.performed -= instance.OnScrollSelect;
                 @ScrollSelect.canceled -= instance.OnScrollSelect;
@@ -932,21 +965,9 @@ namespace Dave6.CharacterKit.Input
                 @Drop.started -= instance.OnDrop;
                 @Drop.performed -= instance.OnDrop;
                 @Drop.canceled -= instance.OnDrop;
-                @Reload.started -= instance.OnReload;
-                @Reload.performed -= instance.OnReload;
-                @Reload.canceled -= instance.OnReload;
                 @WeaponSwitch.started -= instance.OnWeaponSwitch;
                 @WeaponSwitch.performed -= instance.OnWeaponSwitch;
                 @WeaponSwitch.canceled -= instance.OnWeaponSwitch;
-                @OpenStatus.started -= instance.OnOpenStatus;
-                @OpenStatus.performed -= instance.OnOpenStatus;
-                @OpenStatus.canceled -= instance.OnOpenStatus;
-                @Save.started -= instance.OnSave;
-                @Save.performed -= instance.OnSave;
-                @Save.canceled -= instance.OnSave;
-                @Load.started -= instance.OnLoad;
-                @Load.performed -= instance.OnLoad;
-                @Load.canceled -= instance.OnLoad;
             }
 
             /// <summary>
@@ -981,29 +1002,34 @@ namespace Dave6.CharacterKit.Input
         /// </summary>
         public CharacterActions @Character => new CharacterActions(this);
 
-        // Status
-        private readonly InputActionMap m_Status;
-        private List<IStatusActions> m_StatusActionsCallbackInterfaces = new List<IStatusActions>();
-        private readonly InputAction m_Status_Close;
+        // Loadout
+        private readonly InputActionMap m_Loadout;
+        private List<ILoadoutActions> m_LoadoutActionsCallbackInterfaces = new List<ILoadoutActions>();
+        private readonly InputAction m_Loadout_Close;
+        private readonly InputAction m_Loadout_Drop;
         /// <summary>
-        /// Provides access to input actions defined in input action map "Status".
+        /// Provides access to input actions defined in input action map "Loadout".
         /// </summary>
-        public struct StatusActions
+        public struct LoadoutActions
         {
             private @DaveInput m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public StatusActions(@DaveInput wrapper) { m_Wrapper = wrapper; }
+            public LoadoutActions(@DaveInput wrapper) { m_Wrapper = wrapper; }
             /// <summary>
-            /// Provides access to the underlying input action "Status/Close".
+            /// Provides access to the underlying input action "Loadout/Close".
             /// </summary>
-            public InputAction @Close => m_Wrapper.m_Status_Close;
+            public InputAction @Close => m_Wrapper.m_Loadout_Close;
+            /// <summary>
+            /// Provides access to the underlying input action "Loadout/Drop".
+            /// </summary>
+            public InputAction @Drop => m_Wrapper.m_Loadout_Drop;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
-            public InputActionMap Get() { return m_Wrapper.m_Status; }
+            public InputActionMap Get() { return m_Wrapper.m_Loadout; }
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
             public void Enable() { Get().Enable(); }
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
@@ -1011,9 +1037,9 @@ namespace Dave6.CharacterKit.Input
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
             public bool enabled => Get().enabled;
             /// <summary>
-            /// Implicitly converts an <see ref="StatusActions" /> to an <see ref="InputActionMap" /> instance.
+            /// Implicitly converts an <see ref="LoadoutActions" /> to an <see ref="InputActionMap" /> instance.
             /// </summary>
-            public static implicit operator InputActionMap(StatusActions set) { return set.Get(); }
+            public static implicit operator InputActionMap(LoadoutActions set) { return set.Get(); }
             /// <summary>
             /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
             /// </summary>
@@ -1021,14 +1047,17 @@ namespace Dave6.CharacterKit.Input
             /// <remarks>
             /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
             /// </remarks>
-            /// <seealso cref="StatusActions" />
-            public void AddCallbacks(IStatusActions instance)
+            /// <seealso cref="LoadoutActions" />
+            public void AddCallbacks(ILoadoutActions instance)
             {
-                if (instance == null || m_Wrapper.m_StatusActionsCallbackInterfaces.Contains(instance)) return;
-                m_Wrapper.m_StatusActionsCallbackInterfaces.Add(instance);
+                if (instance == null || m_Wrapper.m_LoadoutActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_LoadoutActionsCallbackInterfaces.Add(instance);
                 @Close.started += instance.OnClose;
                 @Close.performed += instance.OnClose;
                 @Close.canceled += instance.OnClose;
+                @Drop.started += instance.OnDrop;
+                @Drop.performed += instance.OnDrop;
+                @Drop.canceled += instance.OnDrop;
             }
 
             /// <summary>
@@ -1037,21 +1066,24 @@ namespace Dave6.CharacterKit.Input
             /// <remarks>
             /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
             /// </remarks>
-            /// <seealso cref="StatusActions" />
-            private void UnregisterCallbacks(IStatusActions instance)
+            /// <seealso cref="LoadoutActions" />
+            private void UnregisterCallbacks(ILoadoutActions instance)
             {
                 @Close.started -= instance.OnClose;
                 @Close.performed -= instance.OnClose;
                 @Close.canceled -= instance.OnClose;
+                @Drop.started -= instance.OnDrop;
+                @Drop.performed -= instance.OnDrop;
+                @Drop.canceled -= instance.OnDrop;
             }
 
             /// <summary>
-            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="StatusActions.UnregisterCallbacks(IStatusActions)" />.
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="LoadoutActions.UnregisterCallbacks(ILoadoutActions)" />.
             /// </summary>
-            /// <seealso cref="StatusActions.UnregisterCallbacks(IStatusActions)" />
-            public void RemoveCallbacks(IStatusActions instance)
+            /// <seealso cref="LoadoutActions.UnregisterCallbacks(ILoadoutActions)" />
+            public void RemoveCallbacks(ILoadoutActions instance)
             {
-                if (m_Wrapper.m_StatusActionsCallbackInterfaces.Remove(instance))
+                if (m_Wrapper.m_LoadoutActionsCallbackInterfaces.Remove(instance))
                     UnregisterCallbacks(instance);
             }
 
@@ -1061,21 +1093,21 @@ namespace Dave6.CharacterKit.Input
             /// <remarks>
             /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
             /// </remarks>
-            /// <seealso cref="StatusActions.AddCallbacks(IStatusActions)" />
-            /// <seealso cref="StatusActions.RemoveCallbacks(IStatusActions)" />
-            /// <seealso cref="StatusActions.UnregisterCallbacks(IStatusActions)" />
-            public void SetCallbacks(IStatusActions instance)
+            /// <seealso cref="LoadoutActions.AddCallbacks(ILoadoutActions)" />
+            /// <seealso cref="LoadoutActions.RemoveCallbacks(ILoadoutActions)" />
+            /// <seealso cref="LoadoutActions.UnregisterCallbacks(ILoadoutActions)" />
+            public void SetCallbacks(ILoadoutActions instance)
             {
-                foreach (var item in m_Wrapper.m_StatusActionsCallbackInterfaces)
+                foreach (var item in m_Wrapper.m_LoadoutActionsCallbackInterfaces)
                     UnregisterCallbacks(item);
-                m_Wrapper.m_StatusActionsCallbackInterfaces.Clear();
+                m_Wrapper.m_LoadoutActionsCallbackInterfaces.Clear();
                 AddCallbacks(instance);
             }
         }
         /// <summary>
-        /// Provides a new <see cref="StatusActions" /> instance referencing this action map.
+        /// Provides a new <see cref="LoadoutActions" /> instance referencing this action map.
         /// </summary>
-        public StatusActions @Status => new StatusActions(this);
+        public LoadoutActions @Loadout => new LoadoutActions(this);
         private int m_PCSchemeIndex = -1;
         /// <summary>
         /// Provides access to the input control scheme.
@@ -1159,6 +1191,34 @@ namespace Dave6.CharacterKit.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnInteract(InputAction.CallbackContext context);
             /// <summary>
+            /// Method invoked when associated input action "Reload" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnReload(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "OpenLoadout" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnOpenLoadout(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Save" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSave(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Load" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnLoad(InputAction.CallbackContext context);
+            /// <summary>
             /// Method invoked when associated input action "ScrollSelect" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -1180,47 +1240,19 @@ namespace Dave6.CharacterKit.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnDrop(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "Reload" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnReload(InputAction.CallbackContext context);
-            /// <summary>
             /// Method invoked when associated input action "WeaponSwitch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnWeaponSwitch(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "OpenStatus" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnOpenStatus(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "Save" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnSave(InputAction.CallbackContext context);
-            /// <summary>
-            /// Method invoked when associated input action "Load" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnLoad(InputAction.CallbackContext context);
         }
         /// <summary>
-        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Status" which allows adding and removing callbacks.
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Loadout" which allows adding and removing callbacks.
         /// </summary>
-        /// <seealso cref="StatusActions.AddCallbacks(IStatusActions)" />
-        /// <seealso cref="StatusActions.RemoveCallbacks(IStatusActions)" />
-        public interface IStatusActions
+        /// <seealso cref="LoadoutActions.AddCallbacks(ILoadoutActions)" />
+        /// <seealso cref="LoadoutActions.RemoveCallbacks(ILoadoutActions)" />
+        public interface ILoadoutActions
         {
             /// <summary>
             /// Method invoked when associated input action "Close" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
@@ -1229,6 +1261,13 @@ namespace Dave6.CharacterKit.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnClose(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Drop" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnDrop(InputAction.CallbackContext context);
         }
     }
 }

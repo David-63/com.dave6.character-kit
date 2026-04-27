@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 namespace Dave6.CharacterKit.Inputs
 {
     [CreateAssetMenu(fileName = "Inputs", menuName = "DaveAssets/Input/InputReader")]
-    public class InputReader : ScriptableObject, DaveInput.ICharacterActions, DaveInput.IStatusActions
+    public class InputReader : ScriptableObject, DaveInput.ICharacterActions, DaveInput.ILoadoutActions
     {
         DaveInput actions;
 
@@ -30,22 +30,25 @@ namespace Dave6.CharacterKit.Inputs
         public event UnityAction<bool> Interact = delegate {};
         public event UnityAction InteractTap = delegate {};
 
+        #region Loadout input
+        public event UnityAction<bool> OpenLoadout = delegate {};
+        public event UnityAction<bool> Close = delegate {};
+        public event UnityAction Save = delegate {};
+        public event UnityAction Load = delegate {};
+        public event UnityAction<bool> Drop = delegate {};
+        public event UnityAction DropTap = delegate {};
+        #endregion
+
+
+
         public event UnityAction<float> ScrollSelect = delegate {};
 
         public event UnityAction<bool> Equip = delegate {};
         public event UnityAction EquipTap = delegate {};
-        public event UnityAction<bool> Drop = delegate {};
-        public event UnityAction DropTap = delegate {};
-
-
         public event UnityAction WeaponSwitchToggleChanged = delegate {};
 
-        public event UnityAction<bool> OpenStatus = delegate {};
-        public event UnityAction<bool> Close = delegate {};
 
 
-        public event UnityAction Save = delegate {};
-        public event UnityAction Load = delegate {};
 
 
         bool _ShiftToggle;
@@ -62,7 +65,7 @@ namespace Dave6.CharacterKit.Inputs
             {
                 actions = new DaveInput();
                 actions.Character.SetCallbacks(this);
-                actions.Status.SetCallbacks(this);
+                actions.Loadout.SetCallbacks(this);
             }
             EnableCharacterInput();
         }
@@ -72,14 +75,14 @@ namespace Dave6.CharacterKit.Inputs
         }
         public void EnableCharacterInput()
         {
-            actions.Status.Disable();
+            actions.Loadout.Disable();
             actions.Character.Enable();
         }
 
         public void EnableStatusInput()
         {
             actions.Character.Disable();
-            actions.Status.Enable();
+            actions.Loadout.Enable();
         }
 
         public void OnMove(InputAction.CallbackContext context)
@@ -141,38 +144,7 @@ namespace Dave6.CharacterKit.Inputs
             }
         }
 
-        public void OnScrollSelect(InputAction.CallbackContext context)
-        {
-            ScrollSelect?.Invoke(context.ReadValue<float>());
-        }
-
-        public void OnEquip(InputAction.CallbackContext context)
-        {
-            switch (context.phase)
-            {
-                case InputActionPhase.Started:
-                Equip?.Invoke(true);
-                EquipTap?.Invoke();
-                break;
-                case InputActionPhase.Canceled:
-                Equip?.Invoke(false);
-                break;
-            }
-        }
-
-        public void OnDrop(InputAction.CallbackContext context)
-        {
-            switch (context.phase)
-            {
-                case InputActionPhase.Started:
-                Drop?.Invoke(true);
-                DropTap?.Invoke();
-                break;
-                case InputActionPhase.Canceled:
-                Drop?.Invoke(false);
-                break;
-            }
-        }
+        
 
         public void OnReload(InputAction.CallbackContext context)
         {
@@ -191,25 +163,6 @@ namespace Dave6.CharacterKit.Inputs
             }
         }
 
-        public void OnWeaponSwitch(InputAction.CallbackContext context)
-        {
-
-            switch (context.phase)
-            {
-                case InputActionPhase.Started:
-                Shift?.Invoke(true);
-
-                _WeaponSwitchToggle = !_WeaponSwitchToggle;
-                WeaponSwitchToggleChanged?.Invoke();
-                break;
-                case InputActionPhase.Canceled:
-                Shift?.Invoke(false);
-                break;
-            }
-
-            
-        }
-
         public void OnFocus(InputAction.CallbackContext context)
         {
             switch (context.phase)
@@ -222,16 +175,15 @@ namespace Dave6.CharacterKit.Inputs
                 break;
             }
         }
-
-        public void OnOpenStatus(InputAction.CallbackContext context)
+        public void OnOpenLoadout(InputAction.CallbackContext context)
         {
             switch (context.phase)
             {
                 case InputActionPhase.Started:
-                OpenStatus?.Invoke(true);
+                OpenLoadout?.Invoke(true);
                 break;
                 case InputActionPhase.Canceled:
-                OpenStatus?.Invoke(false);
+                OpenLoadout?.Invoke(false);
                 break;
             }
         }
@@ -268,5 +220,60 @@ namespace Dave6.CharacterKit.Inputs
                 break;
             }
         }
+
+        public void OnDrop(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Drop?.Invoke(true);
+                DropTap?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Drop?.Invoke(false);
+                break;
+            }
+        }
+
+        public void OnWeaponSwitch(InputAction.CallbackContext context)
+        {
+
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Shift?.Invoke(true);
+
+                _WeaponSwitchToggle = !_WeaponSwitchToggle;
+                WeaponSwitchToggleChanged?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Shift?.Invoke(false);
+                break;
+            }
+        }
+        public void OnScrollSelect(InputAction.CallbackContext context)
+        {
+            ScrollSelect?.Invoke(context.ReadValue<float>());
+        }
+
+        public void OnEquip(InputAction.CallbackContext context)
+        {
+            switch (context.phase)
+            {
+                case InputActionPhase.Started:
+                Equip?.Invoke(true);
+                EquipTap?.Invoke();
+                break;
+                case InputActionPhase.Canceled:
+                Equip?.Invoke(false);
+                break;
+            }
+        }
+
+
+
+        
+
+
     }
 }

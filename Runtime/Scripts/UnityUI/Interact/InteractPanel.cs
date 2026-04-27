@@ -24,13 +24,11 @@ namespace Dave6.CharacterKit
         {
             _Text.text = text;
             _Root.style.display = DisplayStyle.Flex;
-            Debug.Log("Show");
         }
 
         public void Hide()
         {
             _Root.style.display = DisplayStyle.None;
-            Debug.Log("Hide");
         }
     }
 }

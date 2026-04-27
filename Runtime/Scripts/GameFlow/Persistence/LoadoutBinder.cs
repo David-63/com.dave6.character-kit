@@ -55,7 +55,7 @@ namespace Dave6.CharacterKit.GameFlow.Binder
             if (_ViewFactory == null || _Manager == null || _Loadout == null || _UI == null) return;
 
             _Manager.BindContext(_Loadout);
-            _UI.Bind(_Loadout);
+            //_UI.Bind(_Loadout);
 
             _Manager.OnLoadComplete -= _UI.Rebuild;
             _Manager.OnLoadComplete += _UI.Rebuild;

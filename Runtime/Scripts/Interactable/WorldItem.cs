@@ -37,13 +37,14 @@ namespace Dave6.CharacterKit.Interactable
         protected override void OnInteract(IInteractor interactor)
         {
             Debug.Log("Pickup Item");
-            // world Item이 Container에 배치되어야함
-            // 인스턴스..를 가지고 있어야할까?
-
             // ILoadoutProvider 같은 인터페이스는 제네릭에 못써서 그냥 일반 클래스 씀
             var loadout = GameplayHub.Instance.Get<PlayerLoadout>();
-            var result = loadout.Add(_Item, RootContainerRole.Inventory);
-            if (!result.Success) return;
+            var result = loadout.Add(_Item, ExtensionRole.Inventory);
+            if (!result.Success)
+            {
+                Debug.Log($"result: {result.Error}");
+                return;
+            }
 
             Destroy(gameObject);
         }

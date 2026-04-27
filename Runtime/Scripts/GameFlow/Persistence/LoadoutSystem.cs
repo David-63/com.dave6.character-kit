@@ -77,7 +77,7 @@ namespace Dave6.CharacterKit.GameFlow
             {
                 Debug.Log($"초기 아이템 지급: {iDef.DisplayName}");
 
-                _PlayerLoadout.Add(new ItemInstance(iDef.Create()), RootContainerRole.Inventory);
+                _PlayerLoadout.Add(new ItemInstance(iDef.Create()), ExtensionRole.Inventory);
             }
         }
     }

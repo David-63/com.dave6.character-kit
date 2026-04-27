@@ -8,9 +8,9 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
     public abstract partial class ContainerBaseView : VisualElement
     {
         protected IItemContainer _Container;
-        protected ItemInteractionController _InteractionController;
+        protected ItemInteractionController _InteractionController; // 굳이 필요없어보이는데
 
-        public abstract void Initialize(VisualTreeAsset template, ItemInteractionController interactionController);
+        public abstract void Initialize(VisualTreeAsset template);
 
         public abstract void Bind(IItemContainer container);
 

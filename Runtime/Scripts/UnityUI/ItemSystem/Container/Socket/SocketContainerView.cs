@@ -11,9 +11,8 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         SocketContainer _SocketContainer;
         SocketLayoutView _SocketView;
 
-        public override void Initialize(VisualTreeAsset template, ItemInteractionController interactionController)
+        public override void Initialize(VisualTreeAsset template)
         {
-            _InteractionController = interactionController;
             Clear();
             style.flexGrow = 1;
             style.flexShrink = 1;
@@ -50,12 +49,12 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         {
             var socket = _SocketView.GetSlotAtPosition(panelPos);
             if (socket == null) return null;
-            return new SoketPlacement(socket.SlotId);
+            return new SocketPlacement(socket.SlotId);
         }
 
         public override Vector2 PlacementToPanel(ItemPlacement placement)
         {
-            if (placement is not SoketPlacement sp) return Vector2.zero;
+            if (placement is not SocketPlacement sp) return Vector2.zero;
             var slot = _SocketContainer.SocketSlots[sp.SlotId];
             var slotView = _SocketView.GetSlotView(slot);
 

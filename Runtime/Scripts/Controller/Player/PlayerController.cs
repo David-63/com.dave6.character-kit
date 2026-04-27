@@ -86,7 +86,7 @@ namespace Dave6.CharacterKit.Player
         void SetupStateMachine()
         {
             _LocomotionSM = new();
-            
+
             var freelook = new FreelookState(this);
             var strafe = new StrafeState(this);
 

@@ -1,3 +1,5 @@
+using Dave6.CharacterKit.GameFlow;
+using Dave6.CharacterKit.GameFlow.Factory;
 using Dave6.ItemSystem.Application.Container;
 using Dave6.ItemSystem.Application.Mapper;
 using UnityEngine;
@@ -8,17 +10,22 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
     {
         public ILoadoutProvider _LoadoutProvider;
         public IContainerViewResolver _Resolver;
+        public IInteractor _Interactor;
 
 
+        public ItemView SelectedItem { get; private set; }
 
-        public ItemInteractionController(IContainerViewResolver resolver, ILoadoutProvider loadoutProvider)
+        public void SetFocusItem(ItemView itemView) => SelectedItem = itemView;
+
+        public ItemInteractionController(IContainerViewResolver resolver, ILoadoutProvider loadoutProvider, IInteractor interactor)
         {
             _Resolver = resolver;
             _LoadoutProvider = loadoutProvider;
+            _Interactor = interactor;
         }
 
 
-        public void HandleDrop(ItemView itemView)
+        public void HandleMove(ItemView itemView)
         {
             var item = itemView.GetItem();
 
@@ -46,10 +53,9 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
                 TargetPlacement = placement,
             };
 
-            TryDrop(request);
+            TryMove(request);
         }
-
-        void TryDrop(DropRequest request)
+        void TryMove(DropRequest request)
         {
             var result = _LoadoutProvider.Move(request.Item, request.Target, request.TargetPlacement);
 
@@ -102,6 +108,16 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             }
             Debug.Log("드롭할 컨테이너 없음");
             return null;
+        }
+
+        public void DropSelectedItem()
+        {
+            var itemView = SelectedItem;
+            var result = _LoadoutProvider.Remove(itemView.GetItem());
+            if (!result.Success) return;
+
+            GameplayHub.Instance.Get<ItemFactory>().CreateWorldItem(itemView.GetItem(), _Interactor.Origin.position);
+            SelectedItem = null;
         }
     }
 }

@@ -118,11 +118,12 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
         void OnDrop()
         {
-            _InteractionController.HandleDrop(target as ItemView);
+            _InteractionController.HandleMove(target as ItemView);
             Debug.Log("Drop");
         }
         void OnClick()
         {
+            _InteractionController.SetFocusItem(target as ItemView);
             Debug.Log("Click");
         }
         void OnLongPress()

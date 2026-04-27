@@ -2,9 +2,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Dave6.CharacterKit.GameFlow;
 using Dave6.CharacterKit.GameFlow.Factory;
+using Dave6.ItemSystem.Application.Container;
 using Dave6.ItemSystem.Application.Mapper;
 using Dave6.ItemSystem.Domain.Container;
 using Dave6.ItemSystem.Domain.Item;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -20,7 +22,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
         ItemInteractionController _InteractionController;
 
-        Dictionary<IItemContainer, ContainerBaseView> _ContainerViews = new ();
+        Dictionary<ExtensionRole, ContainerCollectionView> _CollectionViews = new();
         Dictionary<ItemInstance, ItemView> _itemViews = new();
 
 
@@ -47,20 +49,18 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             HideUI();
         }
         #region API
-        public void Bind(ILoadoutProvider provider)
+        public void Bind(ILoadoutProvider provider, IInteractor interactor)
         {
             if (_LoadoutProvider == provider) return;
             _LoadoutProvider = provider;
 
-            _InteractionController = new ItemInteractionController(this, _LoadoutProvider);
+            _InteractionController = new ItemInteractionController(this, _LoadoutProvider, interactor);
 
             if (_ContentsContainer == null) _ContentsContainer = _Root.Q<VisualElement>("contents-container");
 
             BindEvents();
 
-            BuildContainerView();
-
-            //RefreshLayout();
+            InitialCollectionView();
         }
 
         public void ShowUI()
@@ -73,6 +73,16 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         {
             _Root.style.visibility = Visibility.Hidden;
             //_Root.style.display = DisplayStyle.None;
+        }
+        public ItemView GetSelectedItem()
+        {
+            return _InteractionController.SelectedItem;
+        }
+        public void RequestDrop()
+        {
+            if (_InteractionController.SelectedItem == null) return;
+
+            _InteractionController.DropSelectedItem();
         }
         public void Rebuild()
         {
@@ -93,19 +103,18 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         }
 
         // dirty 플래그를 통해서 호출하도록 하기¿
-        void BuildContainerView()
+        void InitialCollectionView()
         {
-            _ContainerViews.Clear();
             _ContentsContainer.Clear();
+            _CollectionViews.Clear();
 
-            foreach (var root in _LoadoutProvider.GetContext().GetRootContainers())
+            foreach (var collection in _LoadoutProvider.GetContext().GetCollections())
             {
-                ContainerBaseView view = GameplayHub.Instance.Get<ViewFactory>().CreateContainerView(root.Value, _InteractionController);
+                ContainerCollectionView view = GameplayHub.Instance.Get<ViewFactory>().CreateCollectionView();
                 if (view == null) continue;
-                _ContainerViews[root.Value] = view;
-
+                _CollectionViews[collection.Key] = view;
                 _ContentsContainer.Add(view);
-                view.Bind(root.Value);
+                view.Bind(collection.Value);
             }
         }
         void BuildItemView()
@@ -145,6 +154,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         {
             var view = _itemViews[item];
             view.RemoveFromHierarchy();
+            _itemViews.Remove(item);
         }
         void HandleItemMoved(ItemInstance item, IItemContainer target)
         {
@@ -159,9 +169,15 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         void PlaceItem(ItemView itemView, ItemPlacement placement)
         {
             var container = itemView.GetItem().Owner;
-            var containerView = _ContainerViews[container];
-            var panelPos = containerView.PlacementToPanel(placement);
+            var containerViews = GetContainerViews();
 
+            if (!containerViews.TryGetValue(container, out var containerView))
+            {
+                Debug.LogError("ContainerView not found");
+                return;
+            }
+
+            var panelPos = containerView.PlacementToPanel(placement);
             Vector2 totalPos = _ItemLayer.WorldToLocal(panelPos);
             Debug.Log($"PlaceItem: {itemView.GetItem().Definition.DisplayName} to {totalPos}");
 
@@ -172,7 +188,16 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         #region IContainerViewResolver
         public ReadOnlyDictionary<IItemContainer, ContainerBaseView> GetContainerViews()
         {
-            return new ReadOnlyDictionary<IItemContainer, ContainerBaseView>(_ContainerViews);
+            var dict = new Dictionary<IItemContainer, ContainerBaseView>();
+            foreach (var collectionView in _CollectionViews.Values)
+            {
+                foreach (var kv in collectionView.GetContainerViews())
+                {
+                    dict[kv.Key] = kv.Value;
+                }
+            }
+
+            return new ReadOnlyDictionary<IItemContainer, ContainerBaseView>(dict);
         }
 
         public void RefreshItem(ItemInstance item)

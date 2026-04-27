@@ -15,9 +15,8 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
         public GridArea GetGridArea() => _GridArea;
 
-        public override void Initialize(VisualTreeAsset template, ItemInteractionController interactionController)
+        public override void Initialize(VisualTreeAsset template)
         {
-            _InteractionController = interactionController;
             //Clear();
             style.flexGrow = 1;
             style.flexShrink = 1;

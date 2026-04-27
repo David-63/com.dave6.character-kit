@@ -7,13 +7,21 @@ namespace Dave6.CharacterKit.GameFlow.Factory
 {
     public class ViewFactory : MonoBehaviour
     {
-        [SerializeField] VisualTreeAsset _ItemTemplate;
+        [SerializeField] VisualTreeAsset _CollectionTemplate;
         [SerializeField] VisualTreeAsset _GridTemplate;
         [SerializeField] VisualTreeAsset _SocketTemplate;
+        [SerializeField] VisualTreeAsset _ItemTemplate;
 
         void Awake()
         {
             GameplayHub.Instance.Register(this);
+        }
+
+        public ContainerCollectionView CreateCollectionView()
+        {
+            var view = new ContainerCollectionView();
+            view.Initialize(_CollectionTemplate);
+            return view;
         }
 
         public ItemView CreateItemView(ItemInteractionController interactionController)
@@ -29,18 +37,18 @@ namespace Dave6.CharacterKit.GameFlow.Factory
 
             return view;
         }
-        public ContainerBaseView CreateContainerView(IItemContainer container, ItemInteractionController interactionController)
+        public ContainerBaseView CreateContainerView(IItemContainer container)
         {
             if (container is GridContainer)
             {
                 var view = new GridContainerView();
-                view.Initialize(_GridTemplate, interactionController);
+                view.Initialize(_GridTemplate);
                 return view;
             }
             else if (container is SocketContainer)
             {
                 var view = new SocketContainerView();
-                view.Initialize(_SocketTemplate, interactionController);
+                view.Initialize(_SocketTemplate);
                 return view;
             }
             return null;

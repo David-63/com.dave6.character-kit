@@ -70,6 +70,42 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Reload",
+                    "type": "Button",
+                    "id": "476bb78c-f23f-4331-aac0-14cf74b11563",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "OpenLoadout",
+                    "type": "Button",
+                    "id": "3305a04e-ded1-47b9-a48e-ec70f01c4747",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Save",
+                    "type": "Button",
+                    "id": "4dfb73cd-1014-4945-85dc-2b9712025ed5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Load",
+                    "type": "Button",
+                    "id": "17fcf8b2-5318-4faf-afac-24836bd25493",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "ScrollSelect",
                     "type": "Value",
                     "id": "a6a19ee6-215f-4371-9185-492103996893",
@@ -97,45 +133,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Reload",
-                    "type": "Button",
-                    "id": "476bb78c-f23f-4331-aac0-14cf74b11563",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "WeaponSwitch",
                     "type": "Button",
                     "id": "c87d0dfe-0038-47b7-80eb-3497623a6ee9",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "OpenStatus",
-                    "type": "Button",
-                    "id": "3305a04e-ded1-47b9-a48e-ec70f01c4747",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Save",
-                    "type": "Button",
-                    "id": "4dfb73cd-1014-4945-85dc-2b9712025ed5",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Load",
-                    "type": "Button",
-                    "id": "17fcf8b2-5318-4faf-afac-24836bd25493",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -447,7 +447,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "OpenStatus",
+                    "action": "OpenLoadout",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -476,13 +476,22 @@
             ]
         },
         {
-            "name": "Status",
+            "name": "Loadout",
             "id": "f9c4e7fd-2d88-4f3d-95b4-0397cff7d0da",
             "actions": [
                 {
                     "name": "Close",
                     "type": "Button",
                     "id": "5a4a2557-6569-42fa-bbde-7763d9f050c6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Drop",
+                    "type": "Button",
+                    "id": "f4bd2b76-5069-47cd-926a-78e35172be4c",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -509,6 +518,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Close",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a79b47d2-0550-4e00-ab4a-d00272c903f6",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";PC",
+                    "action": "Drop",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

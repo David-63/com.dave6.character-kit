@@ -15,14 +15,16 @@ namespace Dave6.CharacterKit.GameFlow.Input
 
         void OnEnable()
         {
-            _Input.OpenStatus += HandleOpen;
+            _Input.OpenLoadout += HandleOpen;
             _Input.Close += HandleClose;
+            _Input.DropTap += HandleDrop;
         }
 
         void OnDisable()
         {
-            _Input.OpenStatus -= HandleOpen;
+            _Input.OpenLoadout -= HandleOpen;
             _Input.Close -= HandleClose;
+            _Input.DropTap -= HandleDrop;
         }
 
         void HandleOpen(bool pressed)
@@ -45,6 +47,10 @@ namespace Dave6.CharacterKit.GameFlow.Input
 
             _Input.EnableCharacterInput(); // 핵심
             _UI.HideUI();
+        }
+        void HandleDrop()
+        {
+            _UI.RequestDrop();
         }
     }
 }

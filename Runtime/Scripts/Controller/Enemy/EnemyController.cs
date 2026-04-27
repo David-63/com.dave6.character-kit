@@ -60,7 +60,7 @@ namespace Dave6.CharacterKit
         void Init_Control()
         {
             _EnemyMover = GetComponent<BaseMover>();
-            _CoreStateMachine = new StateMachine();
+            _CoreStateMachine = new();
         }
         #endregion
 

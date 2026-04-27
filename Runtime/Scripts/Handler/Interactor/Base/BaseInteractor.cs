@@ -17,7 +17,7 @@ namespace Dave6.CharacterKit.Handler.Interactor
         public Transform Origin => transform;
 
         [Header("Detection")]
-        [SerializeField] protected float _CastLength = 6f;
+        [SerializeField] protected float _CastLength = 16f;
         [SerializeField] protected float _CastRadius = 0.25f;
         [SerializeField] protected LayerMask _InteractableMask;
         [SerializeField] protected QueryTriggerInteraction _CastInteraction;
@@ -29,10 +29,6 @@ namespace Dave6.CharacterKit.Handler.Interactor
         protected virtual void Awake()
         {
             InitializeSensor();
-        }
-        protected virtual void Tick()
-        {
-            FindTargetInteractable();
         }
 
         protected virtual void InitializeSensor()
@@ -47,14 +43,28 @@ namespace Dave6.CharacterKit.Handler.Interactor
         }
         protected virtual void FindTargetInteractable()
         {
+            _Interactables.RemoveAll(x => x == null);
             _CurrentTarget = null;
+
+            // interactable이 한개만 있으면
+            // 즉시 타겟 설정
+            if (_Interactables.Count == 0) return;
+            if (_Interactables.Count == 1)
+            {
+                var target = _Interactables[0];
+                if (target.CanInteract(this)) _CurrentTarget = target;
+                return;
+            }
+
+            // 여러개 있으면 cast 판정을 통해서 결정
             var origin = GetCastOrigin();
             var direction = GetCastDirection();
             _Sensor.SetCastOrigin(origin);
             _Sensor.SetCastDirection(direction);
-
             _Sensor.Cast();
+
             Debug.DrawLine(origin, origin + direction * _CastLength, Color.red);
+
             if (!_Sensor.HasDetecteHit()) return;
 
             var interactable = _Sensor.GetCollider().GetComponentInParent<IInteractable>();
@@ -79,7 +89,6 @@ namespace Dave6.CharacterKit.Handler.Interactor
         }
         #endregion
 
-
         public virtual void RequestInteract()
         {
             if (_CurrentTarget == null) return;
@@ -87,7 +96,6 @@ namespace Dave6.CharacterKit.Handler.Interactor
         }
 
         protected abstract Vector3 GetCastOrigin();
-
         protected abstract Vector3 GetCastDirection();
 
         protected virtual void OnTriggerEnter(Collider other)

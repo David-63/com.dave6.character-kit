@@ -9,5 +9,4 @@ namespace Dave6.CharacterKit.Player.States
         {
         }
     }
-
 }
