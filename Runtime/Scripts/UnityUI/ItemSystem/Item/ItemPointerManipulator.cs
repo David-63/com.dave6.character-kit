@@ -8,7 +8,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
     /// </summary>
     public class ItemPointerManipulator : PointerManipulator
     {
-        ItemInteractionController _InteractionController;
+        ItemInteractionController _Controller;
         bool _IsPressed, _IsDragging;
         float _PressTime;
 
@@ -18,11 +18,10 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         /// elementStart: 클릭한 요소의 상대적인 위치
         /// </summary>
         Vector3 pointerStart, elementStart;
+        const float _ClickThreshold = 0.2f; // 클릭과 롱프레스 구분 임계값
+        const float _DragThreshold = 5f; // 드래그 시작 임계값
 
-        public ItemPointerManipulator(ItemInteractionController interactionController)
-        {
-            _InteractionController = interactionController;
-        }
+        public ItemPointerManipulator(ItemInteractionController controller) => _Controller = controller;
 
         protected override void RegisterCallbacksOnTarget()
         {
@@ -38,9 +37,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             target.UnregisterCallback<PointerUpEvent>(OnPointerUp);
         }
 
-        /// <summary>
-        /// 포인터 이벤트 시작하기
-        /// </summary>
+        #region Pointer Event
         void OnPointerDown(PointerDownEvent evt)
         {
             if (evt.button != 0) return;
@@ -62,37 +59,11 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             if (!_IsPressed || !target.HasPointerCapture(evt.pointerId)) return;
 
             float distance = (evt.position - pointerStart).magnitude;
-            float dragThreshold = 5f; // 드래그 시작 임계값
-            if (!_IsDragging && distance > dragThreshold)
-            {
-                OnDragStart();
-            }
 
-            if (_IsDragging)
-            {
-                OnDrag(evt);
-            }
+            if (!_IsDragging && distance > _DragThreshold) DragStart();
 
-
+            if (_IsDragging) Drag(evt);
         }
-
-        void OnDragStart()
-        {
-            _IsDragging = true;
-        }
-        void OnDrag(PointerMoveEvent evt)
-        {
-            // 드래그 로직
-            Vector2 delta = evt.position - pointerStart;
-
-            target.style.left = elementStart.x + delta.x;
-            target.style.top = elementStart.y + delta.y;
-        }
-
-
-        /// <summary>
-        /// 포인터 이밴트 결과 확정하기
-        /// </summary>
         void OnPointerUp(PointerUpEvent evt)
         {
             if (!_IsPressed || !target.HasPointerCapture(evt.pointerId)) return;
@@ -101,34 +72,38 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             target.ReleasePointer(evt.pointerId);
 
             float duration = Time.time - _PressTime;
-            float clickThreshold = 0.2f; // 클릭과 롱프레스 구분 임계값
-            if (_IsDragging)
-            {
-                OnDrop();
-            }
-            else if (duration < clickThreshold)
-            {
-                OnClick();
-            }
-            else
-            {
-                OnLongPress();
-            }
+
+            if      (_IsDragging)                   Drop();
+            else if (duration < _ClickThreshold)    Click();
+            else                                    LongPress();
+        }
+        #endregion
+
+        #region Action
+
+        void DragStart() => _IsDragging = true;
+        void Drag(PointerMoveEvent evt)
+        {
+            Vector2 delta = evt.position - pointerStart;
+
+            target.style.left = elementStart.x + delta.x;
+            target.style.top = elementStart.y + delta.y;
         }
 
-        void OnDrop()
+        void Drop()
         {
-            _InteractionController.HandleMove(target as ItemView);
+            _Controller.HandleMove(target as ItemView);
             Debug.Log("Drop");
         }
-        void OnClick()
+        void Click()
         {
-            _InteractionController.SetFocusItem(target as ItemView);
+            _Controller.SetFocusItem(target as ItemView);
             Debug.Log("Click");
         }
-        void OnLongPress()
+        void LongPress()
         {
-            
+            _Controller.SetFocusItem(target as ItemView);
         }
+        #endregion
     }
 }

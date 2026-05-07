@@ -1,4 +1,3 @@
-using Dave6.CharacterKit.Item;
 using Dave6.ObjectPoolingSystem;
 using UnityEngine;
 using UnityUtils.Timer;
@@ -58,13 +57,13 @@ namespace Dave6.CharacterKit.Handler.Combat
         }
         
 
-        ProjectileMover CreateProjectile(Firearm firearm)
-        {
-            GameObject projectileOjb = ObjectPoolService.Instance.Get(firearm.GetProjectilePrefab());
-            var projectile = projectileOjb.GetComponent<ProjectileMover>();
-            //projectile.BindOwner(m_Controller);
-            return projectile;
-        }
+        // ProjectileMover CreateProjectile(Firearm firearm)
+        // {
+        //     GameObject projectileOjb = ObjectPoolService.Instance.Get(firearm.GetProjectilePrefab());
+        //     var projectile = projectileOjb.GetComponent<ProjectileMover>();
+        //     //projectile.BindOwner(m_Controller);
+        //     return projectile;
+        // }
     }
 
 }

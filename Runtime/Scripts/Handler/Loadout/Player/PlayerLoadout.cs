@@ -37,12 +37,6 @@ namespace Dave6.CharacterKit.Handler.Loadout
 
         void HandleExtension(ContainerAction action)
         {
-            // var fromCollection = action.From != null ? _Context.GetCollection(action.From) : null;
-            // var toCollection   = action.To   != null ? _Context.GetCollection(action.To)   : null;
-
-            // bool wasEquipment = fromCollection != null && IsEquipment(fromCollection);
-            // bool isEquipment  = toCollection   != null && IsEquipment(toCollection);
-
             bool wasEquipment = action.From != null && IsItemInEquipmentBefore(action);
             bool isEquipment = action.To != null && IsItemInEquipment(action.Item);
 
@@ -65,7 +59,7 @@ namespace Dave6.CharacterKit.Handler.Loadout
                 }
             }
         }
-        bool IsItemInEquipment(ItemInstance item)
+        public bool IsItemInEquipment(ItemInstance item)
         {
             var owner = item.Owner;
             while (owner != null)
@@ -135,7 +129,7 @@ namespace Dave6.CharacterKit.Handler.Loadout
             var result = _Service.Remove(item);
             if (!result.Success) return result;
             HandleExtension(result.Action);
-            _Context.NotifyItemRemoved(item);
+            _Context.NotifyItemRemoved(item, result.Action.From);
             return result;
         }
     }

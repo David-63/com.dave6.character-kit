@@ -7,13 +7,12 @@ namespace Dave6.CharacterKit.GameFlow.Factory
 {
     public class ItemFactory : MonoBehaviour, IItemFactory
     {
-        [SerializeField] ItemDatabaseAsset _DatabaseAsset;
+        [SerializeField] ItemDatabaseAsset _DefDatabaseAsset;
         ItemDatabase _Database;
-
         void Awake()
         {
             GameplayHub.Instance.Register(this);
-            _Database = new ItemDatabase(_DatabaseAsset);
+            _Database = new ItemDatabase(_DefDatabaseAsset);
         }
 
         public ItemInstance CreateInstance(string itemId)

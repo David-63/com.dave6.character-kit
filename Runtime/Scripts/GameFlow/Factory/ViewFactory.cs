@@ -1,3 +1,4 @@
+using System;
 using Dave6.CharacterKit.UnityUI.ItemSystem;
 using Dave6.ItemSystem.Domain.Container;
 using UnityEngine;
@@ -8,8 +9,7 @@ namespace Dave6.CharacterKit.GameFlow.Factory
     public class ViewFactory : MonoBehaviour
     {
         [SerializeField] VisualTreeAsset _CollectionTemplate;
-        [SerializeField] VisualTreeAsset _GridTemplate;
-        [SerializeField] VisualTreeAsset _SocketTemplate;
+        [SerializeField] VisualTreeAsset _ContainerTemplate;
         [SerializeField] VisualTreeAsset _ItemTemplate;
 
         void Awake()
@@ -17,9 +17,9 @@ namespace Dave6.CharacterKit.GameFlow.Factory
             GameplayHub.Instance.Register(this);
         }
 
-        public ContainerCollectionView CreateCollectionView()
+        public CollectionView CreateCollectionView()
         {
-            var view = new ContainerCollectionView();
+            var view = new CollectionView();
             view.Initialize(_CollectionTemplate);
             return view;
         }
@@ -39,19 +39,23 @@ namespace Dave6.CharacterKit.GameFlow.Factory
         }
         public ContainerBaseView CreateContainerView(IItemContainer container)
         {
-            if (container is GridContainer)
+            ContainerBaseView view;
+
+            switch (container)
             {
-                var view = new GridContainerView();
-                view.Initialize(_GridTemplate);
-                return view;
+                case GridContainer:
+                    view = new GridContainerView();
+                    break;
+                case SocketContainer:
+                    view = new SocketContainerView();
+                    break;
+                default:
+                    Debug.LogError($"Unsupported container type: {container.GetType()}");
+                    return null;
             }
-            else if (container is SocketContainer)
-            {
-                var view = new SocketContainerView();
-                view.Initialize(_SocketTemplate);
-                return view;
-            }
-            return null;
+            if (view == null) throw new InvalidOperationException("Failed to create container view");
+            view.Initialize(_ContainerTemplate);
+            return view;
         }
     }
 

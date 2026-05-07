@@ -1,7 +1,7 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Packages/com.dave6.character-kit/Runtime/Scripts/UnityUI/ItemSystem/Styles/LoadoutBaseStyle.uss?fileID=7433441132597879392&amp;guid=afc9d0249be244546a3686339ac3cdf9&amp;type=3#LoadoutBaseStyle"/>
-    <ui:VisualElement name="main-root" class="l-row l-absolute c-main">
-        <ui:VisualElement name="contents-container" class="l-row l-fill c-container"/>
-        <ui:VisualElement name="item-layer" class="c-drag"/>
+    <ui:VisualElement name="main-root" class="c-main l-column l-fill">
+        <ui:VisualElement name="contents-layer" class="l-fill l-row"/>
+        <ui:VisualElement name="item-layer" class="c-item-layer"/>
     </ui:VisualElement>
 </ui:UXML>

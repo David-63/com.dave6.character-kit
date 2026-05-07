@@ -17,6 +17,7 @@ namespace Dave6.CharacterKit.GameFlow
 
     public class GameFlowController : SingletonTemplate<GameFlowController>
     {
+        public bool ShowDebugLogs = false;
         public event UnityAction<GameState, GameState> OnStateChanged;
         public GameState CurrentState { get; private set; }
 
@@ -37,7 +38,7 @@ namespace Dave6.CharacterKit.GameFlow
             var previous = CurrentState;
             CurrentState = newState;
 
-            Debug.Log($"[GameFlow] State: {previous} → {newState}");
+            if (ShowDebugLogs) Debug.Log($"[GameFlow] State: {previous} → {newState}");
 
             // TODO: 상태 진입/퇴장 핸들링 추가
             OnStateChanged?.Invoke(previous, newState);

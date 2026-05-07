@@ -1,6 +1,0 @@
-@import url("/Packages/com.unity.cinemachine/Runtime/Debug/CinemachineRuntimeTheme.tss");
-
-@import url("InventoryBaseStyle.uss");
-
-
-VisualElement {}

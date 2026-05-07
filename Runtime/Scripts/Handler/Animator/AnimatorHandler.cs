@@ -1,5 +1,4 @@
 using System;
-using Dave6.CharacterKit.Item;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
@@ -135,13 +134,13 @@ namespace Dave6.CharacterKit.AnimHandler
         }
         #endregion
 
-        public void BindAnimator(IWeaponIkProvider nextWeaponIK)
-        {
-            if (nextWeaponIK.overrideAnimator != null)
-            {
-                _Animator.runtimeAnimatorController = nextWeaponIK.overrideAnimator;
-            }
-        }
+        // public void BindAnimator(IWeaponIkProvider nextWeaponIK)
+        // {
+        //     if (nextWeaponIK.overrideAnimator != null)
+        //     {
+        //         _Animator.runtimeAnimatorController = nextWeaponIK.overrideAnimator;
+        //     }
+        // }
         public void UpdateMoveSpeed(float speed)
         {
             _Animator.SetFloat("moveSpeed", speed);

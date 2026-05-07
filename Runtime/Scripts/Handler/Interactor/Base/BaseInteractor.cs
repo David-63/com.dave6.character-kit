@@ -105,7 +105,7 @@ namespace Dave6.CharacterKit.Handler.Interactor
 
             if (!_Interactables.Contains(interactable))
             {
-                Debug.Log("Add Interactable");
+                //Debug.Log("Add Interactable");
                 _Interactables.Add(interactable);
             }
         }
@@ -116,7 +116,7 @@ namespace Dave6.CharacterKit.Handler.Interactor
             if (interactable == null) return;
 
             _Interactables.Remove(interactable);
-            Debug.Log("Remove Interactable");
+            //Debug.Log("Remove Interactable");
 
             if (_CurrentTarget == interactable)
             {

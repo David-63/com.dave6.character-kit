@@ -48,7 +48,7 @@ namespace Dave6.CharacterKit.Handler.Interactor
 
         public void InteractAction()
         {
-            Debug.Log("Do Interact");
+            //Debug.Log("Do Interact");
             _CurrentTarget?.Interact(this);
             ConsumeExit();
         }

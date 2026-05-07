@@ -6,7 +6,6 @@ using Dave6.ItemSystem.Application.Container;
 using Dave6.ItemSystem.Application.Mapper;
 using Dave6.ItemSystem.Domain.Container;
 using Dave6.ItemSystem.Domain.Item;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -14,18 +13,25 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 {
     public class LoadoutMainPanel : MonoBehaviour, IContainerViewResolver
     {
+        #region VisualElement
         VisualElement _Root;
-        ILoadoutProvider _LoadoutProvider;
-
-        VisualElement _ContentsContainer;
+        VisualElement _ContentsLayer;
         VisualElement _ItemLayer;
+        #endregion
 
+        #region Dependency
+        ILoadoutProvider _LoadoutProvider;
         ItemInteractionController _InteractionController;
+        #endregion
 
-        Dictionary<ExtensionRole, ContainerCollectionView> _CollectionViews = new();
+        #region Views
+        Dictionary<ExtensionRole, CollectionView> _CollectionViews = new();
         Dictionary<ItemInstance, ItemView> _itemViews = new();
 
+        ItemView _CurrentSelected;
+        #endregion
 
+        #region Lifesycle
         void Awake()
         {
             var doc = GetComponent<UIDocument>();
@@ -36,32 +42,130 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
         void Initialize()
         {
-            _ContentsContainer = _Root.Q<VisualElement>("contents-container");
-
+            _ContentsLayer = _Root.Q<VisualElement>("contents-layer");
             _ItemLayer = _Root.Q<VisualElement>("item-layer");
-            _ItemLayer.pickingMode = PickingMode.Ignore;
-            _ItemLayer.style.position = Position.Absolute;
-            _ItemLayer.style.top = 0;
-            _ItemLayer.style.bottom = 0;
-            _ItemLayer.style.left = 0;
-            _ItemLayer.style.right = 0;
+            
+            _ItemLayer.pickingMode = PickingMode.Ignore;    // 이거 지워도 괜찬을지도?
+            _Root.RegisterCallback<PointerDownEvent>(OnBackgroundClick);
 
             HideUI();
         }
-        #region API
+        #endregion
+        #region Binding
         public void Bind(ILoadoutProvider provider, IInteractor interactor)
         {
             if (_LoadoutProvider == provider) return;
             _LoadoutProvider = provider;
 
             _InteractionController = new ItemInteractionController(this, _LoadoutProvider, interactor);
-
-            if (_ContentsContainer == null) _ContentsContainer = _Root.Q<VisualElement>("contents-container");
+            _InteractionController.OnFocusChanged += HandleFocusChanged;
 
             BindEvents();
-
-            InitialCollectionView();
+            BuildCollection();
         }
+        #endregion
+
+        #region Events
+        void BindEvents()
+        {
+            var context = _LoadoutProvider.GetContext();
+
+            context.OnItemAdded += HandleItemAdded;
+            context.OnItemRemoved += HandleItemRemoved;
+            context.OnItemMoved += HandleItemMoved;
+        }
+        void OnBackgroundClick(PointerDownEvent evt)
+        {
+            if (evt.target is ItemView) return;
+
+            _InteractionController.ClearFocus();
+        }
+        #endregion
+
+        #region Build
+        void BuildCollection()
+        {
+            _ContentsLayer.Clear();
+            _CollectionViews.Clear();
+
+            foreach (var collection in _LoadoutProvider.GetContext().GetCollections())
+            {
+                CollectionView view = GameplayHub.Instance.Get<ViewFactory>().CreateCollectionView();
+                if (view == null) continue;
+                _CollectionViews[collection.Key] = view;
+                _ContentsLayer.Add(view);
+                view.Bind(collection.Value);
+            }
+        }
+        #endregion
+
+        #region Item Event
+        void HandleItemAdded(ItemInstance item, IItemContainer target)
+        {
+            // 아이템 뷰 생성
+            var itemView = CreateItemView(item);
+            var placement = target.GetPlacement(item);
+
+            PlaceItem(itemView, placement);
+        }
+        void HandleItemRemoved(ItemInstance item, IItemContainer from)
+        {
+            var view = _itemViews[item];
+            view.RemoveFromHierarchy();
+            _itemViews.Remove(item);
+        }
+        void HandleItemMoved(ItemInstance item, IItemContainer target)
+        {
+            var view = _itemViews[item];
+
+            // _ContainerViews[target] 이렇게 container view를 찾아서 월드포지션을 찾는 방법으로 개선해야함
+            var placement = target.GetPlacement(item);
+            PlaceItem(view, placement);
+        }
+        void HandleFocusChanged(ItemView itemView)
+        {
+            if (_CurrentSelected != null)
+            {
+                _CurrentSelected.RemoveFromClassList("s-item-selected");
+            }
+            _CurrentSelected = itemView;
+            if (_CurrentSelected != null)
+            {
+                _CurrentSelected.AddToClassList("s-item-selected");
+            }
+        }
+        #endregion
+
+        #region Item View
+        ItemView CreateItemView(ItemInstance item)
+        {
+            var view = GameplayHub.Instance.Get<ViewFactory>().CreateItemView(_InteractionController);
+            view.Bind(item);
+            _itemViews[item] = view;
+            _ItemLayer.Add(view);
+            return view;
+        }
+        void PlaceItem(ItemView itemView, ItemPlacement placement)
+        {
+            var container = itemView.GetItem().Owner;
+            var containerViews = GetContainerViews();
+
+            if (!containerViews.TryGetValue(container, out var containerView))
+            {
+                Debug.LogError("ContainerView not found");
+                return;
+            }
+
+            var panelPos = containerView.PlacementToPanel(placement);
+            Vector2 totalPos = _ItemLayer.WorldToLocal(panelPos);
+            Debug.Log($"PlaceItem: {itemView.GetItem().Definition.DisplayName} to {totalPos}");
+
+            itemView.style.left = totalPos.x;
+            itemView.style.top = totalPos.y;
+        }
+        #endregion
+
+        #region UI Control API
 
         public void ShowUI()
         {
@@ -84,6 +188,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
             _InteractionController.DropSelectedItem();
         }
+        #endregion
         public void Rebuild()
         {
             _ItemLayer.Clear();
@@ -91,37 +196,11 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
             BuildItemView();
         }
-        #endregion
 
-        void BindEvents()
-        {
-            var context = _LoadoutProvider.GetContext();
-
-            context.OnItemAdded += HandleItemAdded;
-            context.OnItemRemoved += HandleItemRemoved;
-            context.OnItemMoved += HandleItemMoved;
-        }
-
-        // dirty 플래그를 통해서 호출하도록 하기¿
-        void InitialCollectionView()
-        {
-            _ContentsContainer.Clear();
-            _CollectionViews.Clear();
-
-            foreach (var collection in _LoadoutProvider.GetContext().GetCollections())
-            {
-                ContainerCollectionView view = GameplayHub.Instance.Get<ViewFactory>().CreateCollectionView();
-                if (view == null) continue;
-                _CollectionViews[collection.Key] = view;
-                _ContentsContainer.Add(view);
-                view.Bind(collection.Value);
-            }
-        }
         void BuildItemView()
         {
             foreach (var item in _LoadoutProvider.GetContext().GetItemsAll())
             {
-                
                 var itemView = GameplayHub.Instance.Get<ViewFactory>().CreateItemView(_InteractionController);
                 if (itemView == null) continue;
 
@@ -136,56 +215,9 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             }
         }
 
-        #region Handle Item
-        void HandleItemAdded(ItemInstance item, IItemContainer target)
-        {
-            // 아이템 뷰 생성
-            var itemView = GameplayHub.Instance.Get<ViewFactory>().CreateItemView(_InteractionController);
-            itemView.Bind(item);
-            _itemViews.Add(item, itemView);
 
-            // 아이템 뷰 등록
-            _ItemLayer.Add(itemView);
-            var placement = target.GetPlacement(item);
 
-            PlaceItem(itemView, placement);
-        }
-        void HandleItemRemoved(ItemInstance item)
-        {
-            var view = _itemViews[item];
-            view.RemoveFromHierarchy();
-            _itemViews.Remove(item);
-        }
-        void HandleItemMoved(ItemInstance item, IItemContainer target)
-        {
-            var view = _itemViews[item];
-
-            // _ContainerViews[target] 이렇게 container view를 찾아서 월드포지션을 찾는 방법으로 개선해야함
-            var placement = target.GetPlacement(item);
-            PlaceItem(view, placement);
-        }
-        #endregion
-
-        void PlaceItem(ItemView itemView, ItemPlacement placement)
-        {
-            var container = itemView.GetItem().Owner;
-            var containerViews = GetContainerViews();
-
-            if (!containerViews.TryGetValue(container, out var containerView))
-            {
-                Debug.LogError("ContainerView not found");
-                return;
-            }
-
-            var panelPos = containerView.PlacementToPanel(placement);
-            Vector2 totalPos = _ItemLayer.WorldToLocal(panelPos);
-            Debug.Log($"PlaceItem: {itemView.GetItem().Definition.DisplayName} to {totalPos}");
-
-            itemView.style.left = totalPos.x;
-            itemView.style.top = totalPos.y;
-        }
-
-        #region IContainerViewResolver
+        #region ViewResolver
         public ReadOnlyDictionary<IItemContainer, ContainerBaseView> GetContainerViews()
         {
             var dict = new Dictionary<IItemContainer, ContainerBaseView>();
