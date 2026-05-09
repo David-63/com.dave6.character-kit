@@ -1,5 +1,7 @@
 @import url("/Packages/com.unity.cinemachine/Runtime/Debug/CinemachineRuntimeTheme.tss");
 
-@import url("StashBaseStyle.uss");
+@import url("InspectorBaseStyle.uss");
+
+
 
 VisualElement {}

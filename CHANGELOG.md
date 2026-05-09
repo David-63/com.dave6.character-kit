@@ -1,26 +1,30 @@
-## [0.0.17] - 2025.04.27
+## [0.0.18] - 2025.05.09
 
 ### Added
-- ContainerCollection 기반 Loadout 구조 도입
-- 장비 상태에 따른 Extension 컨테이너 동적 추가/제거 로직
-- ContainerCollectionView UI 추가 (컨테이너 그룹 단위 표현)
-- Collection 이벤트 기반 UI 동기화 (컨테이너 추가/제거 반영)
+- Item Inspector UI 추가
+- Inspector 열기/닫기 및 선택 아이템 기반 상호작용 추가
+- Collection 기반 ItemView 재배치(RebuildItemPlacement) 처리 추가
+- CollectionView 기반 ContainerView 생성 및 관리 구조 추가
 
 ### Changed
-- PlayerLoadout이 ContainerCollection 기반으로 동작하도록 변경
-- LoadoutRootContext가 ContainerCollection을 관리하도록 구조 수정
-- 아이템 추가/이동/제거 시 Extension 처리 로직 통합
-- UI가 단일 Container → Collection 기반 구조로 전환
+- Loadout UI 초기화 및 ItemView 배치 순서 개선
+- Loadout open/close 입력 흐름 및 Input Action 네이밍 정리
+- Runtime Binder 및 UI Hierarchy 구조 정리
+- LoadoutMain의 View 생성 및 이벤트 바인딩 흐름 개선
+- ItemView 배치 로직을 CollectionView 기반 탐색 구조로 변경
 
 ### Removed
 
 ### Refactored
-- Loadout / Service / Context 책임 재정리
-- 컨테이너 탐색 및 매핑 구조 개선 (Container → Collection)
-- UI와 도메인 간 의존성 정리 및 이벤트 흐름 단순화
+- LoadoutMain UI 빌드 및 배치 책임 정리
+- CollectionView / ItemView 생성 흐름 정리
+- UI 이벤트 바인딩 및 선택 처리 구조 개선
+- Inspector 관련 UI 책임 분리
 
 ### Fixed
-- 아이템을 자신의 하위 컨테이너로 이동할 수 있는 문제 방지 (순환 참조 차단)
+- Loadout UI 재오픈 시 Item 위치 동기화 안정성 개선
+- Extension 컨테이너 초기화 순서에 따른 ItemView 배치 문제 완화
 
 ### Notes
-- 인벤토리 시스템이 확장 가능한 구조(ContainerCollection)로 전환됨
+- UI 초기화와 Runtime 흐름이 순서 기반 구조로 정리됨
+- Collection 중심 View 구조로 전환 작업 진행 중

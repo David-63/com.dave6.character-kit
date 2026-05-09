@@ -1,0 +1,6 @@
+@import url("/Packages/com.unity.cinemachine/Runtime/Debug/CinemachineRuntimeTheme.tss");
+
+@import url("LoadoutBaseStyle.uss");
+
+
+VisualElement {}

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Dave6.CharacterKit.GameFlow;
+using Dave6.CharacterKit.ItemStat;
 using Dave6.ItemSystem.Domain.Item;
 using Dave6.StatSystem2.Application;
 using Dave6.StatSystem2.Domain;
 using UnityEngine;
 
-namespace Dave6.CharacterKit.ItemStat
+namespace Dave6.CharacterKit.GameFlow
 {
     /// <summary>
     /// 이건 매니저급 책임을 가져야할듯

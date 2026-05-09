@@ -480,7 +480,7 @@
             "id": "f9c4e7fd-2d88-4f3d-95b4-0397cff7d0da",
             "actions": [
                 {
-                    "name": "Close",
+                    "name": "CloseLoadout",
                     "type": "Button",
                     "id": "5a4a2557-6569-42fa-bbde-7763d9f050c6",
                     "expectedControlType": "",
@@ -489,9 +489,27 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Drop",
+                    "name": "DropSelected",
                     "type": "Button",
                     "id": "f4bd2b76-5069-47cd-926a-78e35172be4c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "InspectSelected",
+                    "type": "Button",
+                    "id": "07eddec6-ed67-4475-a5c6-71b97bc1c9f7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CancelAction",
+                    "type": "Button",
+                    "id": "c06046df-8eed-4dfb-b080-08b08a5ac65a",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -506,7 +524,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Close",
+                    "action": "CloseLoadout",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -517,7 +535,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Close",
+                    "action": "CloseLoadout",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -528,7 +546,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";PC",
-                    "action": "Drop",
+                    "action": "DropSelected",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "33b80dec-b5dd-42b7-b16a-f423ad65fc8a",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";PC",
+                    "action": "InspectSelected",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9c75ff4e-d543-4222-9ddd-be5fe924c375",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";PC",
+                    "action": "CancelAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

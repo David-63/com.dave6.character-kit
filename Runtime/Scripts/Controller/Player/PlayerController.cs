@@ -15,6 +15,7 @@ namespace Dave6.CharacterKit.Player
 {
     public class PlayerController : MonoBehaviour, IInputReceiver
     {
+        [SerializeField] bool _DebugActionState = false;
         // 카메라 제어
         public ThirdPersonCameraController CameraSystem {get; private set;}
         [SerializeField] Transform _CameraFollowTarget;
@@ -95,7 +96,6 @@ namespace Dave6.CharacterKit.Player
             _LocomotionSM.SetState(_LocomotionSM.GetStateByType(typeof(FreelookState)));
 
             _ActionSM = new();
-            _ActionSM.SetDebug(true);
 
             var idle = new ActionIdleState(this);
             var melee = new ActionMeleeState(this);
@@ -108,7 +108,10 @@ namespace Dave6.CharacterKit.Player
             _ActionSM.Any(reload, new FuncPredicate(() => Combat.ShouldEnterReload()));
             _ActionSM.Any(interact, new FuncPredicate(() => Interactor.ShouldEnterInteract()));
 
-            _ActionSM.SetDebug(true);
+            if (_DebugActionState)
+            {
+                _ActionSM.SetDebug(_DebugActionState);
+            }
 
             // 종료 조건
             _ActionSM.At(melee, idle, new FuncPredicate(() => true));

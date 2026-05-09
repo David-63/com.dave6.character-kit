@@ -26,7 +26,6 @@ namespace Dave6.CharacterKit.AnimHandler
         {
             _Animator = animator;
             _AnimatorEventProxy = animProxy;
-            Debug.Log("이벤트 프록시 등록됨");
 
             _AnimatorEventProxy.OnAttackFinishEvent += OnAttackAnimationEnd;
             _AnimatorEventProxy.OnReloadFinishEvent += OnReloadAnimationEnd;

@@ -86,7 +86,7 @@ namespace Dave6.CharacterKit.GameFlow
     {
         public LoadoutSystem Manager;
         public PlayerLoadout Loadout;
-        public LoadoutMainPanel UI;
+        public LoadoutMain UI;
     }
 
 

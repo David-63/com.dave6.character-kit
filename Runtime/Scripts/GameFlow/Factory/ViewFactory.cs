@@ -11,6 +11,7 @@ namespace Dave6.CharacterKit.GameFlow.Factory
         [SerializeField] VisualTreeAsset _CollectionTemplate;
         [SerializeField] VisualTreeAsset _ContainerTemplate;
         [SerializeField] VisualTreeAsset _ItemTemplate;
+        [SerializeField] VisualTreeAsset _InspectorTemplate;
 
         void Awake()
         {
@@ -21,20 +22,6 @@ namespace Dave6.CharacterKit.GameFlow.Factory
         {
             var view = new CollectionView();
             view.Initialize(_CollectionTemplate);
-            return view;
-        }
-
-        public ItemView CreateItemView(ItemInteractionController interactionController)
-        {
-            var view = new ItemView();
-            view.Initialize(_ItemTemplate);
-            if (interactionController == null)
-            {
-                Debug.LogError("ItemInteractionController is null");
-                return view;
-            }
-            view.AddManipulator(new ItemPointerManipulator(interactionController));
-
             return view;
         }
         public ContainerBaseView CreateContainerView(IItemContainer container)
@@ -57,6 +44,22 @@ namespace Dave6.CharacterKit.GameFlow.Factory
             view.Initialize(_ContainerTemplate);
             return view;
         }
+        public ItemView CreateItemView(ItemInteractionController interactionController)
+        {
+            var view = new ItemView();
+            view.Initialize(_ItemTemplate);
+            if (interactionController == null)
+            {
+                Debug.LogError("ItemInteractionController is null");
+                return view;
+            }
+            view.AddManipulator(new ItemPointerManipulator(interactionController));
+
+            return view;
+        }
+
+        #region inspector api
+        #endregion
     }
 
 }

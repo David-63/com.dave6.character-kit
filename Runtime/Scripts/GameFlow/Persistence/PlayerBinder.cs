@@ -4,15 +4,16 @@ using Dave6.CharacterKit.GameFlow.Input;
 using Dave6.CharacterKit.Handler.Interactor;
 using Dave6.CharacterKit.Handler.Loadout;
 using Dave6.CharacterKit.Handler.Stat;
-using Dave6.CharacterKit.ItemStat;
 using Dave6.CharacterKit.UnityUI.ItemSystem;
 using Dave6.ItemSystem.Domain.Container;
 using Dave6.ItemSystem.Domain.Item;
-using Dave6.StatSystem2.Application;
 using UnityEngine;
 
 namespace Dave6.CharacterKit.GameFlow.Binder
 {
+    /// <summary>
+    /// Runtime Composition Layer
+    /// </summary>
     public class PlayerBinder : MonoBehaviour
     {
         // ===== Loadout =====
@@ -20,7 +21,10 @@ namespace Dave6.CharacterKit.GameFlow.Binder
         ViewFactory _ViewFactory;
         LoadoutSystem _LoadoutSystem;
         PlayerLoadout _Loadout;
-        LoadoutMainPanel _LoadoutUI;
+        LoadoutMain _LoadoutUI;
+        #endregion
+        #region Item Inspector
+        ItemInspector _ItemInspector;
         #endregion
 
         // ===== Interactor =====
@@ -60,7 +64,12 @@ namespace Dave6.CharacterKit.GameFlow.Binder
             if (_ViewFactory == null && type == typeof(ViewFactory)) _ViewFactory = (ViewFactory)instance;
             else if (_LoadoutSystem == null && type == typeof(LoadoutSystem)) _LoadoutSystem = (LoadoutSystem)instance;
             else if (_Loadout == null && type == typeof(PlayerLoadout)) _Loadout = (PlayerLoadout)instance;
-            else if (_LoadoutUI == null && type == typeof(LoadoutMainPanel)) _LoadoutUI = (LoadoutMainPanel)instance;
+            else if (_LoadoutUI == null && type == typeof(LoadoutMain)) _LoadoutUI = (LoadoutMain)instance;
+            #endregion
+
+            // ===== Item Inspector =====
+            #region Item Inspector
+            else if (_ItemInspector == null && type == typeof(ItemInspector)) _ItemInspector = (ItemInspector)instance;
             #endregion
 
             // ===== Interactor =====
@@ -69,8 +78,11 @@ namespace Dave6.CharacterKit.GameFlow.Binder
             else if (_InteractUI == null && type == typeof(InteractPanel)) _InteractUI = (InteractPanel)instance;
             #endregion
 
+            // ===== Stat =====
+            #region Stat
             else if (_PlayerStat == null && type == typeof(PlayerStat)) _PlayerStat = (PlayerStat)instance;
             else if (_ItemStatApplier == null && type == typeof(ItemStatApplier)) _ItemStatApplier = (ItemStatApplier)instance;
+            #endregion
 
             TryBind();
         }
@@ -84,7 +96,7 @@ namespace Dave6.CharacterKit.GameFlow.Binder
             if (_ViewFactory == null) _ViewFactory = hub.Get<ViewFactory>();
             if (_LoadoutSystem == null) _LoadoutSystem = hub.Get<LoadoutSystem>();
             if (_Loadout == null) _Loadout = hub.Get<PlayerLoadout>();
-            if (_LoadoutUI == null) _LoadoutUI = hub.Get<LoadoutMainPanel>();
+            if (_LoadoutUI == null) _LoadoutUI = hub.Get<LoadoutMain>();
             #endregion
 
             // ===== Interactor =====
@@ -99,60 +111,88 @@ namespace Dave6.CharacterKit.GameFlow.Binder
             if (_ItemStatApplier == null) _ItemStatApplier = hub.Get<ItemStatApplier>();
             #endregion
 
+            // ===== Inspector =====
+            #region Inspector
+            if (_ItemInspector == null) _ItemInspector = hub.Get<ItemInspector>();
+            #endregion
+
             TryBind();
         }
 
         void TryBind()
         {
-            if (_ViewFactory == null || _LoadoutSystem == null || _Loadout == null || _LoadoutUI == null 
-            || _Interactor == null || _ItemStatApplier == null || _PlayerStat == null)
-                return;
+            if (!CanBind()) return;
 
-            // ===== Loadout Binding =====
-            #region Loadout
+            BindLoadout();
+            BindInteractor();
+            BindInput();
+            BindStat();
+
+            FinishBinding();
+        }
+
+        void HandleEquipChanged(ItemInstance item, IItemContainer container)
+        {
+            if (_Loadout.IsItemInEquipment(item)) _ItemStatApplier.ApplyItem(_PlayerStat.StatController, item);
+            else _ItemStatApplier.RemoveItem(_PlayerStat.StatController, item);
+        }
+
+        void HandleEquipRemoved(ItemInstance item, IItemContainer container)
+        {
+            _ItemStatApplier.RemoveItem(_PlayerStat.StatController, item);
+        }
+        void HandleInspect(ItemInstance item)
+        {
+            _ItemInspector.Bind(item);
+            _ItemInspector.Show();
+        }
+
+        bool CanBind()
+        {
+            return _ViewFactory != null && _LoadoutSystem != null && _Loadout != null && _LoadoutUI != null && _Interactor != null &&
+             _ItemStatApplier != null && _PlayerStat != null && _ItemInspector != null;
+        }
+        void BindLoadout()
+        {
             _LoadoutSystem.BindContext(_Loadout);
             _LoadoutUI.Bind(_Loadout, _Interactor);
+            _LoadoutUI.OnInspectRequested += HandleInspect;
 
             _LoadoutSystem.OnLoadComplete -= _LoadoutUI.Rebuild;
             _LoadoutSystem.OnLoadComplete += _LoadoutUI.Rebuild;
+
             var loadoutCtx = _Loadout.GetContext();
-            loadoutCtx.OnItemAdded += OnItemAdded;
-            loadoutCtx.OnItemMoved += OnItemAdded;
-            loadoutCtx.OnItemRemoved += OnItemRemoved;
-            #endregion
-
-            // ===== Interactor Binding =====
-            #region Interactor
-            if (_InteractUI != null)
-            {
-                _Interactor.OnShowPrompt += _InteractUI.Show;
-                _Interactor.OnHidePrompt += _InteractUI.Hide;
-            }
-            #endregion
-
-            // ===== Input Binding =====
-            #region Input
+            loadoutCtx.OnItemAdded += HandleEquipChanged;
+            loadoutCtx.OnItemMoved += HandleEquipChanged;
+            loadoutCtx.OnItemRemoved += HandleEquipRemoved;
+        }
+        void BindInteractor()
+        {
+            _Interactor.OnShowPrompt += _InteractUI.Show;
+            _Interactor.OnHidePrompt += _InteractUI.Hide;
+        }
+        void BindInput()
+        {
             var uiInput = FindFirstObjectByType<UIInputHandler>();
-            if (uiInput != null) uiInput.SetUI(_LoadoutUI);
+            if (uiInput == null) Debug.LogWarning("UIInputHandler not found");
+            
+            uiInput.Inject(_LoadoutUI, _ItemInspector);
+            uiInput.InputBind();
+
 
             var systemInput = FindFirstObjectByType<SystemInputHandler>();
-            if (systemInput != null) systemInput.Inject(_LoadoutSystem.Save, _LoadoutSystem.Load);
-            #endregion
-
+            if (systemInput == null) Debug.LogWarning("SystemInputHandler not found");
+            systemInput.Inject(_LoadoutSystem.Save, _LoadoutSystem.Load);
+        }
+        void BindStat()
+        {
+            // todo
+        }
+        void FinishBinding()
+        {
+            Debug.Log("플레이어 바인딩 완료");
             enabled = false;
             GameplayHub.Instance.OnRegistered -= HandleRegister;
-
-        }
-
-        void OnItemAdded(ItemInstance item, IItemContainer container)
-        {
-            if (!_Loadout.IsItemInEquipment(item)) return;
-            _ItemStatApplier.ApplyItem(_PlayerStat.StatController, item);
-        }
-        void OnItemRemoved(ItemInstance item, IItemContainer container)
-        {
-            if (!_Loadout.IsItemInEquipment(item)) return;
-            _ItemStatApplier.RemoveItem(_PlayerStat.StatController, item);
         }
     }
 }
