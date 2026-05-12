@@ -33,8 +33,6 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
         #region State
         bool _Initialized;
-        bool _ViewReady;
-        IVisualElementScheduledItem _ScheduledPlacement;
         #endregion
 
         #region Views
@@ -61,7 +59,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         }
         #endregion
 
-        #region Initialize
+        #region UI Root
         void InitializeUI()
         {
             if (_Initialized) return;
@@ -77,7 +75,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             _Initialized = true;
         }
         #endregion
-        #region Binding
+        #region Context Binding
         public void Bind(ILoadoutProvider provider, IInteractor interactor)
         {
             if (_LoadoutProvider == provider) return;
@@ -109,23 +107,21 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             context.OnItemRemoved -= HandleItemRemoved;
         }
         #endregion
-
-        #region Build
+        #region Layout
         void BuildViews()
         {
-            _ViewReady = false;
             BuildCollectionViews();
             BuildItemViews();
-
-            _ScheduledPlacement?.Pause();
-            _ScheduledPlacement = _Root.schedule.Execute(() =>
-            {
-                RebuildItemPlacement();
-                _ViewReady = true;
-            });
         }
+        #endregion
+        #region Collection View
         void BuildCollectionViews()
         {
+            foreach (var view in _CollectionViews.Values)
+            {
+                view.OnContainerAdded -= HandleContainerAdded;
+                view.OnContainerRemoved -= HandleContainerRemoved;
+            }
             _ContentsLayer.Clear();
             _CollectionViews.Clear();
             foreach (var pair in _LoadoutProvider.GetContext().GetCollections())
@@ -137,113 +133,13 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
                 if (view == null) continue;
 
                 view.Bind(collection);
+                view.OnContainerAdded += HandleContainerAdded;
+                view.OnContainerRemoved += HandleContainerRemoved;
+
                 _CollectionViews[role] = view;
                 _ContentsLayer.Add(view);
             }
         }
-        void BuildItemViews()
-        {
-            _ItemLayer.Clear();
-            _ItemViews.Clear();
-
-            foreach (var item in _LoadoutProvider.GetContext().GetItemsAll())
-            {
-                CreateItem(item);
-            }
-        }
-        void RebuildItemPlacement()
-        {
-            foreach (var item in _ItemViews.Keys)
-            {
-                RefreshItem(item);
-            }
-        }
-        #endregion
-
-        #region Item Event
-        void HandleItemAdded(ItemInstance item, IItemContainer target)
-        {
-            if (!_ViewReady)
-            {
-                Debug.LogWarning($"View not ready: {item.Definition.DisplayName}");
-                return;
-            }
-            CreateItem(item);
-            _Root.schedule.Execute(() =>
-            {
-                RefreshItem(item);
-            });
-        }
-        void HandleItemRemoved(ItemInstance item, IItemContainer from)
-        {
-            if (!_ItemViews.TryGetValue(item, out var view)) return;
-            view.RemoveFromHierarchy();
-            _ItemViews.Remove(item);
-        }
-
-        void HandleItemMoved(ItemInstance item, IItemContainer target)
-        {
-            _Root.schedule.Execute(() =>
-            {
-                RefreshItem(item);
-            });
-        }
-        #endregion
-        #region Selection
-        void HandleFocusChanged(ItemView itemView)
-        {
-            if (_CurrentSelected != null)
-            {
-                _CurrentSelected.RemoveFromClassList("s-item-selected");
-            }
-            _CurrentSelected = itemView;
-            _SelectedItem = itemView != null ? itemView.GetItem() : null;
-            if (_CurrentSelected != null)
-            {
-                _CurrentSelected.AddToClassList("s-item-selected");
-            }
-        }
-        void HandleBackgroundClick(PointerDownEvent evt)
-        {
-            if (evt.target is ItemView) return;
-
-            _InteractionController.ClearFocus();
-        }
-        #endregion
-
-        #region Item View
-        void CreateItem(ItemInstance item)
-        {
-            if (_ItemViews.ContainsKey(item)) return;
-            var view = GameplayHub.Instance.Get<ViewFactory>().CreateItemView(_InteractionController);
-            view.Bind(item);
-            _ItemViews[item] = view;
-            _ItemLayer.Add(view);
-        }
-
-        void PlaceItem(ItemView itemView, ItemPlacement placement)
-        {
-            var item = itemView.GetItem();
-            var container = item.Owner;
-            if (container == null)
-            {
-                throw new InvalidOperationException($"Owner missing: {item.Definition.DisplayName}");
-            }
-
-            if (!TryResolveContainerView(container, out var containerView))
-            {
-                throw new InvalidOperationException($"ContainerView missing: {item.Definition.DisplayName}");
-            }
-
-            var panelPos = containerView.PlacementToPanel(placement);
-            Vector2 localPos = _ItemLayer.WorldToLocal(panelPos);
-
-            itemView.style.left = localPos.x;
-            itemView.style.top = localPos.y;
-        }
-        #endregion
-
-        #region View Resolver
         bool TryResolveContainerView(IItemContainer container, out ContainerBaseView containerView)
         {
             foreach (var collectionView in _CollectionViews.Values)
@@ -269,23 +165,132 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             return new ReadOnlyDictionary<IItemContainer, ContainerBaseView>(dict);
         }
 
-        public void RefreshItem(ItemInstance item)
+        /// <summary>
+        /// 나중에 재귀적인 호출이 필요함
+        /// </summary>
+        /// <param name="container"></param>
+        void HandleContainerAdded(IItemContainer container)
+        {
+            if (!TryResolveContainerView(container, out var containerView)) return;
+            containerView.RegisterCallback<GeometryChangedEvent>(OnContainerViewReady);
+        }
+        void HandleContainerRemoved(IItemContainer container)
+        {
+            foreach (var item in container.Items)
+            {
+                if (!_ItemViews.TryGetValue(item, out var view)) continue;
+                view.RemoveFromHierarchy();
+                _ItemViews.Remove(item);
+            }
+        }
+        void OnContainerViewReady(GeometryChangedEvent evt)
+        {
+            var containerView = evt.currentTarget as ContainerBaseView;
+            containerView.UnregisterCallback<GeometryChangedEvent>(OnContainerViewReady);
+            var container = containerView.GetContainer();
+
+            foreach (var item in container.Items)
+            {
+                if (!_ItemViews.ContainsKey(item))
+                {
+                    CreateItemView(item);
+                }
+
+                RefreshItemView(item);
+            }
+        }
+        #endregion
+        #region Item View
+        void BuildItemViews()
+        {
+            _ItemLayer.Clear();
+            _ItemViews.Clear();
+
+            foreach (var item in _LoadoutProvider.GetContext().GetItemsAll())
+            {
+                CreateItemView(item);
+            }
+            _Root.RegisterCallback<GeometryChangedEvent>(OnContainerViewReady);
+        }
+        void CreateItemView(ItemInstance item)
+        {
+            if (_ItemViews.ContainsKey(item)) return;
+            var view = GameplayHub.Instance.Get<ViewFactory>().CreateItemView(_InteractionController);
+            view.Bind(item);
+            _ItemViews[item] = view;
+            _ItemLayer.Add(view);
+        }
+        public void RefreshItemView(ItemInstance item)
         {
             if (!_ItemViews.TryGetValue(item, out var view)) return;
             var container = item.Owner;
             if (container == null) return;
             var placement = container.GetPlacement(item);
-            PlaceItem(view, placement);
+            PlaceItemView(view, placement);
+        }
+        void PlaceItemView(ItemView itemView, ItemPlacement placement)
+        {
+            var item = itemView.GetItem();
+            var container = item.Owner;
+            if (container == null)
+            {
+                throw new InvalidOperationException($"Owner missing: {item.Definition.DisplayName}");
+            }
+
+            if (!TryResolveContainerView(container, out var containerView))
+            {
+                throw new InvalidOperationException($"ContainerView missing: {item.Definition.DisplayName}");
+            }
+
+            var panelPos = containerView.PlacementToPanel(placement);
+            Vector2 localPos = _ItemLayer.WorldToLocal(panelPos);
+
+            itemView.style.left = localPos.x;
+            itemView.style.top = localPos.y;
+        }
+        void HandleItemAdded(ItemInstance item, IItemContainer target)
+        {
+            CreateItemView(item);
+            RefreshItemView(item);
+        }
+        void HandleItemRemoved(ItemInstance item, IItemContainer from)
+        {
+            if (!_ItemViews.TryGetValue(item, out var view)) return;
+            view.RemoveFromHierarchy();
+            _ItemViews.Remove(item);
+        }
+
+        void HandleItemMoved(ItemInstance item, IItemContainer target)
+        {
+            RefreshItemView(item);
         }
         #endregion
+        #region Selection
+        void HandleFocusChanged(ItemView itemView)
+        {
+            if (_CurrentSelected != null)
+            {
+                _CurrentSelected.RemoveFromClassList("s-item-selected");
+            }
+            _CurrentSelected = itemView;
+            _SelectedItem = itemView != null ? itemView.GetItem() : null;
+            if (_CurrentSelected != null)
+            {
+                _CurrentSelected.AddToClassList("s-item-selected");
+            }
+        }
+        void HandleBackgroundClick(PointerDownEvent evt)
+        {
+            if (evt.target is ItemView) return;
 
+            _InteractionController.ClearFocus();
+        }
+        #endregion
         #region Public API
-
         public void ShowUI()
         {
             //_Root.style.display = DisplayStyle.Flex;  // 이거 사용하면 ui 계산 순서가 어긋남
             _Root.style.visibility = Visibility.Visible;
-            RebuildItemPlacement();
         }
 
         public void HideUI()
@@ -313,10 +318,12 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             BuildViews();
         }
         #endregion
+
+
     }
     public interface IContainerViewResolver
     {
         ReadOnlyDictionary<IItemContainer, ContainerBaseView> GetContainerViews();
-        void RefreshItem(ItemInstance item);
+        void RefreshItemView(ItemInstance item);
     }
 }

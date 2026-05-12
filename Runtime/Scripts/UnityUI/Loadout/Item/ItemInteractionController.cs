@@ -55,7 +55,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             var targetView = ResolveContainerView(itemView.GetItemWorldArea());
             if (targetView == null)
             {
-                _Resolver.RefreshItem(item); // 드롭 실패 시 원래 위치로 돌아가도록
+                _Resolver.RefreshItemView(item); // 드롭 실패 시 원래 위치로 돌아가도록
                 return;
             }
 
@@ -90,7 +90,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
             if (!result.Success)
             {
-                _Resolver.RefreshItem(request.Item);
+                _Resolver.RefreshItemView(request.Item);
             }
         }
 

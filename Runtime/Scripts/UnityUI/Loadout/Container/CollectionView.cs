@@ -24,6 +24,9 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         Label _RoleLabel;
         VisualElement _ExtensionLayer;
 
+        public event Action<IItemContainer> OnContainerAdded;
+        public event Action<IItemContainer> OnContainerRemoved;
+
         public void Initialize(VisualTreeAsset template)
         {
             //Clear();
@@ -79,13 +82,18 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         void HandleContainerAdded(IItemContainer container, ContainerCollection collection)
         {
             CreateContainerView(container);
+
+            // 여기서 아이템 뷰 추가
+            OnContainerAdded?.Invoke(container);
         }
         void HandleContainerRemoved(IItemContainer container, ContainerCollection collection)
         {
             if (!_ContainerViews.TryGetValue(container, out var view)) return;
-
             view.RemoveFromHierarchy();
             _ContainerViews.Remove(container);
+
+            // 여기서 아이템 뷰 제거
+            OnContainerRemoved?.Invoke(container);
         }
 
         void CreateContainerView(IItemContainer container)
