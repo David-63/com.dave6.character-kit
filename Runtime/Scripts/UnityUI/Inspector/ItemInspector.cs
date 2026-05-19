@@ -1,5 +1,7 @@
 using System;
 using Dave6.CharacterKit.GameFlow;
+using Dave6.CharacterKit.GameFlow.Factory;
+using Dave6.CharacterKit.ItemStat;
 using Dave6.ItemSystem.Domain.Item;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -32,8 +34,18 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             _TargetItem = item;
             _Title.text = item.Definition.DisplayName;
 
-            AddPreview();
-            AddStatSection();
+            var asset = GameplayHub.Instance.Get<ItemFactory>().GetItemDefinitionAsset(item.Definition.ItemId);
+
+            if (asset.Image != null)
+            {
+                AddPreview(asset.Image);
+            }
+
+            if (GameplayHub.Instance.Get<ItemStatApplier>().TryGetItemStat(item, out var statDef))
+            {
+                if (statDef.Modifiers.Count > 0) AddStatSection(statDef);
+            }
+            
             AddSocketSection();
         }
         public void Unbind()
@@ -56,19 +68,40 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
         void ClearSections()
         {
-            
+            _SectionLayer.Clear();
+            _Title.text = string.Empty;
         }
 
-        void AddPreview()
+        void AddPreview(Texture image)
         {
-            return;
-            // ItemFactory 로부터 _Database.GetItemEntry(id).ItemDefinitionAsset 참조해서 스프라이트 혹은 텍스쳐 가져오기
-            // 위 기능을 viewFectory에서 만들라는데
+            var section = new VisualElement();
+            section.AddToClassList("i-section");
 
+            section.style.width = 256f;
+            section.style.height = 256f;
+
+            var previewIcon = new Image
+            {
+                image = image
+            };
+            section.Add(previewIcon);
+
+            _SectionLayer.Add(section);
         }
-        void AddStatSection()
+        void AddStatSection(ItemStatDefinition statDef)
         {
-            return;
+            var section = new VisualElement();
+            section.AddToClassList("i-section");
+
+            var title = new Label("Stats");
+            section.Add(title);
+
+            foreach (var modifier in statDef.Modifiers)
+            {
+                var label = new Label($"{modifier.Tag.TagName}: {modifier.Value}");
+                section.Add(label);
+            }
+            _SectionLayer.Add(section);
             // 스텟을 가지고 있는지 체크해야함..
 
             // ItemStatApplier 여기에 참조해서 id에 해당하는 스텟이 있는지 검사

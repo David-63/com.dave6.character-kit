@@ -10,7 +10,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
 
         #region Visual
         VisualElement _Root;
-        Label _SourceLabel;
+        Label _SectionLabel;
         protected VisualElement _VisualArea;
         #endregion
         public virtual void Initialize(VisualTreeAsset template)
@@ -22,7 +22,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             template.CloneTree(this);
 
             _Root = this.Q<VisualElement>("container-root");
-            _SourceLabel = this.Q<Label>("source-label");
+            _SectionLabel = this.Q<Label>("section-label");
             _VisualArea = this.Q<VisualElement>("area");
         }
 
@@ -31,9 +31,9 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         public ContainerArea GetArea() => _ContainerArea;
         public void SetSourceLabel(string text)
         {
-            if (_SourceLabel != null)
+            if (_SectionLabel != null)
             {
-                _SourceLabel.text = text;
+                _SectionLabel.text = text;
             }
         }
 

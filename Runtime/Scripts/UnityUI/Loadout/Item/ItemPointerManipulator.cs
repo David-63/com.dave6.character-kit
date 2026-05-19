@@ -93,12 +93,10 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         void Drop()
         {
             _Controller.HandleMove(target as ItemView);
-            Debug.Log("Drop");
         }
         void Click()
         {
             _Controller.SetFocusItem(target as ItemView);
-            Debug.Log("Click");
         }
         void LongPress()
         {

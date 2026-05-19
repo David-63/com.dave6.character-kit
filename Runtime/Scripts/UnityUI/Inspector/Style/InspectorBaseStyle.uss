@@ -1,47 +1,69 @@
 .i-inspector-root {
     position: absolute;
-    right: 32px;
-    top: 32px;
-    width: 320px;
-    min-height: 420px;
+
+    left: 40%;
+    top: 25%;
+    translate: -50% 0;
+
     flex-direction: column;
-    background-color: rgba(228, 228, 228, 0.95);
-    border-top-width: 1px;
-    border-bottom-width: 1px;
+
+    min-width: 400px;
+    max-width: 1200px;
+
+    padding: 16px;
+
+    background-color: rgba(125, 161, 218, 0.1);
+
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+
     border-left-width: 1px;
     border-right-width: 1px;
-    border-top-color: rgba(255, 255, 255, 0.08);
-    border-bottom-color: rgba(255, 255, 255, 0.08);
-    border-left-color: rgba(255, 255, 255, 0.08);
-    border-right-color: rgba(255, 255, 255, 0.08);
-    padding-top: 14px;
-    padding-bottom: 14px;
-    padding-left: 14px;
-    padding-right: 14px;
-}
+    border-top-width: 1px;
+    border-bottom-width: 1px;
 
+    border-left-color: rgba(255,255,255,0.08);
+    border-right-color: rgba(255,255,255,0.08);
+    border-top-color: rgba(255,255,255,0.08);
+    border-bottom-color: rgba(255,255,255,0.08);
+}
 .i-inspector-title {
+    font-size: 22px;
+    color: black;
+    -unity-font-style: bold;
+    margin-bottom: 12px;
+}
+/* .i-inspector-title {
     color: black;
     font-size: 20px;
-    -unity-font-style: bold;
+    
     margin-bottom: 12px;
     border-bottom-width: 1px;
     border-bottom-color: rgba(255, 255, 255, 0.08);
     padding-bottom: 8px;
+} */
+.i-section-layer {
+    flex-direction: row;
+    align-items: flex-start;
+    
+    /* margin: 12px; */
 }
 
-.i-section-layer {
+/* .i-section-layer {
     flex-grow: 1;
     flex-direction: column;
-}
+} */
 
 .i-section {
     margin-bottom: 12px;
+
     padding-top: 8px;
     padding-bottom: 8px;
     padding-left: 10px;
     padding-right: 10px;
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(186, 199, 255, 0.68);
 }
 
 .i-section-header {

@@ -1,14 +1,16 @@
 using Dave6.CharacterKit.GameFlow;
 using Dave6.StatSystem2.Application;
 
-namespace Dave6.CharacterKit.Handler.Stat
+namespace Dave6.CharacterKit.Handler.Stats
 {
     public class PlayerStat : BaseStat
     {
-        public void Awake()
+        
+        protected override void Initialize()
         {
-            StatController = new StatController();
             GameplayHub.Instance.Register(this);
+
+            StatController.Initialize(_StatGroup);
         }
     }
 }

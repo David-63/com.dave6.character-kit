@@ -1,7 +1,7 @@
 using Dave6.CharacterKit.GameFlow;
 using Dave6.CharacterKit.GameFlow.Factory;
 using Dave6.CharacterKit.Handler.Loadout;
-using Dave6.ItemSystem.Application.Container;
+using Dave6.ItemSystem.Domain.Container;
 using Dave6.ItemSystem.Domain.Item;
 using UnityEngine;
 namespace Dave6.CharacterKit.Interactable

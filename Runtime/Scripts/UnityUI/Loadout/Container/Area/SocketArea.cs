@@ -58,7 +58,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
                 root.style.flexDirection = FlexDirection.Row;
             }
             var label = new Label(socket.SlotCategory.ToString());
-            label.AddToClassList("s-source-label");
+            label.AddToClassList("s-core-label");
             var slot = new SocketSlotView();
             slot.style.width = 128;
             slot.style.height = 128;

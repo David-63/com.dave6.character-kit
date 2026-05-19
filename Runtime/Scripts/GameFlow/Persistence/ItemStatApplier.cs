@@ -45,5 +45,10 @@ namespace Dave6.CharacterKit.GameFlow
         {
             entity.RemoveSource(item);
         }
+
+        public bool TryGetItemStat(ItemInstance item, out ItemStatDefinition statDef)
+        {
+            return _StatDatabase.TryGet(item.Definition.ItemId, out statDef);
+        }
     }
 }

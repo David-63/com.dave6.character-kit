@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Dave6.CharacterKit.GameFlow;
 using Dave6.ItemSystem.Application.Container;
@@ -35,101 +36,52 @@ namespace Dave6.CharacterKit.Handler.Loadout
             }
         }
 
-        void HandleExtension(ContainerAction action)
+        void RefreshExtension(ContainerAction action)
         {
-            bool wasEquipment = action.From != null && IsItemInEquipmentBefore(action);
-            bool isEquipment = action.To != null && IsItemInEquipment(action.Item);
+            bool was = _Context.WasEquipped(action);
+            bool now = _Context.IsEquipped(action.Item);
 
-
-            // 들어옴
-            if (!wasEquipment && isEquipment)
+            if (!was && now)
             {
                 foreach (var collection in _Context.GetCollections())
                 {
-                    collection.Value.AddExtension(action.Item);
+                    var affected = collection.Value.AttachExtension(action.Item);
+                    _Context.NotifyItemsInvalidated(affected);
                 }
             }
 
-            // 나감
-            if (wasEquipment && !isEquipment)
+            if (was && !now)
             {
                 foreach (var collection in _Context.GetCollections())
                 {
-                    collection.Value.RemoveExtension(action.Item);
+                    var evicted = collection.Value.DetachExtension(action.Item);
+                    _Context.NotifyItemsInvalidated(evicted);
                 }
             }
-        }
-        public bool IsItemInEquipment(ItemInstance item)
-        {
-            var owner = item.Owner;
-            while (owner != null)
-            {
-                var collection = _Context.GetCollection(owner);
-                var role = _Context.GetRole(collection);
-                if (role == ExtensionRole.Equipment) return true;
-
-                var parentItem = owner.Owner;
-                if (parentItem == null) break;
-                owner = parentItem.Owner;
-            }
-            return false;
-        }
-        bool IsItemInEquipmentBefore(ContainerAction action)
-        {
-            var owner = action.From;
-            while (owner != null)
-            {
-                var collection = _Context.GetCollection(owner);
-                var role = _Context.GetRole(collection);
-                if (role == ExtensionRole.Equipment) return true;
-
-                var parentItem = owner.Owner;
-                if (parentItem == null) break;
-                owner = parentItem.Owner;
-            }
-            return false;
-        }
-        bool IsEquipment(ContainerCollection collection)
-        {
-            foreach (var kv in _Context.GetCollections())
-            {
-                if (kv.Value == collection)
-                    return kv.Key == ExtensionRole.Equipment;
-            }
-            return false;
         }
         public ContainerResult Move(ItemInstance item, IItemContainer target, ItemPlacement placement)
         {
-            var result = _Service.Move(item, target, placement);
-            if (!result.Success) return result;
-            HandleExtension(result.Action);
-            _Context.NotifyItemMoved(item, target);
-            return result;
+            return Commit(_Service.Move(item, target, placement));
         }
         public ContainerResult Add(ItemInstance item, ExtensionRole role)
         {
             bool suceess = _Context.TryGetCollection(role, out var collection);
             if (!suceess) return ContainerResult.Fail(ContainerError.InvalidTarget);
-            var result = _Service.Add(item, collection);
-            if (!result.Success) return result;
-            HandleExtension(result.Action);
-            _Context.NotifyItemAdded(item, result.Action.To);
-            return result;
+            return Commit(_Service.Add(item, collection));
         }
         public ContainerResult Add(ItemInstance item, IItemContainer target, ItemPlacement placement = null)
         {
-            var result = _Service.Add(item, target, placement);
-            if (!result.Success) return result;
-            HandleExtension(result.Action);
-            _Context.NotifyItemAdded(item, result.Action.To);
-            return result;
+            return Commit(_Service.Add(item, target, placement));
         }
         public ContainerResult Remove(ItemInstance item)
         {
-            var result = _Service.Remove(item);
+            return Commit(_Service.Remove(item));
+        }
+        public ContainerResult Commit(ContainerResult result)
+        {
             if (!result.Success) return result;
-            HandleExtension(result.Action);
-            _Context.NotifyItemRemoved(item, result.Action.From);
+            RefreshExtension(result.Action);
+            _Context.NotifyItemChanged(result.Action.Item, result);
             return result;
         }
     }

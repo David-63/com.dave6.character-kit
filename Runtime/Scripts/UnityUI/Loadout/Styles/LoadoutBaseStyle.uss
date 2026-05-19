@@ -18,11 +18,11 @@ VisualElement { background-color: rgba(0, 0, 0, 0.6); }
 .c-item-layer { position: absolute; left:0; top:0; right:0; bottom:0; /*pointer-events: none;*/ }
 
 /* skin */
-.s-role-label { font-size: 18px; /*font-weight: bold;*/ color: white; margin-bottom: 8px; }
-.s-source-label { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
+.s-role-label { font-size: 24px; /*font-weight: bold;*/ color: white; margin-bottom: 8px; }
+.s-core-label { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
 
-.s-panel { background-color: rgba(31, 18, 7, 0.54); padding: 8px; border-radius: 6px; border-width: 1px; border-color: rgba(255,255,255,0.4); }
-
+.s-panel { background-color: rgba(31, 18, 7, 0.54); border-radius: 6px; }
+/* padding: 8px;  border-width: 1px; border-color: rgba(255,255,255,0.4); */
 .s-container { padding: 6px; }
 .s-grid { position: relative; }
 .s-socket { padding: 4px; }
@@ -33,3 +33,72 @@ VisualElement { background-color: rgba(0, 0, 0, 0.6); }
 
 .s-item { background-color: rgba(255, 200, 50, 0.8); }
 .s-cell { position: absolute; border-width: 1px; border-color: rgba(245, 245, 245, 0.64); }
+
+/* =========================
+   inspecter
+========================= */
+
+.s-section-root {
+    flex-direction: column;
+
+    margin-bottom: 12px;
+    padding: 10px;
+
+    background-color: rgba(0, 0, 0, 0.35);
+
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+
+/* =========================
+   Status style
+========================= */
+/* 섹션 제목 */
+.s-section-label {
+    color: rgba(255, 255, 255, 0.9);
+
+    font-size: 18px;
+    -unity-font-style: bold;
+
+    margin-bottom: 8px;
+
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(255,255,255,0.08);
+
+    padding-bottom: 4px;
+}
+
+/* stat row들을 담는 영역 */
+.s-section-contents {
+    flex-direction: column;
+}
+.s-stat-root {
+    flex-direction: row;
+
+    justify-content: space-between;
+    align-items: center;
+
+    padding-top: 3px;
+    padding-bottom: 3px;
+
+    min-height: 24px;
+}
+
+/* stat 이름 */
+.s-tag-name {
+    color: rgba(255,255,255,0.75);
+
+    font-size: 15px;
+}
+
+/* stat 값 */
+.s-tag-value {
+    color: white;
+
+    font-size: 15px;
+
+    -unity-font-style: bold;
+}

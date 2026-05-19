@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Dave6.CharacterKit.GameFlow;
 using Dave6.CharacterKit.GameFlow.Factory;
+using Dave6.CharacterKit.Handler.Stats;
 using Dave6.ItemSystem.Application.Container;
 using Dave6.ItemSystem.Application.Mapper;
 using Dave6.ItemSystem.Domain.Container;
@@ -29,6 +30,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         #region Dependency
         ILoadoutProvider _LoadoutProvider;
         ItemInteractionController _InteractionController;
+        BaseStat _PlayerStat;
         #endregion
 
         #region State
@@ -65,7 +67,9 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             if (_Initialized) return;
             var doc = GetComponent<UIDocument>();
             _Root = doc.rootVisualElement.Q<VisualElement>("main-root");
+            
             _ContentsLayer = _Root.Q<VisualElement>("contents-layer");
+
             _ItemLayer = _Root.Q<VisualElement>("item-layer");
             
             _ItemLayer.pickingMode = PickingMode.Ignore;
@@ -76,7 +80,7 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         }
         #endregion
         #region Context Binding
-        public void Bind(ILoadoutProvider provider, IInteractor interactor)
+        public void Bind(ILoadoutProvider provider, IInteractor interactor, BaseStat playerStat)
         {
             if (_LoadoutProvider == provider) return;
             UnbindContextEvents();
@@ -86,6 +90,8 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             _InteractionController = new ItemInteractionController(this, _LoadoutProvider, interactor);
             _InteractionController.OnFocusChanged += HandleFocusChanged;
 
+            _PlayerStat = playerStat;
+
             BindContextEvent();
             BuildViews();
         }
@@ -93,18 +99,21 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         {
             var context = _LoadoutProvider.GetContext();
 
-            context.OnItemAdded += HandleItemAdded;
-            context.OnItemMoved += HandleItemMoved;
-            context.OnItemRemoved += HandleItemRemoved;
+            context.OnItemChanged += HandleItemChanged;
+
+            // context.OnItemAdded += HandleItemAdded;
+            // context.OnItemMoved += HandleItemMoved;
+            // context.OnItemRemoved += HandleItemRemoved;
         }
         void UnbindContextEvents()
         {
             if (_LoadoutProvider == null) return;
             var context = _LoadoutProvider.GetContext();
+            context.OnItemChanged -= HandleItemChanged;
 
-            context.OnItemAdded -= HandleItemAdded;
-            context.OnItemMoved -= HandleItemMoved;
-            context.OnItemRemoved -= HandleItemRemoved;
+            // context.OnItemAdded -= HandleItemAdded;
+            // context.OnItemMoved -= HandleItemMoved;
+            // context.OnItemRemoved -= HandleItemRemoved;
         }
         #endregion
         #region Layout
@@ -124,6 +133,11 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             }
             _ContentsLayer.Clear();
             _CollectionViews.Clear();
+
+            var statusView = GameplayHub.Instance.Get<ViewFactory>().CreateStatusView();
+            statusView.Bind(_PlayerStat);
+            _ContentsLayer.Add(statusView);
+
             foreach (var pair in _LoadoutProvider.GetContext().GetCollections())
             {
                 var role = pair.Key;
@@ -135,6 +149,8 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
                 view.Bind(collection);
                 view.OnContainerAdded += HandleContainerAdded;
                 view.OnContainerRemoved += HandleContainerRemoved;
+
+                RegisterContainerGeometryEvents(view);
 
                 _CollectionViews[role] = view;
                 _ContentsLayer.Add(view);
@@ -185,7 +201,9 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
         }
         void OnContainerViewReady(GeometryChangedEvent evt)
         {
-            var containerView = evt.currentTarget as ContainerBaseView;
+            if (evt.currentTarget is not ContainerBaseView containerView) return;
+            if (containerView.resolvedStyle.width <= 0) return;
+
             containerView.UnregisterCallback<GeometryChangedEvent>(OnContainerViewReady);
             var container = containerView.GetContainer();
 
@@ -199,6 +217,14 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
                 RefreshItemView(item);
             }
         }
+
+        void RegisterContainerGeometryEvents(CollectionView collectionView)
+        {
+            foreach (var containerView in collectionView.GetContainerViews().Values)
+            {
+                containerView.RegisterCallback<GeometryChangedEvent>(OnContainerViewReady);
+            }
+        }
         #endregion
         #region Item View
         void BuildItemViews()
@@ -210,7 +236,6 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             {
                 CreateItemView(item);
             }
-            _Root.RegisterCallback<GeometryChangedEvent>(OnContainerViewReady);
         }
         void CreateItemView(ItemInstance item)
         {
@@ -248,22 +273,44 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             itemView.style.left = localPos.x;
             itemView.style.top = localPos.y;
         }
-        void HandleItemAdded(ItemInstance item, IItemContainer target)
+        void HandleItemChanged(ItemInstance item, ContainerResult result)
         {
-            CreateItemView(item);
-            RefreshItemView(item);
+            switch (result.Action.Type)
+            {
+                case ContainerAction.ActionType.Add:
+                    CreateItemView(item);
+                    RefreshItemView(item);
+                break;
+                    
+                case ContainerAction.ActionType.Move:
+                    RefreshItemView(item);
+                break;
+                    
+                case ContainerAction.ActionType.Remove:
+                    if (!_ItemViews.TryGetValue(item, out var view)) return;
+                    view.RemoveFromHierarchy();
+                    _ItemViews.Remove(item);
+                break;
+            }
         }
-        void HandleItemRemoved(ItemInstance item, IItemContainer from)
-        {
-            if (!_ItemViews.TryGetValue(item, out var view)) return;
-            view.RemoveFromHierarchy();
-            _ItemViews.Remove(item);
-        }
+        // void HandleItemAdded(ItemInstance item, IItemContainer to)
+        // {
+        //     CreateItemView(item);
+        //     RefreshItemView(item);
+        // }
+        // void HandleItemRemoved(ItemInstance item, IItemContainer from)
+        // {
+        //     if (!_ItemViews.TryGetValue(item, out var view)) return;
+        //     // 제거하기 전에 스텟 정상화 해야함
+        //     // 여기서 하는게 아닌가?
+        //     view.RemoveFromHierarchy();
+        //     _ItemViews.Remove(item);
+        // }
 
-        void HandleItemMoved(ItemInstance item, IItemContainer target)
-        {
-            RefreshItemView(item);
-        }
+        // void HandleItemMoved(ItemInstance item, IItemContainer target)
+        // {
+        //     RefreshItemView(item);
+        // }
         #endregion
         #region Selection
         void HandleFocusChanged(ItemView itemView)
@@ -318,8 +365,6 @@ namespace Dave6.CharacterKit.UnityUI.ItemSystem
             BuildViews();
         }
         #endregion
-
-
     }
     public interface IContainerViewResolver
     {

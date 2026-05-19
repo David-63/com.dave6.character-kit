@@ -1,7 +1,6 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Packages/com.dave6.character-kit/Runtime/Scripts/UnityUI/Loadout/Styles/LoadoutBaseStyle.uss?fileID=7433441132597879392&amp;guid=afc9d0249be244546a3686339ac3cdf9&amp;type=3#LoadoutBaseStyle"/>
-    <ui:VisualElement name="container-root" class="s-panel l-column" style="flex-grow: 1;">
-        <ui:Label text="Label" name="section-label" class="s-core-label s-section-label" style="color: rgb(224, 224, 224);"/>
-        <ui:VisualElement name="area" class="c-area" style="flex-grow: 1;"/>
+    <ui:VisualElement name="status-root" class="s-panel l-column" style="flex-grow: 1;">
+        <ui:Label text="Label" name="role-label" class="s-role-label"/>
     </ui:VisualElement>
 </ui:UXML>

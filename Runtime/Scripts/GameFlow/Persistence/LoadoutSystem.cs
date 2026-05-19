@@ -7,6 +7,7 @@ using Dave6.CharacterKit.UnityUI.ItemSystem;
 using Dave6.ItemSystem.Application.Container;
 using Dave6.ItemSystem.Application.Item;
 using Dave6.ItemSystem.Application.Mapper;
+using Dave6.ItemSystem.Domain.Container;
 using Dave6.ItemSystem.Domain.Item;
 using Dave6.ItemSystem.Persistence.Dto;
 using Dave6.ItemSystem.Persistence.Mapper;

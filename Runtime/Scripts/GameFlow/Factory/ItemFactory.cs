@@ -20,7 +20,6 @@ namespace Dave6.CharacterKit.GameFlow.Factory
             var entry = _Database.GetItemEntry(itemId);
             return new ItemInstance(entry.ItemDefinition);
         }
-
         public WorldItem CreateWorldItem(ItemInstance item, Vector3 position)
         {
             var def = item.Definition;
@@ -43,6 +42,10 @@ namespace Dave6.CharacterKit.GameFlow.Factory
 
             return worldItem;
         }
-    }
 
+        public ItemDefinitionAsset GetItemDefinitionAsset(string itemId)
+        {
+            return _Database.GetItemEntry(itemId).ItemDefinitionAsset;
+        }
+    }
 }

@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using Dave6.CharacterKit.GameFlow.Factory;
 using Dave6.CharacterKit.GameFlow.Input;
 using Dave6.CharacterKit.Handler.Interactor;
 using Dave6.CharacterKit.Handler.Loadout;
-using Dave6.CharacterKit.Handler.Stat;
+using Dave6.CharacterKit.Handler.Stats;
 using Dave6.CharacterKit.UnityUI.ItemSystem;
+using Dave6.ItemSystem.Application.Container;
 using Dave6.ItemSystem.Domain.Container;
 using Dave6.ItemSystem.Domain.Item;
 using UnityEngine;
@@ -126,21 +128,42 @@ namespace Dave6.CharacterKit.GameFlow.Binder
             BindLoadout();
             BindInteractor();
             BindInput();
-            BindStat();
 
             FinishBinding();
         }
-
-        void HandleEquipChanged(ItemInstance item, IItemContainer container)
+        void HandleEquipChanged(ItemInstance item, ContainerResult result)
         {
-            if (_Loadout.IsItemInEquipment(item)) _ItemStatApplier.ApplyItem(_PlayerStat.StatController, item);
-            else _ItemStatApplier.RemoveItem(_PlayerStat.StatController, item);
+            var action = result.Action;
+            bool wasEquipped = action.From != null && action.From.CurrentCollection?.Role == ExtensionRole.Equipment;
+            if (action.From != null) Debug.Log($"{action.From.CurrentCollection?.Role}");
+
+            bool isEquipped = action.To != null && action.To.CurrentCollection?.Role == ExtensionRole.Equipment;
+            if (action.To != null) Debug.Log($"{action.To.CurrentCollection?.Role}");
+
+            if (!wasEquipped && isEquipped)
+            {
+                _ItemStatApplier.ApplyItem(_PlayerStat.StatController, item);
+            }
+            else if (wasEquipped && !isEquipped)
+            {
+                _ItemStatApplier.RemoveItem(_PlayerStat.StatController, item);
+            }
+        }
+        void RefreshEquipItems(IEnumerable<ItemInstance> items)
+        {
+            foreach (var item in items)
+            {
+                if (_Loadout.GetContext().IsEquipped(item))
+                {
+                    _ItemStatApplier.ApplyItem(_PlayerStat.StatController, item);
+                }
+                else
+                {
+                    _ItemStatApplier.RemoveItem(_PlayerStat.StatController, item);
+                }
+            }
         }
 
-        void HandleEquipRemoved(ItemInstance item, IItemContainer container)
-        {
-            _ItemStatApplier.RemoveItem(_PlayerStat.StatController, item);
-        }
         void HandleInspect(ItemInstance item)
         {
             _ItemInspector.Bind(item);
@@ -155,16 +178,15 @@ namespace Dave6.CharacterKit.GameFlow.Binder
         void BindLoadout()
         {
             _LoadoutSystem.BindContext(_Loadout);
-            _LoadoutUI.Bind(_Loadout, _Interactor);
+            _LoadoutUI.Bind(_Loadout, _Interactor, _PlayerStat);
             _LoadoutUI.OnInspectRequested += HandleInspect;
 
             _LoadoutSystem.OnLoadComplete -= _LoadoutUI.Rebuild;
             _LoadoutSystem.OnLoadComplete += _LoadoutUI.Rebuild;
 
             var loadoutCtx = _Loadout.GetContext();
-            loadoutCtx.OnItemAdded += HandleEquipChanged;
-            loadoutCtx.OnItemMoved += HandleEquipChanged;
-            loadoutCtx.OnItemRemoved += HandleEquipRemoved;
+            loadoutCtx.OnItemChanged += HandleEquipChanged;
+            loadoutCtx.OnItemsInvalidated += RefreshEquipItems;
         }
         void BindInteractor()
         {
@@ -184,10 +206,7 @@ namespace Dave6.CharacterKit.GameFlow.Binder
             if (systemInput == null) Debug.LogWarning("SystemInputHandler not found");
             systemInput.Inject(_LoadoutSystem.Save, _LoadoutSystem.Load);
         }
-        void BindStat()
-        {
-            // todo
-        }
+
         void FinishBinding()
         {
             Debug.Log("플레이어 바인딩 완료");

@@ -1,30 +1,30 @@
-## [0.0.19] - 2025.05.12
+## [0.0.20] - 2025.05.19
 
 ### Added
-- ItemInspector UI 기본 구조 추가
-- GeometryChanged 기반 ItemView 배치 처리 추가
-- CollectionView → LoadoutMain 컨테이너 이벤트 연결 추가
+- Player Status 추가
+- Item Inspector Stat Section 표시 추가
+- StatTag Group 기반 스탯 구성 추가
 
 
 ### Changed
-- Loadout UI 빌드 흐름 개선 (Collection → Item 순서)
-- ItemView 생성/배치 책임을 LoadoutMain으로 통합
-- Visibility 기반 UI 표시 방식으로 변경
+- 장비 스탯 적용 방식을 reevaluate 기반 구조로 변경
+- extension 장착/해제 시 nested equipment stat 동기화 추가
+- equip 판정 흐름 개선
 
 
 ### Removed
 
 
 ### Refactored
-- LoadoutMain 구조 및 이벤트 흐름 정리
-- Collection / ItemView 갱신 구조 단순화
+- Status UI를 section 기반 구조로 구성
+- Equip 런타임 흐름 정리
 
 
 ### Fixed
-- Extension Container 제거 시 ItemView가 남는 문제 수정
-- 초기 UI 계산 시 ItemView 위치가 틀어지는 문제 수정
-- ContainerView missing 예외 수정
+- Extension inventory 내부 장비가 equip 상태로 잘못 판정되던 문제 수정
+- Extension 제거 후 nested equipment stat이 유지되던 문제 수정
+- Backpack 재장착 시 extension 내부 장비 stat이 재적용되지 않던 문제 수정
 
 
 ### Notes
-- 동적 컨테이너 환경 대응 구조 안정화
+- nested 구조 개선, status 추가
